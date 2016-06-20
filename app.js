@@ -1,10 +1,9 @@
 /* FIXME:
 - comments behind instructions
-- label address, based on fixed address instead of array index
 - flags register
 - arithmetic (and flag setting) is based on 32bits
 - two complements representation in the table registers
-- now adding and subtracting are hardcoded, not looking is param1 is source of destination (FASM)
+- now adding and subtracting are hardcoded, not looking if param1 is source or destination (Intel syntax)
 - minus numbers in hex. register needs to be fixed
 - what to do when numbers are too large for processor?
 - is toDec needed before we set the flags (because maybe carry flag can not be detected)
@@ -156,6 +155,7 @@ Debugger.WebApp = (function() {
                 param1.base = Debugger.Helper.extractBase(param1.value);
             }
 
+            // save as integer when in base 10
             if (param1.type === 'val' && param1.base === 10) {
                 param1.value = Debugger.Helper.toDec(param1.value);
             }
@@ -173,6 +173,7 @@ Debugger.WebApp = (function() {
                 param2.base = Debugger.Helper.extractBase(param2.value);
             }
 
+            // save as integer when in base 10
             if (param2.type === 'val' && param2.base === 10) {
                 param2.value = Debugger.Helper.toDec(param2.value);
             }
@@ -341,7 +342,7 @@ Debugger.WebApp = (function() {
                 var address;
                 if (!(address = findLabelAddress(instructionObject.param1.value))) {
                     console.log('Jump to, but label not found');
-                    return;
+                    return false;
                 }
 
                 instructionPointer = address;
@@ -357,7 +358,7 @@ Debugger.WebApp = (function() {
             case 'jno':
                 if (!(address = findLabelAddress(instructionObject.param1.value))) {
                     console.log('Jump to, but label not found');
-                    return;
+                    return false;
                 }
 
                 var secondLetter = param0.value.substr(1,1);
