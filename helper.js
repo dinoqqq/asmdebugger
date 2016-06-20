@@ -313,7 +313,7 @@ Debugger.Helper = (function() {
             return 16;
         }
 
-        if (/0x[0-9a-fA-F]+/.test(value)) {
+        if (/0[0-9a-fA-F]+/.test(value)) {
             return 16;
         }
         
