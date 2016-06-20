@@ -69,6 +69,9 @@ Debugger.Config = (function() {
         'div': [
             ['reg']
         ],
+        'cmp': [
+            ['reg', 'reg']
+        ],
         'jz': [
             ['label']
         ],
@@ -85,6 +88,30 @@ Debugger.Config = (function() {
             ['label']
         ],
         'jno': [
+            ['label']
+        ],
+        'jb': [
+            ['label']
+        ],
+        'jbe': [
+            ['label']
+        ],
+        'ja': [
+            ['label']
+        ],
+        'jae': [
+            ['label']
+        ],
+        'jl': [
+            ['label']
+        ],
+        'jle': [
+            ['label']
+        ],
+        'jg': [
+            ['label']
+        ],
+        'jge': [
             ['label']
         ],
         'jmp': [

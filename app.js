@@ -265,7 +265,8 @@ Debugger.WebApp = (function() {
                 Debugger.Helper.setRegister(param1.value, result);
 
                 break;
-            
+
+            case 'cmp':
             case 'sub':
                 if (param2.type === 'reg') {
                     var operand1 = Debugger.Config.registers[param1.value]['dec'];
@@ -281,7 +282,11 @@ Debugger.WebApp = (function() {
                 var type = 'sub';
                 
                 Debugger.Helper.setFlags(type, operand1, operand2, result);
-                Debugger.Helper.setRegister(param1.value, result);
+                
+                // do not set registers when using "cmp"
+                if (param0.value === 'sub') {
+                    Debugger.Helper.setRegister(param1.value, result);
+                }
                 
                 break;
 
@@ -372,6 +377,94 @@ Debugger.WebApp = (function() {
                 }
 
                 if (secondLetter !== 'n' && Debugger.Config.flags[secondLetter + 'f'] === 1) {
+                    instructionPointer = address;
+                }
+                break;
+
+            case 'jb':
+                if (!(address = findLabelAddress(instructionObject.param1.value))) {
+                    console.log('Jump to, but label not found');
+                    return false;
+                }
+
+                if (Debugger.Config.flags['cf'] === 1) {
+                    instructionPointer = address;
+                }
+                break;
+
+            case 'jbe':
+                if (!(address = findLabelAddress(instructionObject.param1.value))) {
+                    console.log('Jump to, but label not found');
+                    return false;
+                }
+
+                if (Debugger.Config.flags['cf'] === 1 || Debugger.Config.flags['zf'] === 1) {
+                    instructionPointer = address;
+                }
+                break;
+
+            case 'ja':
+                if (!(address = findLabelAddress(instructionObject.param1.value))) {
+                    console.log('Jump to, but label not found');
+                    return false;
+                }
+
+                if (Debugger.Config.flags['cf'] === 0 && Debugger.Config.flags['zf'] === 0) {
+                    instructionPointer = address;
+                }
+                break;
+
+            case 'jae':
+                if (!(address = findLabelAddress(instructionObject.param1.value))) {
+                    console.log('Jump to, but label not found');
+                    return false;
+                }
+
+                if (Debugger.Config.flags['cf'] === 0) {
+                    instructionPointer = address;
+                }
+                break;
+
+            case 'jl':
+                if (!(address = findLabelAddress(instructionObject.param1.value))) {
+                    console.log('Jump to, but label not found');
+                    return false;
+                }
+
+                if (Debugger.Config.flags['sf'] !== Debugger.Config.flags['of']) {
+                    instructionPointer = address;
+                }
+                break;
+
+            case 'jle':
+                if (!(address = findLabelAddress(instructionObject.param1.value))) {
+                    console.log('Jump to, but label not found');
+                    return false;
+                }
+
+                if (Debugger.Config.flags['sf'] !== Debugger.Config.flags['of'] || Debugger.Config.flags['zf'] === 1) {
+                    instructionPointer = address;
+                }
+                break;
+
+            case 'jg':
+                if (!(address = findLabelAddress(instructionObject.param1.value))) {
+                    console.log('Jump to, but label not found');
+                    return false;
+                }
+
+                if (Debugger.Config.flags['sf'] === Debugger.Config.flags['of'] && Debugger.Config.flags['zf'] === 0) {
+                    instructionPointer = address;
+                }
+                break;
+
+            case 'jge':
+                if (!(address = findLabelAddress(instructionObject.param1.value))) {
+                    console.log('Jump to, but label not found');
+                    return false;
+                }
+
+                if (Debugger.Config.flags['sf'] === Debugger.Config.flags['of']) {
                     instructionPointer = address;
                 }
                 break;
