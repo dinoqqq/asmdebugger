@@ -175,11 +175,27 @@ Debugger.Helper = (function() {
 
     function setRegister(register, value) {
         Debugger.Config.registers[register]['dec'] = toDec(value);
-        
+
         Debugger.Config.registers[register]['hex'] = toHex(value, 8);
-        
+
         Debugger.Config.registers[register]['bin'] = toBin(value, 32);
-        
+
+        drawRegisters('registers');
+    }
+
+    function resetFlags() {
+        for (key in Debugger.Config.flags) {
+            Debugger.Config.flags[key] = 0;
+        }
+        drawRegisters('flags');
+    }
+
+    function resetRegisters() {
+        for (key in Debugger.Config.registers) {
+            for (key2 in Debugger.Config.registers[key]) {
+                Debugger.Config.registers[key][key2] = 0;
+            }
+        }
         drawRegisters('registers');
     }
 
@@ -355,6 +371,8 @@ Debugger.Helper = (function() {
     return {
         setRegister: setRegister,
         setFlags: setFlags,
+        resetRegisters: resetRegisters,
+        resetFlags: resetFlags,
         echoInstruction: echoInstruction,
         getTypeParam: getTypeParam,
         isLabel: isLabel,

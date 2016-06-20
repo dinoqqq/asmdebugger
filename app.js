@@ -51,6 +51,9 @@ Debugger.WebApp = (function() {
         
         Debugger.Helper.drawRegisters('registers');
         Debugger.Helper.drawRegisters('flags');
+
+        Debugger.Helper.resetFlags();
+        Debugger.Helper.resetRegisters();
         
         initHelp();
     }
@@ -538,5 +541,9 @@ $('document').ready(function() {
 
     $('.help').on('click', function() {
         $('.help-content').toggle();
+    });
+
+    $('.code').on('keyup', function() {
+        Debugger.WebApp.init();
     });
 });
