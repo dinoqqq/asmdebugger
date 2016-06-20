@@ -51,6 +51,8 @@ Debugger.WebApp = (function() {
         
         Debugger.Helper.drawRegisters('registers');
         Debugger.Helper.drawRegisters('flags');
+        
+        initHelp();
     }
     
     function createInstructionObjects() {
@@ -191,6 +193,7 @@ Debugger.WebApp = (function() {
         
         // check if the types are allowed with this instruction
         chosenInstructionList = Debugger.Config.instructionList[param0.value];
+        
         for (i=0; i<chosenInstructionList.length; i++) {
             var length = chosenInstructionList[i].length;
 
@@ -404,6 +407,24 @@ Debugger.WebApp = (function() {
         return false;
     }
     
+    function initHelp() {
+        var listItem = '';
+        
+        $('.supported-instructions li').remove();
+        
+        for (key in Debugger.Config.instructionList) {
+            listItem = '<li>' + key + ': <ul>';
+
+            for (key2 in Debugger.Config.instructionList[key]) {
+                listItem += '<li>' + Debugger.Config.instructionList[key][key2] + '</li>';
+            }
+
+            listItem += '</ul></li>';
+
+            $('.supported-instructions').append(listItem);
+        }
+    }
+    
     return {
         init: init,
         executeNextLine: executeNextLine
@@ -417,8 +438,12 @@ $('document').ready(function() {
     $('.next').on('click', function() {
         Debugger.WebApp.executeNextLine();
     });
-    
+
     $('.new').on('click', function() {
         Debugger.WebApp.init();
+    });
+
+    $('.help').on('click', function() {
+        $('.help-content').toggle();
     });
 });
