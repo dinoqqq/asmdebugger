@@ -1,59 +1,6 @@
 var Debugger = Debugger || {};
 
 Debugger.Helper = (function() {
-
-    function drawRegisters(registerType) {
-        var object = {};
-        
-        /* Clear current html */
-        $('.' + registerType).html('');
-        
-        if (registerType === 'registers') {
-            object = Debugger.Config.registers;
-            $('.' + registerType).append('<tr><th>register</th><th>dec.</th><th>hex.</th><th>bin.</th></tr>');
-        }
-        
-        if (registerType === 'flags') {
-            object = Debugger.Config.flags;
-        }
-        
-        for (var key in object) {
-            if (!object.hasOwnProperty(key)) { continue; }
-            
-            var tds = '';
-            
-            // check if we have another object inside the object
-            if (object[key] === Object(object[key])) {
-                for (var key2 in object[key]) {
-                    tds += '<td>' + object[key][key2] + '</td>';
-                }
-            } else {
-                tds += '<td>' + object[key] + '</td>';
-            }
-
-            $('.' + registerType).append('<tr><th>' + key + '</th>' + tds + '</tr>');
-        }
-    }
-    
-    function drawCodeLine(instructionPointer, instructionPointerToAddressCode) {
-        var addressCode = instructionPointerToAddressCode[instructionPointer];
-
-        $('.code [data-address]').removeClass('active');
-        $('.code [data-address=' + addressCode + ']').addClass('active');
-        
-        return true;
-    }
-    
-    function assignAddressToCode(code, instructions) {
-        count = 0;
-        code = code.replace(/^(.*)$/mg, function(match) {
-            // console.log(match);
-            count++;
-            return '<span class="line" data-address="' + count + '">' + match + '</span>';
-        });
-        
-        $('.code').html(code);
-    }
     
     function assignInstructionPointerToAddressCode(instructionObjects, instructionPointerToAddressCode) {
         var instructionCounter = 1;
@@ -84,20 +31,20 @@ Debugger.Helper = (function() {
     }
     
     function codeCleanup(code) {
-        code = removeTooMuchWhitespace(code);
-        code = removeComments(code);
-        code = removeTooMuchWhitespace(code);
+        code = _removeTooMuchWhitespace(code);
+        code = _removeComments(code);
+        code = _removeTooMuchWhitespace(code); // FIXME, only call this once
         return code;
     }
     
-    function removeComments(code) {
+    function _removeComments(code) {
         // remove all empty lines
         code = code.replace(/^;.*/mg,'');
 
         return code;
     }
 
-    function removeTooMuchWhitespace(code) {
+    function _removeTooMuchWhitespace(code) {
         var pattern;
         
         // matches whitespace (equivalent of \s), except we removed \n 
@@ -107,11 +54,11 @@ Debugger.Helper = (function() {
         code = code.replace(/^\n/mg,'');
         
         // reduce all whitespace to 1 space char.
-        pattern = new RegExp(whitespace + '+', 'g')
+        pattern = new RegExp(whitespace + '+', 'g');
         code = code.replace(pattern,' ');
         
         // remove preceeding whitespaces
-        pattern = new RegExp('^' + whitespace + '+', 'gm')
+        pattern = new RegExp('^' + whitespace + '+', 'gm');
         code = code.replace(pattern, '');
 
         // remove comma's with 1 space char.
@@ -121,28 +68,17 @@ Debugger.Helper = (function() {
     }
 
     function checkMnemonic(mnemonic) {
-        if (Debugger.Config.instructionList[mnemonic]) {
-            return true;
-        }
-        return false;
+        return !!Debugger.Config.instructionList[mnemonic];
     }
 
     /* Check if we have a label without a ":" on the end */
     function isLabelName(param) {
-        // check if we have a label
-        if (/[a-zA-Z]{1}[a-zA-Z0-9_]*/.test(param)) {
-            return true;
-        }
-        return false;
+        return /[a-zA-Z]{1}[a-zA-Z0-9_]*/.test(param);
     }
 
     /* Check if we have a label with a ":" on the end */
     function isLabel(param) {
-        // check if we have a label
-        if (/[a-zA-Z]{1}[a-zA-Z0-9_]*:/.test(param)) {
-            return true;
-        }
-        return false;
+        return /[a-zA-Z]{1}[a-zA-Z0-9_]*:/.test(param);
     }
 
     function getTypeParam(param) {
@@ -151,7 +87,7 @@ Debugger.Helper = (function() {
             return 'reg';
         }
         
-        if (isLabelName(param)) {
+        if (Debugger.Helper.isLabelName(param)) {
             return 'label';
         }
         
@@ -160,17 +96,19 @@ Debugger.Helper = (function() {
 
     /* Set the flags and draw new table */
     function setFlags(type, operand1, operand2, result) {
-        updateSignFlag(result);
-        updateZeroFlag(result);
-        updateCarryFlag(result);
-        updateOverflowFlag(type, operand1, operand2, result);
+        Debugger.Helper.updateSignFlag(result);
+        Debugger.Helper.updateZeroFlag(result);
+        Debugger.Helper.updateCarryFlag(result);
+        Debugger.Helper.updateOverflowFlag(type, operand1, operand2, result);
 
-        drawRegisters('flags');
+        Debugger.Html.drawRegisters('flags');
     }
 
     /* Set 1 flag */
     function setFlag(flag, value) {
         Debugger.Config.flags[flag] = value;
+        
+        Debugger.Html.drawRegisters('flags');
     }
 
     function setRegister(register, value) {
@@ -180,14 +118,14 @@ Debugger.Helper = (function() {
 
         Debugger.Config.registers[register]['bin'] = toBin(value, 32);
 
-        drawRegisters('registers');
+        Debugger.Html.drawRegisters('registers');
     }
 
     function resetFlags() {
         for (key in Debugger.Config.flags) {
             Debugger.Config.flags[key] = 0;
         }
-        drawRegisters('flags');
+        Debugger.Html.drawRegisters('flags');
     }
 
     function resetRegisters() {
@@ -196,24 +134,24 @@ Debugger.Helper = (function() {
                 Debugger.Config.registers[key][key2] = 0;
             }
         }
-        drawRegisters('registers');
+        Debugger.Html.drawRegisters('registers');
     }
 
     function updateSignFlag(result) {
-        var resultBin = toBin(result, 32);
+        var resultBin = Debugger.Helper.toBin(result, 32);
         
         if (resultBin.length >= 32 && resultBin.substr(-32).substr(0,1) === '1') {
-            setFlag('sf', 1);
+            Debugger.Helper.setFlag('sf', 1);
         } else {
-            setFlag('sf', 0);
+            Debugger.Helper.setFlag('sf', 0);
         }
     }
 
     function updateZeroFlag(result) {
         if (result === 0) {
-            setFlag('zf', 1);
+            Debugger.Helper.setFlag('zf', 1);
         } else {
-            setFlag('zf', 0);
+            Debugger.Helper.setFlag('zf', 0);
         }
     }
 
@@ -221,18 +159,18 @@ Debugger.Helper = (function() {
     // FIXME
     function updateCarryFlag(result) {
         if (result < 0 || result > 4294967295) {
-            setFlag('cf', 1);
+            Debugger.Helper.setFlag('cf', 1);
         } else {
-            setFlag('cf', 0);
+            Debugger.Helper.setFlag('cf', 0);
         }
     }
     
     function toBin(value, length) {
-        return addPadding((value >>> 0).toString(2), length, 0);
+        return Debugger.Helper.addPadding((value >>> 0).toString(2), length, 0);
     }
 
     function toHex(value, length) {
-        return addPadding((value).toString(16), length, 0);
+        return Debugger.Helper.addPadding((value).toString(16), length, 0);
     }
 
     function toDec(value, length) {
@@ -259,38 +197,38 @@ Debugger.Helper = (function() {
      * 
      */
     function updateOverflowFlag(type, operand1, operand2, result) {
-        setFlag('of', 0);
+        Debugger.Helper.setFlag('of', 0);
         
-        if (isSignedPositive(operand1) && isSignedPositive(operand2) && type === 'add' && isSignedNegative(result)) {
-            setFlag('of', 1);
+        if (_isSignedPositive(operand1) && _isSignedPositive(operand2) && type === 'add' && _isSignedNegative(result)) {
+            Debugger.Helper.setFlag('of', 1);
         }
 
-        if (isSignedNegative(operand1) && isSignedNegative(operand2) && type === 'add' && isSignedPositive(result)) {
-            setFlag('of', 1);
+        if (_isSignedNegative(operand1) && _isSignedNegative(operand2) && type === 'add' && _isSignedPositive(result)) {
+            Debugger.Helper.setFlag('of', 1);
         }
 
-        if (isSignedNegative(operand1) && isSignedPositive(operand2) && type === 'sub' && isSignedPositive(result)) {
-            setFlag('of', 1);
+        if (_isSignedNegative(operand1) && _isSignedPositive(operand2) && type === 'sub' && _isSignedPositive(result)) {
+            Debugger.Helper.setFlag('of', 1);
         }
 
-        if (isSignedPositive(operand1) && isSignedNegative(operand2) && type === 'sub' && isSignedNegative(result)) {
-            setFlag('of', 1);
+        if (_isSignedPositive(operand1) && _isSignedNegative(operand2) && type === 'sub' && _isSignedNegative(result)) {
+            Debugger.Helper.setFlag('of', 1);
         }
 
-        if (isSignedPositive(operand1) && isSignedPositive(operand2) && type === 'div' && isSignedNegative(result)) {
-            setFlag('of', 1);
+        if (_isSignedPositive(operand1) && _isSignedPositive(operand2) && type === 'div' && _isSignedNegative(result)) {
+            Debugger.Helper.setFlag('of', 1);
         }
 
-        if (isSignedNegative(operand1) && isSignedNegative(operand2) && type === 'div' && isSignedNegative(result)) {
-            setFlag('of', 1);
+        if (_isSignedNegative(operand1) && _isSignedNegative(operand2) && type === 'div' && _isSignedNegative(result)) {
+            Debugger.Helper.setFlag('of', 1);
         }
 
-        if (isSignedNegative(operand1) && isSignedPositive(operand2) && type === 'div' && isSignedPositive(result)) {
-            setFlag('of', 1);
+        if (_isSignedNegative(operand1) && _isSignedPositive(operand2) && type === 'div' && _isSignedPositive(result)) {
+            Debugger.Helper.setFlag('of', 1);
         }
 
-        if (isSignedPositive(operand1) && isSignedNegative(operand2) && type === 'div' && isSignedPositive(result)) {
-            setFlag('of', 1);
+        if (_isSignedPositive(operand1) && _isSignedNegative(operand2) && type === 'div' && _isSignedPositive(result)) {
+            Debugger.Helper.setFlag('of', 1);
         }
     }
 
@@ -302,11 +240,11 @@ Debugger.Helper = (function() {
     * So operands in base 10 [2147483648, 4294967295] are -
     * 
     */
-    function isSignedPositive(value) {
+    function _isSignedPositive(value) {
         return value >= 0 && value <= 2147483647;
     }
 
-    function isSignedNegative(value) {
+    function _isSignedNegative(value) {
         return value >= 2147483648 && value <= 4294967295;
     }
 
@@ -341,7 +279,7 @@ Debugger.Helper = (function() {
         var newValue = valueInt.toString(toBase);
         
         // when in base 10 convert to int
-        if (toBase === 10) {
+        if (Debugger.Helper.toBase === 10) {
             newValue = parseInt(newValue, 10);
         }
         
@@ -367,22 +305,36 @@ Debugger.Helper = (function() {
         
         console.log(preText + message + afterText);
     }
+    
+    function findLabelAddress(label, instructionObjects) {
+        var match = label + ':';
+
+        for (key in instructionObjects) {
+            if (!instructionObjects.hasOwnProperty(key)) { continue; }
+
+            if (instructionObjects[key].param0.type === 'label' && instructionObjects[key].param0.value === match) {
+                return parseInt(key, 10);
+            }
+        }
+
+        return false;
+    }
 
     return {
         setRegister: setRegister,
         setFlags: setFlags,
+        setFlag: setFlag,
         resetRegisters: resetRegisters,
         resetFlags: resetFlags,
         echoInstruction: echoInstruction,
+        addPadding: addPadding,
         getTypeParam: getTypeParam,
         isLabel: isLabel,
         isLabelName: isLabelName,
         checkMnemonic: checkMnemonic,
         codeCleanup: codeCleanup,
         splitCode: splitCode,
-        drawRegisters: drawRegisters,
-        drawCodeLine: drawCodeLine,
-        assignAddressToCode: assignAddressToCode,
+        findLabelAddress: findLabelAddress,
         assignInstructionPointerToAddressCode: assignInstructionPointerToAddressCode,
         updateZeroFlag: updateZeroFlag,
         updateSignFlag: updateSignFlag,
