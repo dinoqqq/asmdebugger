@@ -1,17 +1,17 @@
 var Debugger = Debugger || {};
 
 Debugger.Helper = (function() {
-    
+
     function assignInstructionPointerToAddressCode(instructionObjects, instructionPointerToAddressCode) {
         var instructionCounter = 1;
-        
+
         $('.code .line').each(function() {
             var instructionLine = $(this).text();
             instructionLine = codeCleanup(instructionLine);
 
             if (instructionLine !== "" && instructionCounter > Object.keys(instructionObjects).length) {
                 console.log('Trying to assign ' + instructionLine + ' but instructionObjects is already processed');
-                
+
                 // continue
                 return true;
             }
@@ -21,22 +21,22 @@ Debugger.Helper = (function() {
                 instructionCounter++;
             }
         });
-        
+
         return true;
     }
-    
+
     function splitCode(code) {
         code = code.trim();
         return code.split("\n");
     }
-    
+
     function codeCleanup(code) {
         code = _removeTooMuchWhitespace(code);
         code = _removeComments(code);
         code = _removeTooMuchWhitespace(code); // FIXME, only call this once
         return code;
     }
-    
+
     function _removeComments(code) {
         // remove all empty lines
         code = code.replace(/^;.*/mg,'');
@@ -46,17 +46,17 @@ Debugger.Helper = (function() {
 
     function _removeTooMuchWhitespace(code) {
         var pattern;
-        
-        // matches whitespace (equivalent of \s), except we removed \n 
+
+        // matches whitespace (equivalent of \s), except we removed \n
         var whitespace = '[ \f\r\t\v\u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]';
-        
+
         // remove all empty lines
         code = code.replace(/^\n/mg,'');
-        
+
         // reduce all whitespace to 1 space char.
         pattern = new RegExp(whitespace + '+', 'g');
         code = code.replace(pattern,' ');
-        
+
         // remove preceeding whitespaces
         pattern = new RegExp('^' + whitespace + '+', 'gm');
         code = code.replace(pattern, '');
@@ -86,11 +86,11 @@ Debugger.Helper = (function() {
         if (Debugger.Config.registers[param]) {
             return 'reg';
         }
-        
+
         if (Debugger.Helper.isLabelName(param)) {
             return 'label';
         }
-        
+
         return 'val';
     }
 
@@ -107,7 +107,7 @@ Debugger.Helper = (function() {
     /* Set 1 flag */
     function setFlag(flag, value) {
         Debugger.Config.flags[flag] = value;
-        
+
         Debugger.Html.drawRegisters('flags');
     }
 
@@ -139,7 +139,7 @@ Debugger.Helper = (function() {
 
     function updateSignFlag(result) {
         var resultBin = Debugger.Helper.toBin(result, 32);
-        
+
         if (resultBin.length >= 32 && resultBin.substr(-32).substr(0,1) === '1') {
             Debugger.Helper.setFlag('sf', 1);
         } else {
@@ -164,7 +164,7 @@ Debugger.Helper = (function() {
             Debugger.Helper.setFlag('cf', 0);
         }
     }
-    
+
     function toBin(value, length) {
         return Debugger.Helper.addPadding((value >>> 0).toString(2), length, 0);
     }
@@ -177,28 +177,28 @@ Debugger.Helper = (function() {
         return value % 4294967296;
     }
 
-    /* 
+    /*
      * In the following cases the overflow flag is set:
      * + + + = -
      * - + - = +
      * - - + = +
      * + - - = -
-     * 
+     *
      * + / + = -
      * - / - = -
      * - / + = +
      * + / - = +
-     * 
+     *
      * Only works for 32bit registers (2^32 = 4294967296) FIXME
      * Signed limits 32bit = [-2147483648, 2147483647]
-     * 
-     * So operands in base 10 [0, 2147483647] are + 
+     *
+     * So operands in base 10 [0, 2147483647] are +
      * So operands in base 10 [2147483648, 4294967295] are -
-     * 
+     *
      */
     function updateOverflowFlag(type, operand1, operand2, result) {
         Debugger.Helper.setFlag('of', 0);
-        
+
         if (_isSignedPositive(operand1) && _isSignedPositive(operand2) && type === 'add' && _isSignedNegative(result)) {
             Debugger.Helper.setFlag('of', 1);
         }
@@ -238,7 +238,7 @@ Debugger.Helper = (function() {
     *
     * So operands in base 10 [0, 2147483647] are +
     * So operands in base 10 [2147483648, 4294967295] are -
-    * 
+    *
     */
     function _isSignedPositive(value) {
         return value >= 0 && value <= 2147483647;
@@ -253,7 +253,7 @@ Debugger.Helper = (function() {
         var pad = new Array(1 + p).join(pad_char);
         return (pad + n).slice(-pad.length);
     }
-    
+
     function extractBase(value) {
         if (/[0-9]+/.test(value)) {
             return 10;
@@ -270,27 +270,27 @@ Debugger.Helper = (function() {
         if (/0[0-9a-fA-F]+/.test(value)) {
             return 16;
         }
-        
+
         return false;
     }
-    
+
     function baseConverter(value, fromBase, toBase) {
         var valueInt = parseInt(value, fromBase);
         var newValue = valueInt.toString(toBase);
-        
+
         // when in base 10 convert to int
         if (Debugger.Helper.toBase === 10) {
             newValue = parseInt(newValue, 10);
         }
-        
+
         return newValue;
     }
-    
+
     function echoInstruction(instructionObject, preText, afterText) {
         var message = '';
         preText = preText || '';
         afterText = afterText || '';
-        
+
         if (instructionObject.param0 && instructionObject.param0.value) {
             message += ' ' + instructionObject.param0.value;
         }
@@ -302,10 +302,10 @@ Debugger.Helper = (function() {
         if (instructionObject.param2 && instructionObject.param2.value) {
             message += ' ' + instructionObject.param2.value;
         }
-        
+
         console.log(preText + message + afterText);
     }
-    
+
     function findLabelAddress(label, instructionObjects) {
         var match = label + ':';
 

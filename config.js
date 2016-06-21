@@ -118,7 +118,7 @@ Debugger.Config = (function() {
             ['label']
         ]
     };
-    
+
     return {
         registers: registers,
         typeList: typeList,

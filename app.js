@@ -29,23 +29,23 @@ Debugger.App = (function() {
             console.log('We need some code!');
             return false;
         }
-        
+
         var codeAddress = Debugger.Html.assignAddressToCode(Debugger.Vars.code);
         Debugger.Vars.code = Debugger.Helper.codeCleanup(Debugger.Vars.code);
-        
+
         Debugger.Vars.instructions = Debugger.Helper.splitCode(Debugger.Vars.code);
         if (!(Debugger.Vars.instructionObjects = _createInstructionObjects(Debugger.Vars.instructions, Debugger.Vars.instructionPointer))) {
             return false;
         }
-        
+
         Debugger.Helper.assignInstructionPointerToAddressCode(Debugger.Vars.instructionObjects, Debugger.Vars.instructionPointerToAddressCode);
-        
+
         Debugger.Html.drawRegisters('registers');
         Debugger.Html.drawRegisters('flags');
 
         Debugger.Helper.resetFlags();
         Debugger.Helper.resetRegisters();
-        
+
         Debugger.Html.initHelp();
     }
     /*
@@ -56,7 +56,7 @@ Debugger.App = (function() {
             console.log('No more instructions');
             return;
         }
-        
+
         if (!Debugger.Html.drawCodeLine(Debugger.Vars.instructionPointer, Debugger.Vars.instructionPointerToAddressCode)) {
             console.log('Could not draw code line for: ' + Debugger.Vars.instructionObjects[instructionPointer].instruction);
             return false;
@@ -65,7 +65,7 @@ Debugger.App = (function() {
         // Get the current instruction
         var instructionObject = Debugger.Vars.instructionObjects[Debugger.Vars.instructionPointer];
         Debugger.Vars.instructionPointer++;
-        
+
         // when we have a label just proceed
         if (instructionObject.param0.type === 'label') {
             return true;
@@ -75,7 +75,7 @@ Debugger.App = (function() {
             console.log('Could not validate instruction: ' + instructionObject.instruction);
             return false;
         }
-        
+
         if (!Debugger.Instructions.executeInstruction(instructionObject, Debugger.Vars.instructionObjects)) {
             console.log('Could not execute instruction: ' + instructionObject.instruction);
             return false;
@@ -86,12 +86,12 @@ Debugger.App = (function() {
         return instructions[index];
     }
 
-    /* 
+    /*
      * Create all instructionObjects combined in one object "instructionObjects"
      */
     function _createInstructionObjects(instructions, instructionPointer) {
         var instructionObjects = {};
-        
+
         if (!instructions) {
             console.log('No instructions found');
             return false;
@@ -128,9 +128,9 @@ Debugger.App = (function() {
     function _createInstructionObject(instruction) {
         var instructionObject = {};
         var instructionParams = instruction.split(' ');
-        
+
         instructionObject.instruction = instruction;
-        
+
         if (instructionParams.length === 0) {
             return false;
         }
@@ -140,7 +140,7 @@ Debugger.App = (function() {
             var param0 = {
                 value: value
             };
-            
+
             // check if we have a label or mnemonic
             if (Debugger.Helper.isLabel(param0.value)) {
                 param0.type = 'label';
@@ -150,10 +150,10 @@ Debugger.App = (function() {
                 console.log('Mnemonic not supported: ' + param0.value);
                 return false;
             }
-            
+
             instructionObject.param0 = param0;
         }
-        
+
         if (instructionParams[1]) {
             var param1 = {
                 type: Debugger.Helper.getTypeParam(instructionParams[1]),
@@ -177,7 +177,7 @@ Debugger.App = (function() {
                 type: Debugger.Helper.getTypeParam(instructionParams[2]),
                 value: instructionParams[2]
             };
-            
+
             if (param2.type === 'val') {
                 param2.base = Debugger.Helper.extractBase(param2.value);
             }
@@ -186,10 +186,10 @@ Debugger.App = (function() {
             if (param2.type === 'val' && param2.base === 10) {
                 param2.value = Debugger.Helper.toDec(param2.value);
             }
-            
+
             instructionObject.param2 = param2;
         }
-        
+
         return instructionObject;
     }
 
@@ -197,10 +197,10 @@ Debugger.App = (function() {
         var param0 = instructionObject.param0;
         var param1 = instructionObject.param1;
         var param2 = instructionObject.param2;
-        
+
         // check if the types are allowed with this instruction
         var chosenInstructionList = Debugger.Config.instructionList[param0.value];
-        
+
         for (i=0; i<chosenInstructionList.length; i++) {
             var length = chosenInstructionList[i].length;
 
@@ -227,11 +227,11 @@ Debugger.App = (function() {
                     break;
             }
         }
-        
+
         Debugger.Helper.echoInstruction(instructionObject, 'No instruction found for: ');
         return false;
     }
-    
+
     return {
         init: init,
         executeNextLine: executeNextLine

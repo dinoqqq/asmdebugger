@@ -10,7 +10,7 @@ Debugger.Instructions = (function() {
             case 'mov':
                 if (param2.type === 'reg') {
                     var value = Debugger.Config.registers[param2.value]['dec'];
-                    
+
                     Debugger.Helper.setRegister(param1.value, value);
                 }
 
@@ -18,11 +18,11 @@ Debugger.Instructions = (function() {
                     value = param2.value;
                     Debugger.Helper.setRegister(param1.value, param2.value);
                 }
-                
+
                 Debugger.Helper.setRegister(param1.value, value);
-                
+
                 break;
-            
+
             case 'add':
                 if (param2.type === 'reg') {
                     var operand1 = Debugger.Config.registers[param1.value]['dec'];
@@ -33,7 +33,7 @@ Debugger.Instructions = (function() {
                     var operand1 = Debugger.Config.registers[param1.value]['dec'];
                     var operand2 = param2.value;
                 }
-                
+
                 var result = Debugger.Helper.toDec(operand1 + operand2);
                 var type = 'add';
 
@@ -53,30 +53,30 @@ Debugger.Instructions = (function() {
                     var operand1 = Debugger.Config.registers[param1.value]['dec'];
                     var operand2 = param2.value;
                 }
-                
+
                 var result = Debugger.Helper.toDec(operand1 - operand2);
                 var type = 'sub';
-                
+
                 Debugger.Helper.setFlags(type, operand1, operand2, result);
-                
+
                 // do not set registers when using "cmp"
                 if (param0.value === 'sub') {
                     Debugger.Helper.setRegister(param1.value, result);
                 }
-                
+
                 break;
 
             case 'inc':
                 var value1 = Debugger.Config.registers[param1.value]['dec'];
-                
+
                 var operand1 = value1;
                 var operand2 = 1;
                 var result = Debugger.Helper.toDec(operand1 + operand2);
                 var type = 'add';
-                
+
                 Debugger.Helper.setFlags(type, operand1, operand2, result);
                 Debugger.Helper.setRegister(param1.value, result);
-                
+
                 break;
 
             case 'dec':
@@ -94,9 +94,9 @@ Debugger.Instructions = (function() {
 
              /*
               * Divison works like this
-              * 
+              *
               * div ecx (edx:eax / ecx)
-              * 
+              *
               * Remainder stored in edx
               * Division value stored in eax
               */
@@ -105,13 +105,13 @@ Debugger.Instructions = (function() {
 
                 var value2 = Debugger.Config.registers['edx']['bin'];
                 var value3 = Debugger.Config.registers['eax']['bin'];
-                
+
                 var value4 = Debugger.Helper.baseConverter(value2 + value3, 2, 10);
-                
+
                 // trick to floor
                 var resultEax = ~~(Debugger.Helper.toDec(value4) / value1);
                 var resultEdx = Debugger.Helper.toDec(value4) % value1;
-                
+
                 var operand1 = value4;
                 var operand2 = value1;
                 var type = 'div';
@@ -119,7 +119,7 @@ Debugger.Instructions = (function() {
                 Debugger.Helper.setFlags(type, operand1, operand2, resultEax);
                 Debugger.Helper.setRegister('eax', resultEax);
                 Debugger.Helper.setRegister('edx', resultEdx);
-                
+
                 break;
 
             case 'jmp':
@@ -253,7 +253,7 @@ Debugger.Instructions = (function() {
         Debugger.Helper.echoInstruction(instructionObject);
         return true;
     }
-    
+
     return {
         executeInstruction: executeInstruction
     };
