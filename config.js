@@ -34,6 +34,41 @@ Debugger.Config = (function() {
         }
     };
 
+    var registerTypes = {
+        'eax': {
+            bit32: 'eax',
+            bit16: 'ax',
+            bit8h: 'ah',
+            bit8l: 'al'
+        },
+        'ebx': {
+            bit32: 'ebx',
+            bit16: 'bx',
+            bit8h: 'bh',
+            bit8l: 'bl'
+        },
+        'ecx': {
+            bit32: 'ecx',
+            bit16: 'cx',
+            bit8h: 'ch',
+            bit8l: 'cl'
+        },
+        'edx': {
+            bit32: 'edx',
+            bit16: 'dx',
+            bit8h: 'dh',
+            bit8l: 'dl'
+        },
+        'esi': {
+            bit32: 'esi',
+            bit16: 'si'
+        },
+        'edi': {
+            bit32: 'edi',
+            bit16: 'di'
+        }
+    };
+
     var flags = {
         'cf': 0,
         'of': 0,

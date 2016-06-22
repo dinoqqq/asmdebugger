@@ -83,7 +83,8 @@ Debugger.Helper = (function() {
 
     function getTypeParam(param) {
         // check if we have a register
-        if (Debugger.Config.registers[param]) {
+        var registers = Debugger.Helper.getAllRegisters();
+        if (registers.indexOf(param) > -1) {
             return 'reg';
         }
 
@@ -92,6 +93,41 @@ Debugger.Helper = (function() {
         }
 
         return 'val';
+    }
+
+    /*
+     * Combines all possible registers and returns an array
+     */
+    function getAllRegisters() {
+        if (!Debugger.Config.registerTypes) {
+            console.log('No registerTypes found');
+            return false;
+        }
+
+        var registerTypes = Debugger.Config.registerTypes;
+        var array = [];
+
+        for (key in registerTypes) {
+            if (!registerTypes.hasOwnProperty(key)) { continue; }
+
+            if (registerTypes.bit32.length) {
+                array.push(registerTypes.bit32);
+            }
+
+            if (registerTypes.bit16.length) {
+                array.push(registerTypes.bit16);
+            }
+
+            if (registerTypes.bit8h.length) {
+                array.push(registerTypes.bit8h);
+            }
+
+            if (registerTypes.bit8l.length) {
+                array.push(registerTypes.bit8l);
+            }
+        }
+
+        return array;
     }
 
     /* Set the flags and draw new table */
@@ -331,6 +367,7 @@ Debugger.Helper = (function() {
         resetRegisters: resetRegisters,
         resetFlags: resetFlags,
         echoInstruction: echoInstruction,
+        getAllRegisters: getAllRegisters,
         addPadding: addPadding,
         getTypeParam: getTypeParam,
         isLabel: isLabel,
