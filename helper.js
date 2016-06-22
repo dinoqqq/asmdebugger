@@ -112,11 +112,11 @@ Debugger.Helper = (function() {
     }
 
     function setRegister(register, value) {
-        Debugger.Config.registers[register]['dec'] = toDec(value);
+        Debugger.Config.registers[register]['dec'] = Debugger.Helper.toDec(value);
 
-        Debugger.Config.registers[register]['hex'] = toHex(value, 8);
+        Debugger.Config.registers[register]['hex'] = Debugger.Helper.toHex(value, 8);
 
-        Debugger.Config.registers[register]['bin'] = toBin(value, 32);
+        Debugger.Config.registers[register]['bin'] = Debugger.Helper.toBin(value, 32);
 
         Debugger.Html.drawRegisters('registers');
     }
@@ -166,7 +166,11 @@ Debugger.Helper = (function() {
     }
 
     function toBin(value, length) {
-        return Debugger.Helper.addPadding((value >>> 0).toString(2), length, 0);
+        if (value.length <= 32) {
+            // this trims the value to max. 32 bits
+            value = value >>> 0;
+        }
+        return Debugger.Helper.addPadding((value).toString(2), length, 0);
     }
 
     function toHex(value, length) {
