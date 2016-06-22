@@ -81,11 +81,18 @@ Debugger.Helper = (function() {
         return /[a-zA-Z]{1}[a-zA-Z0-9_]*:/.test(param);
     }
 
+    /*
+     * Check if the type is a register
+     */
+    function isTypeRegister(type) {
+        return 'reg' === type.substr(0,3);
+    }
+
     function getTypeParam(param) {
         // check if we have a register
-        var registers = Debugger.Helper.getAllRegisters();
-        if (registers.indexOf(param) > -1) {
-            return 'reg';
+        var register;
+        if (register = Debugger.Helper.getTypeRegister(param)) {
+            return register;
         }
 
         if (Debugger.Helper.isLabelName(param)) {
@@ -96,38 +103,39 @@ Debugger.Helper = (function() {
     }
 
     /*
-     * Combines all possible registers and returns an array
+     * Get the type of a register
      */
-    function getAllRegisters() {
+    function getTypeRegister(register) {
         if (!Debugger.Config.registerTypes) {
-            console.log('No registerTypes found');
+            console.log('No register types found in config');
             return false;
         }
 
         var registerTypes = Debugger.Config.registerTypes;
-        var array = [];
 
         for (key in registerTypes) {
-            if (!registerTypes.hasOwnProperty(key)) { continue; }
-
-            if (registerTypes.bit32.length) {
-                array.push(registerTypes.bit32);
+            if (!registerTypes.hasOwnProperty(key)) {
+                continue;
             }
 
-            if (registerTypes.bit16.length) {
-                array.push(registerTypes.bit16);
+            if (registerTypes[key].bit32 && registerTypes[key].bit32 === register) {
+                return 'reg32';
             }
 
-            if (registerTypes.bit8h.length) {
-                array.push(registerTypes.bit8h);
+            if (registerTypes[key].bit16 && registerTypes[key].bit16 === register) {
+                return 'reg16';
             }
 
-            if (registerTypes.bit8l.length) {
-                array.push(registerTypes.bit8l);
+            if (registerTypes[key].bit8h && registerTypes[key].bit8h === register) {
+                return 'reg8h';
+            }
+
+            if (registerTypes[key].bit8l && registerTypes[key].bit8l === register) {
+                return 'reg8l';
             }
         }
 
-        return array;
+        return false;
     }
 
     /* Set the flags and draw new table */
@@ -367,7 +375,8 @@ Debugger.Helper = (function() {
         resetRegisters: resetRegisters,
         resetFlags: resetFlags,
         echoInstruction: echoInstruction,
-        getAllRegisters: getAllRegisters,
+        getTypeRegister: getTypeRegister,
+        isTypeRegister: isTypeRegister,
         addPadding: addPadding,
         getTypeParam: getTypeParam,
         isLabel: isLabel,

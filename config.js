@@ -1,6 +1,6 @@
 var Debugger = Debugger || {};
 
-Debugger.Config = (function() {
+Debugger.Config = function() {
     var registers = {
         'eax': {
             dec: 0,
@@ -77,38 +77,62 @@ Debugger.Config = (function() {
     };
 
     var typeList = [
-        'reg',
+        'reg32',
+        'reg16',
+        'reg8',
         'label',
         'val'
     ];
 
     var instructionList = {
         'mov': [
-            ['reg', 'reg'],
-            ['reg', 'val']
+            ['reg32', 'reg32'],
+            ['reg16', 'reg16'],
+            ['reg8', 'reg8'],
+            ['reg32', 'val'],
+            ['reg16', 'val'],
+            ['reg8', 'val']
         ],
         'sub': [
-            ['reg', 'reg'],
-            ['reg', 'val']
+            ['reg32', 'reg32'],
+            ['reg16', 'reg16'],
+            ['reg8', 'reg8'],
+            ['reg32', 'val'],
+            ['reg16', 'val'],
+            ['reg8', 'val']
         ],
         'add': [
-            ['reg', 'reg'],
-            ['reg', 'val']
+            ['reg32', 'reg32'],
+            ['reg16', 'reg16'],
+            ['reg8', 'reg8'],
+            ['reg32', 'val'],
+            ['reg16', 'val'],
+            ['reg8', 'val']
         ],
         'inc': [
-            ['reg']
+            ['reg32'],
+            ['reg16'],
+            ['reg8']
         ],
         'dec': [
-            ['reg']
+            ['reg32'],
+            ['reg16'],
+            ['reg8']
         ],
         'mul': [
-            ['reg']
+            ['reg32'],
+            ['reg16'],
+            ['reg8']
         ],
         'div': [
-            ['reg']
+            ['reg32'],
+            ['reg16'],
+            ['reg8']
         ],
         'cmp': [
-            ['reg', 'reg']
+            ['reg32', 'reg32'],
+            ['reg16', 'reg16'],
+            ['reg8', 'reg8']
         ],
         'loop': [
             ['label']
@@ -163,7 +187,8 @@ Debugger.Config = (function() {
     return {
         registers: registers,
         typeList: typeList,
+        registerTypes: registerTypes,
         flags: flags,
         instructionList: instructionList
     }
-})();
+}();

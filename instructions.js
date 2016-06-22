@@ -8,7 +8,7 @@ Debugger.Instructions = (function() {
 
         switch(param0.value) {
             case 'mov':
-                if (param2.type === 'reg') {
+                if (Debugger.Helper.isTypeRegister(param2.type)) {
                     var value = Debugger.Config.registers[param2.value]['dec'];
 
                     Debugger.Helper.setRegister(param1.value, value);
@@ -24,7 +24,7 @@ Debugger.Instructions = (function() {
                 break;
 
             case 'add':
-                if (param2.type === 'reg') {
+                if (Debugger.Helper.isTypeRegister(param2.type)) {
                     var operand1 = Debugger.Config.registers[param1.value]['dec'];
                     var operand2 = Debugger.Config.registers[param2.value]['dec'];
                 }
@@ -44,7 +44,7 @@ Debugger.Instructions = (function() {
 
             case 'cmp':
             case 'sub':
-                if (param2.type === 'reg') {
+                if (Debugger.Helper.isTypeRegister(param2.type)) {
                     var operand1 = Debugger.Config.registers[param1.value]['dec'];
                     var operand2 = Debugger.Config.registers[param2.value]['dec'];
                 }
