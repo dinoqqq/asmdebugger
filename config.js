@@ -75,6 +75,9 @@ Debugger.Config = (function() {
         'cmp': [
             ['reg', 'reg']
         ],
+        'loop': [
+            ['label']
+        ],
         'jz': [
             ['label']
         ],

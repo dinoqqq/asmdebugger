@@ -122,14 +122,14 @@ Debugger.Instructions = (function() {
 
                 break;
 
-             /*
-              * Divison works like this
-              *
-              * div ecx (edx:eax / ecx)
-              *
-              * Remainder stored in edx
-              * Quotient value stored in eax
-              */
+            /*
+             * Divison works like this
+             *
+             * div ecx (edx:eax / ecx)
+             *
+             * Remainder stored in edx
+             * Quotient value stored in eax
+             */
             case 'div':
                 var value1 = Debugger.Config.registers[param1.value]['dec'];
 
@@ -150,6 +150,31 @@ Debugger.Instructions = (function() {
                 Debugger.Helper.setRegister('eax', resultEax);
                 Debugger.Helper.setRegister('edx', resultEdx);
 
+                break;
+
+            /*
+             * Loop jumps to a label when ecx is not zero. After every jump it decreases ecx.
+             */
+            case 'loop':
+                if (!(address = Debugger.Helper.findLabelAddress(instructionObject.param1.value, instructionObjects))) {
+                    console.log('Jump to, but label not found');
+                    return false;
+                }
+
+                var ecx = Debugger.Config.registers['ecx']['dec'];
+
+                if (ecx !== 0) {
+                    Debugger.Vars.instructionPointer = address;
+
+                    // Decrease ecx
+                    Debugger.Helper.setRegister('ecx', --ecx);
+                }
+
+                var operand1 = null;
+                var operand2 = null;
+                var type = 'loop';
+
+                Debugger.Helper.setFlags(type, operand1, operand2, ecx);
                 break;
 
             case 'jmp':
