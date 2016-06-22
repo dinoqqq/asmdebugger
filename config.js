@@ -66,6 +66,9 @@ Debugger.Config = (function() {
         'dec': [
             ['reg']
         ],
+        'mul': [
+            ['reg']
+        ],
         'div': [
             ['reg']
         ],

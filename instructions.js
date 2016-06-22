@@ -92,13 +92,43 @@ Debugger.Instructions = (function() {
 
                 break;
 
+            /*
+             * Multiplication works like this
+             *
+             * mul ecx (ecx * eax = edx:eax)
+             */
+            case 'mul':
+                var value1 = Debugger.Config.registers[param1.value]['dec'];
+                var value2 = Debugger.Config.registers['eax']['dec'];
+
+                var result = value1 * value2;
+
+                /* create a 64 bit long string */
+                var resultBin = Debugger.Helper.toBin(result, 64);
+
+                var resultEax = resultBin.substr(-32);
+                var resultEdx = resultBin.substr(0, 32);
+
+                var resultEaxDec = Debugger.Helper.baseConverter(resultEax, 2, 10);
+                var resultEdxDec = Debugger.Helper.baseConverter(resultEdx, 2, 10);
+
+                var operand1 = value1;
+                var operand2 = value2;
+                var type = 'mul';
+
+                Debugger.Helper.setFlags(type, operand1, operand2, result);
+                Debugger.Helper.setRegister('eax', resultEaxDec);
+                Debugger.Helper.setRegister('edx', resultEdxDec);
+
+                break;
+
              /*
               * Divison works like this
               *
               * div ecx (edx:eax / ecx)
               *
               * Remainder stored in edx
-              * Division value stored in eax
+              * Quotient value stored in eax
               */
             case 'div':
                 var value1 = Debugger.Config.registers[param1.value]['dec'];
