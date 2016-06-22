@@ -47,6 +47,8 @@ Debugger.App = (function() {
         Debugger.Helper.resetRegisters();
 
         Debugger.Html.initHelp();
+
+        return true;
     }
     /*
      * Read the next instruction in the instructionObjects with the instructionPointer and execute it.
@@ -240,21 +242,26 @@ Debugger.App = (function() {
 
 
 $('document').ready(function() {
+    var resetCode = false;
+
     Debugger.App.init();
 
     $('.next').on('click', function() {
-        Debugger.App.executeNextLine();
-    });
+        if (resetCode) {
+            Debugger.App.init();
 
-    $('.new').on('click', function() {
-        Debugger.App.init();
+            resetCode = false;
+        }
+
+        Debugger.App.executeNextLine();
     });
 
     $('.help').on('click', function() {
         $('.help-content').toggle();
+        $(this).toggleClass('active');
     });
 
     $('.code').on('keyup', function() {
-        Debugger.App.init();
+        resetCode = true;
     });
 });
