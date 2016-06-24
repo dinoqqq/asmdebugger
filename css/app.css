@@ -1,0 +1,116 @@
+body,
+html {
+  margin: 0;
+  font-family: monospace;
+  font-size: 15px; }
+
+body,
+html,
+.container,
+.code {
+  height: 100%;
+  width: 100%; }
+
+.code {
+  width: 40%;
+  border: 1px solid;
+  line-height: 20px;
+  white-space: pre;
+  height: calc(100% - 40px);
+  max-height: calc(100% - 40px);
+  overflow: auto; }
+
+.code,
+.right {
+  margin-top: 20px;
+  margin-left: 20px;
+  display: inline-block;
+  vertical-align: top; }
+
+.code .active {
+  background: deepskyblue;
+  display: inline-block;
+  width: calc(100% - 1px); }
+
+.github-logo,
+.help {
+  float: right;
+  margin-left: 20px; }
+
+.help {
+  width: 52.5px;
+  height: 30px;
+  line-height: 30px;
+  background: forestgreen;
+  border: 1px solid black;
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+  outline: none;
+  padding: 0;
+  margin: 0; }
+  .help:hover {
+    background: green;
+    cursor: hand;
+    cursor: pointer; }
+
+.help.active {
+  background: darkgreen; }
+
+.help-content {
+  display: none; }
+
+.right {
+  width: calc(60% - 80px); }
+
+.github-logo {
+  background: url("../img/GitHub-Mark-32px.png") no-repeat;
+  width: 32px;
+  height: 32px;
+  display: block; }
+
+.next {
+  width: 150px;
+  height: 40px;
+  line-height: 40px;
+  background: forestgreen;
+  border: 1px solid black;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  outline: none;
+  padding: 0;
+  margin: 0; }
+  .next:hover {
+    background: green;
+    cursor: hand;
+    cursor: pointer; }
+
+table {
+  border-collapse: collapse; }
+
+table tr:nth-child(even) {
+  background: aliceblue; }
+
+table tr:nth-child(odd) {
+  background: lightskyblue; }
+
+table th {
+  text-align: left;
+  background: deepskyblue; }
+
+table th,
+table td {
+  padding: 2px 8px; }
+
+table td:nth-child(n) {
+  border-left: 2px solid deepskyblue; }
+
+table th:nth-child(2) {
+  width: 100px; }
+
+table th:nth-child(3) {
+  width: 100px; }
+
+table th:nth-child(4) {
+  width: 360px; }

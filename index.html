@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Assembly Debugger Online</title>
+        <meta name="description" content="ASM debugger online, quickly check what your code is doing" />
+
+        <link rel="stylesheet" href="css/app.css" type="text/css" />
+
+        <script src="js/lib/jquery-1.11.1.min.js" type="application/javascript"></script>
+        <script src="js/config.js" type="application/javascript"></script>
+        <script src="js/vars.js" type="application/javascript"></script>
+        <script src="js/html.js" type="application/javascript"></script>
+        <script src="js/helper.js" type="application/javascript"></script>
+        <script src="js/instructions.js" type="application/javascript"></script>
+        <script src="js/app.js" type="application/javascript"></script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="code" contenteditable="true">start:
+  mov eax, 2
+  mov ebx, 512
+  mul ebx
+
+  mov eax, 2
+  mul bh
+
+  mov eax, 2
+  mul bl
+
+  mov eax, 2
+  mul ebx
+
+  mov eax, 4294967295
+  mul ebx
+
+  mov ax, 17
+  mov ecx, 0
+  mov cl, 2
+  div cl
+
+  mov ax, 256
+  mov ecx, 0
+  mov ch, 2
+  div ch
+
+  mov eax, 10
+  mov edx, 1
+  mov ecx, 2
+  div cx
+
+  mov eax, 10
+  mov edx, 1
+  mov ecx, 2
+  div ecx
+
+  inc ah
+  inc al
+  inc ax
+
+  add ah, 4
+  add al, 10
+  add ax, 10
+  add eax, 1000000
+
+  dec ah
+  dec al
+  dec ax
+  dec eax
+
+  div ebx
+  add ebx, 10
+  sub eax, 2
+
+compare:
+  cmp ebx, eax
+  ja above
+
+below:
+  jmp exit
+
+above:
+  dec ebx
+  jmp compare
+
+exit:
+            </div>
+
+            <div class="right">
+                <button class="next">Next Instruction</button>
+                <a class="github-logo" href="https://github.com/daankuijsten/asmdebugger" target="_blank"></a>
+                <button class="help">Help</button>
+                <h2>Registers</h2>
+                <table class="registers">
+                    <tr>
+                        <th>register</th>
+                        <th>dec.</th>
+                        <th>hex.</th>
+                        <th>bin.</th>
+                    </tr>
+                    <tr>
+                        <th>eax</th>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <th>ebx</th>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <th>ecx</th>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <th>edx</th>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <th>esi</th>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <th>edi</th>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                </table>
+
+                <h2>Flags</h2>
+                <table class="flags">
+                    <tr>
+                        <th>cf</th>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <th>of</th>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <th>sf</th>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <th>zf</th>
+                        <td>0</td>
+                    </tr>
+                </table>
+
+                <div class="help-content">
+                    <h2>Supported instructions</h2>
+                    <p>Behind every instruction are the possible types (registry, value or label)</p>
+                    <ul class="supported-instructions">
+                    </ul>
+
+                    <h2>Debug</h2>
+                    <p>Read the console log for more detailed feedback about your code</p>
+                </div>
+            </div>
+        </div>
+
+
+
+    </body>
+</html>
