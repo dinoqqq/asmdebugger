@@ -2,6 +2,70 @@ var Debugger = Debugger || {};
 
 Debugger.Helper = (function() {
 
+    /*
+     * Format a string with spaces after a given number
+     */
+    function _readableFormat(value, spaceAfter) {
+        var newValue = '';
+        var i;
+
+        for(i = 0; i < value.length; i++) {
+            newValue += value[i];
+
+            if (i > 0 && (i+1) % spaceAfter === 0) {
+                newValue += ' ';
+            }
+        }
+
+        return newValue;
+    }
+
+    function _removeComments(code) {
+        // remove all empty lines
+        code = code.replace(/^;.*/mg,'');
+
+        return code;
+    }
+
+    function _removeTooMuchWhitespace(code) {
+        var pattern;
+
+        // matches whitespace (equivalent of \s), except we removed \n
+        var whitespace = '[ \f\r\t\v\u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]';
+
+        // remove all empty lines
+        code = code.replace(/^\n/mg,'');
+
+        // reduce all whitespace to 1 space char.
+        pattern = new RegExp(whitespace + '+', 'g');
+        code = code.replace(pattern,' ');
+
+        // remove preceeding whitespaces
+        pattern = new RegExp('^' + whitespace + '+', 'gm');
+        code = code.replace(pattern, '');
+
+        // remove comma's with 1 space char.
+        code = code.replace(/\s*,\s*/g,' ');
+
+        return code;
+    }
+
+    /*
+     * Only works for 32bit registers (2^32 = 4294967296) FIXME
+     * Signed limits 32bit = [-2147483648, 2147483647]
+     *
+     * So operands in base 10 [0, 2147483647] are +
+     * So operands in base 10 [2147483648, 4294967295] are -
+     *
+     */
+    function _isSignedPositive(value) {
+        return value >= 0 && value <= 2147483647;
+    }
+
+    function _isSignedNegative(value) {
+        return value >= 2147483648 && value <= 4294967295;
+    }
+
     function assignInstructionPointerToAddressCode(instructionObjects, instructionPointerToAddressCode) {
         var instructionCounter = 1;
 
@@ -34,36 +98,6 @@ Debugger.Helper = (function() {
         code = _removeTooMuchWhitespace(code);
         code = _removeComments(code);
         code = _removeTooMuchWhitespace(code); // FIXME, only call this once
-        return code;
-    }
-
-    function _removeComments(code) {
-        // remove all empty lines
-        code = code.replace(/^;.*/mg,'');
-
-        return code;
-    }
-
-    function _removeTooMuchWhitespace(code) {
-        var pattern;
-
-        // matches whitespace (equivalent of \s), except we removed \n
-        var whitespace = '[ \f\r\t\v\u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]';
-
-        // remove all empty lines
-        code = code.replace(/^\n/mg,'');
-
-        // reduce all whitespace to 1 space char.
-        pattern = new RegExp(whitespace + '+', 'g');
-        code = code.replace(pattern,' ');
-
-        // remove preceeding whitespaces
-        pattern = new RegExp('^' + whitespace + '+', 'gm');
-        code = code.replace(pattern, '');
-
-        // remove comma's with 1 space char.
-        code = code.replace(/\s*,\s*/g,' ');
-
         return code;
     }
 
@@ -102,42 +136,6 @@ Debugger.Helper = (function() {
         return 'val';
     }
 
-    /*
-     * Get the type of a register
-     */
-    function getTypeRegister(register) {
-        if (!Debugger.Config.registerTypes) {
-            console.log('No register types found in config');
-            return false;
-        }
-
-        var registerTypes = Debugger.Config.registerTypes;
-
-        for (key in registerTypes) {
-            if (!registerTypes.hasOwnProperty(key)) {
-                continue;
-            }
-
-            if (registerTypes[key].bit32 && registerTypes[key].bit32 === register) {
-                return 'reg32';
-            }
-
-            if (registerTypes[key].bit16 && registerTypes[key].bit16 === register) {
-                return 'reg16';
-            }
-
-            if (registerTypes[key].bit8h && registerTypes[key].bit8h === register) {
-                return 'reg8h';
-            }
-
-            if (registerTypes[key].bit8l && registerTypes[key].bit8l === register) {
-                return 'reg8l';
-            }
-        }
-
-        return false;
-    }
-
     /* Set the flags and draw new table */
     function setFlags(type, operand1, operand2, result) {
         Debugger.Helper.updateSignFlag(result);
@@ -145,40 +143,142 @@ Debugger.Helper = (function() {
         Debugger.Helper.updateCarryFlag(result);
         Debugger.Helper.updateOverflowFlag(type, operand1, operand2, result);
 
-        Debugger.Html.drawRegisters('flags');
+        Debugger.Html.drawFlags();
     }
 
     /* Set 1 flag */
     function setFlag(flag, value) {
         Debugger.Config.flags[flag] = value;
 
-        Debugger.Html.drawRegisters('flags');
+        Debugger.Html.drawFlags();
     }
 
-    function setRegister(register, value) {
-        Debugger.Config.registers[register]['dec'] = Debugger.Helper.toDec(value);
+    /*
+     * This functions sets a register based on the type (e.g. reg32, reg16, reg8h, reg8l).
+     *
+     * It takes the value and adds 0 padding based on the length of the register.
+     * Example:
+     *
+     * mov eax, 100101b ; 37 decimal, 25 hex
+     *
+     * Binary: extend the length of the value to 32 (because eax = 32b) and save it.
+     * 0000000000000000000000000100101
+     *
+     * Hex: extend the length of the value to 8 (because eax = 8h) and save it.
+     * 00000025
+     *
+     * Decimal: no extension
+     * 37
+     *
+     */
+    function setRegister(register, type, value) {
+        // Determine how many positions need to be edited per base
+        var hexStart;
+        var hexEnd;
+        var binStart;
+        var binEnd;
 
-        Debugger.Config.registers[register]['hex'] = Debugger.Helper.toHex(value, 8);
+        var registerOffsets = Debugger.Vars.getRegisterOffsetValues(type);
 
-        Debugger.Config.registers[register]['bin'] = Debugger.Helper.toBin(value, 32);
+        var hex = Debugger.Helper.toHex(value, (registerOffsets.hexEnd - registerOffsets.hexStart + 1));
+        var bin = Debugger.Helper.toBin(value, (registerOffsets.binEnd - registerOffsets.binStart + 1));
 
-        Debugger.Html.drawRegisters('registers');
+        var register32Bit = Debugger.Helper.get32BitRegister(register, type);
+
+        // Set the hex register
+        var hexValue = Debugger.Helper.replacePartOfString(
+            Debugger.Config.registers[register32Bit]['value']['hex'],
+            hex,
+            registerOffsets.hexStart,
+            registerOffsets.hexEnd
+        );
+        Debugger.Config.registers[register32Bit]['value']['hex'] = hexValue;
+        Debugger.Config.registers[register32Bit]['valueFormat']['hex'] = _readableFormat(hexValue, 4);
+
+        // Set the bin register
+        var binValue = Debugger.Helper.replacePartOfString(
+            Debugger.Config.registers[register32Bit]['value']['bin'],
+            bin,
+            registerOffsets.binStart,
+            registerOffsets.binEnd
+        );
+
+        Debugger.Config.registers[register32Bit]['value']['bin'] = binValue;
+        Debugger.Config.registers[register32Bit]['valueFormat']['bin'] = _readableFormat(binValue, 8);
+
+        // Always take the whole 32 bit value of the register to show in the decimal register
+        var base10 = Debugger.Helper.baseConverter(Debugger.Config.registers[register32Bit]['value']['bin'], 2, 10);
+
+        // Set the decimal register
+        Debugger.Config.registers[register32Bit]['value']['dec'] = Debugger.Helper.toDec(base10);
+        Debugger.Config.registers[register32Bit]['valueFormat']['dec'] = Debugger.Helper.toDec(base10);
+
+        Debugger.Html.drawRegisters();
+    }
+
+    /*
+     * Replace part of a string by index (starts at 0)
+     *
+     * Example
+     * 'abc','c', 1, 1 => 'acc'
+     * 'abcdef','', 2, 3 => 'abef'
+     */
+    function replacePartOfString(string, replace, start, end) {
+        if (start < 0 || end < 0) {
+            console.log('Debugger.Helper.getPartOfString: "start" or "end" can not be < 0');
+            return false;
+        }
+        return string.substr(0,start) + replace + string.substr(end + 1);
+    }
+
+    /*
+     * Get the part of a string by index (starts at 0)
+     *
+     * Example
+     * 'abc', 1, 1 => 'a'
+     * 'abcdef', 2, 3 => 'cd'
+     */
+    function getPartOfString(string, start, end) {
+        if (start < 0 || end < 0) {
+            console.log('Debugger.Helper.getPartOfString: "start" or "end" can not be < 0');
+            return false;
+        }
+        return string.substr(start, (end - start + 1));
     }
 
     function resetFlags() {
-        for (key in Debugger.Config.flags) {
+        for (var key in Debugger.Config.flags) {
+            if (!Debugger.Config.flags.hasOwnProperty(key)) { continue; }
+
             Debugger.Config.flags[key] = 0;
         }
-        Debugger.Html.drawRegisters('flags');
+        Debugger.Html.drawFlags();
     }
 
+    /*
+     * Set all the registers to 0.
+     */
     function resetRegisters() {
-        for (key in Debugger.Config.registers) {
-            for (key2 in Debugger.Config.registers[key]) {
-                Debugger.Config.registers[key][key2] = 0;
+        for (var key in Debugger.Config.registers) {
+            if (!Debugger.Config.registers.hasOwnProperty(key)) { continue; }
+
+            for (var key2 in Debugger.Config.registers[key]['value']) {
+                if (!Debugger.Config.registers[key]['value'].hasOwnProperty(key2)) { continue; }
+
+                if (key2 === 'dec') {
+                    Debugger.Config.registers[key]['value'][key2] = 0;
+                    Debugger.Config.registers[key]['valueFormat'][key2] = 0;
+                } else if (key2 === 'hex') {
+                    Debugger.Config.registers[key]['value'][key2] = '00000000';
+                    Debugger.Config.registers[key]['valueFormat'][key2] = _readableFormat('00000000', 4);
+                } else if (key2 === 'bin') {
+                    Debugger.Config.registers[key]['value'][key2] = '00000000000000000000000000000000';
+                    Debugger.Config.registers[key]['valueFormat'][key2] = _readableFormat('00000000000000000000000000000000', 8);
+                }
+
             }
         }
-        Debugger.Html.drawRegisters('registers');
+        Debugger.Html.drawRegisters();
     }
 
     function updateSignFlag(result) {
@@ -279,23 +379,9 @@ Debugger.Helper = (function() {
             Debugger.Helper.setFlag('of', 1);
         }
     }
-
-   /*
-    * Only works for 32bit registers (2^32 = 4294967296) FIXME
-    * Signed limits 32bit = [-2147483648, 2147483647]
-    *
-    * So operands in base 10 [0, 2147483647] are +
-    * So operands in base 10 [2147483648, 4294967295] are -
-    *
-    */
-    function _isSignedPositive(value) {
-        return value >= 0 && value <= 2147483647;
-    }
-
-    function _isSignedNegative(value) {
-        return value >= 2147483648 && value <= 4294967295;
-    }
-
+    /*
+     * Add padding to a string.
+     */
     function addPadding(n, p, c) {
         var pad_char = typeof c !== 'undefined' ? c : '0';
         var pad = new Array(1 + p).join(pad_char);
@@ -327,7 +413,7 @@ Debugger.Helper = (function() {
         var newValue = valueInt.toString(toBase);
 
         // when in base 10 convert to int
-        if (Debugger.Helper.toBase === 10) {
+        if (toBase === 10) {
             newValue = parseInt(newValue, 10);
         }
 
@@ -357,7 +443,7 @@ Debugger.Helper = (function() {
     function findLabelAddress(label, instructionObjects) {
         var match = label + ':';
 
-        for (key in instructionObjects) {
+        for (var key in instructionObjects) {
             if (!instructionObjects.hasOwnProperty(key)) { continue; }
 
             if (instructionObjects[key].param0.type === 'label' && instructionObjects[key].param0.value === match) {
@@ -368,22 +454,127 @@ Debugger.Helper = (function() {
         return false;
     }
 
+    /*
+     * Throw in a param object and return the value of the 32 bit register. Optionally the second parameter can be
+     * a base number, defaults to 10;
+     *
+     * Examples:
+     * Register values: eax = 00010A0Fh
+     *
+     * input "ah", output "10" (= 0Ah)
+     * input "al", output "15" (= 0Fh)
+     * input "ax", output "2575" (= 0A0Fh)
+     * input "eax", output "68111" (= 0001 0A0Fh)
+     * input "ax", "2", output "101000001111" (= 0A0Fh)
+     */
+    function paramToRegisterValue(param, base) {
+        base = base || 10;
+
+        var register32Bit = Debugger.Helper.get32BitRegister(param.value, param.type);
+
+        // Get the 32 bit
+        var register32BinValue = Debugger.Config.registers[register32Bit]['value']['bin'];
+        var registerOffsets = Debugger.Vars.getRegisterOffsetValues(param.type);
+
+        // Get part from the string that we need
+        var binValue = Debugger.Helper.getPartOfString(
+            register32BinValue,
+            registerOffsets.binStart,
+            registerOffsets.binEnd
+        );
+
+        return Debugger.Helper.baseConverter(binValue, 2, base);
+    }
+
+    /*
+     * Get the type of a register
+     *
+     * Examples:
+     * input "al", output "reg8l"
+     * input "bh", output "reg8h"
+     * input "eax", output "reg32"
+     */
+    function getTypeRegister(register) {
+        var registers = Debugger.Config.registers;
+        var typeList = Debugger.Config.typeList;
+
+        for (var key in registers) {
+            if (!registers.hasOwnProperty(key)) { continue; }
+
+            for (var key2 in typeList) {
+                if (!typeList.hasOwnProperty(key2)) { continue; }
+
+                if (registers[key][typeList[key2]] && registers[key][typeList[key2]] === register) {
+                    return typeList[key2];
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /*
+     * Gets the 32 bit variant of the register
+     *
+     * Example:
+     * input "al", output "eax"
+     * input "ax", output "eax"
+     * input "si", output "esi"
+     * input "ebx", output "ebx"
+     */
+    function get32BitRegister(register, type) {
+        for (var key in Debugger.Config.registers) {
+            if (!Debugger.Config.registers.hasOwnProperty(key)) { continue; }
+
+            if (Debugger.Config.registers[key][type] && Debugger.Config.registers[key][type] === register) {
+                return key;
+            }
+        }
+
+        return false;
+    }
+
+    /*
+     * When we have a 8 bit register, ensure that we get the low 8 bit register
+     *
+     * Examples:
+     * "reg8h" => "reg8l"
+     * "reg8l" => "reg8l"
+     * "reg32" => "reg32"
+     * "reg16" => "reg16"
+     */
+    function ensure8BitLow(string) {
+        return string === 'reg8h' ? 'reg8l' : string;
+    }
+
+    /*
+     * Returns the size of the register (with "l" and "h" for 8 bit registers)
+     */
+    function getSizeOfRegister(register) {
+        return register.substr(3);
+    }
+
     return {
         setRegister: setRegister,
         setFlags: setFlags,
         setFlag: setFlag,
         resetRegisters: resetRegisters,
         resetFlags: resetFlags,
+        replacePartOfString: replacePartOfString,
+        getPartOfString: getPartOfString,
         echoInstruction: echoInstruction,
         getTypeRegister: getTypeRegister,
+        get32BitRegister: get32BitRegister,
         isTypeRegister: isTypeRegister,
         addPadding: addPadding,
         getTypeParam: getTypeParam,
         isLabel: isLabel,
         isLabelName: isLabelName,
         checkMnemonic: checkMnemonic,
+        paramToRegisterValue: paramToRegisterValue,
         codeCleanup: codeCleanup,
         splitCode: splitCode,
+        getSizeOfRegister: getSizeOfRegister,
         findLabelAddress: findLabelAddress,
         assignInstructionPointerToAddressCode: assignInstructionPointerToAddressCode,
         updateZeroFlag: updateZeroFlag,
@@ -394,6 +585,7 @@ Debugger.Helper = (function() {
         toHex: toHex,
         toDec: toDec,
         extractBase: extractBase,
+        ensure8BitLow: ensure8BitLow,
         baseConverter: baseConverter
     };
 })();

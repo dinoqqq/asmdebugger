@@ -2,38 +2,41 @@ var Debugger = Debugger || {};
 
 Debugger.Html = (function() {
 
-    function drawRegisters(registerType) {
-        var object = {};
+    function drawFlags() {
+        var flags = Debugger.Config.flags;
 
         /* Clear current html */
-        $('.' + registerType).html('');
+        $('.flags').html('');
 
-        if (registerType === 'registers') {
-            object = Debugger.Config.registers;
-            $('.' + registerType).append('<tr><th>register</th><th>dec.</th><th>hex.</th><th>bin.</th></tr>');
-        }
-
-        if (registerType === 'flags') {
-            object = Debugger.Config.flags;
-        }
-
-        for (var key in object) {
-            if (!object.hasOwnProperty(key)) { continue; }
+        for (var key in flags) {
+            if (!flags.hasOwnProperty(key)) { continue; }
 
             var tds = '';
+            tds += '<td>' + flags[key] + '</td>';
 
-            // check if we have another object inside the object
-            if (object[key] === Object(object[key])) {
-                for (var key2 in object[key]) {
-                    if (!object[key].hasOwnProperty(key2)) { continue; }
+            $('.flags').append('<tr><th>' + key + '</th>' + tds + '</tr>');
+        }
+    }
 
-                    tds += '<td>' + object[key][key2] + '</td>';
-                }
-            } else {
-                tds += '<td>' + object[key] + '</td>';
+
+    function drawRegisters() {
+        var registers = Debugger.Config.registers;
+
+        /* Clear current html */
+        $('.registers').html('');
+        $('.registers').append('<tr><th>register</th><th>dec.</th><th>hex.</th><th>bin.</th></tr>');
+
+        for (var key in registers) {
+            if (!registers.hasOwnProperty(key)) { continue; }
+
+            var tds = '';
+            for (var key2 in registers[key]['valueFormat']) {
+                if (!registers[key]['valueFormat'].hasOwnProperty(key2)) { continue; }
+
+                tds += '<td>' + registers[key]['valueFormat'][key2] + '</td>';
             }
 
-            $('.' + registerType).append('<tr><th>' + key + '</th>' + tds + '</tr>');
+            $('.registers').append('<tr><th>' + key + '</th>' + tds + '</tr>');
         }
     }
 
@@ -75,6 +78,7 @@ Debugger.Html = (function() {
     }
 
     return {
+        drawFlags: drawFlags,
         drawRegisters: drawRegisters,
         drawCodeLine: drawCodeLine,
         initHelp: initHelp,
