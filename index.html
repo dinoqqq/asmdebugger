@@ -17,8 +17,14 @@
     <body>
         <div class="container">
             <div class="code" contenteditable="true">start:
-  mov eax, 1b
-  mov ebx, 0ah
+  add eax, 0x7fffffff
+  add eax, 1b
+
+  mov dx, 0
+  mov ax, 0xffff
+  mov cx, 555
+  div cx
+
   mul ebx
 
   mov eax, 2d
