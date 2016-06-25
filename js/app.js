@@ -205,17 +205,20 @@ Debugger.App = (function() {
         }
 
         if (instructionParams[1]) {
+            if (!(type = Debugger.Helper.getTypeParam(instructionParams[1]))){
+                console.log('Param not supported: ' + instructionParams[1]);
+                return false;
+            }
+
             var param1 = {
-                type: Debugger.Helper.getTypeParam(instructionParams[1]),
+                type: type,
                 value: instructionParams[1]
             };
 
-            if (param1.type === 'val') {
-                param1.base = Debugger.Helper.extractBase(param1.value);
-            }
-
-            // save as integer when in base 10
-            if (param1.type === 'val' && param1.base === 10) {
+            // save all values as base 10
+            if (type === 'val') {
+                var base = Debugger.Helper.extractBase(param1.value);
+                param1.value = Debugger.Helper.baseConverter(param1.value, base, 10);
                 param1.value = Debugger.Helper.toDec(param1.value);
             }
 
@@ -223,17 +226,20 @@ Debugger.App = (function() {
         }
 
         if (instructionParams[2]) {
+            if (!(type = Debugger.Helper.getTypeParam(instructionParams[2]))){
+                console.log('Param not supported: ' + instructionParams[2]);
+                return false;
+            }
+
             var param2 = {
-                type: Debugger.Helper.getTypeParam(instructionParams[2]),
+                type: type,
                 value: instructionParams[2]
             };
 
-            if (param2.type === 'val') {
-                param2.base = Debugger.Helper.extractBase(param2.value);
-            }
-
-            // save as integer when in base 10
-            if (param2.type === 'val' && param2.base === 10) {
+            // save all values as base 10
+            if (type === 'val') {
+                var base = Debugger.Helper.extractBase(param2.value);
+                param2.value = Debugger.Helper.baseConverter(param2.value, base, 10);
                 param2.value = Debugger.Helper.toDec(param2.value);
             }
 

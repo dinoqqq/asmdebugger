@@ -143,7 +143,11 @@ Debugger.Helper = (function() {
             return 'label';
         }
 
-        return 'val';
+        if (Debugger.Helper.extractBase(param) > 0) {
+            return 'val';
+        }
+
+        return false;
     }
 
     /* Set the flags and draw new table */
@@ -398,26 +402,51 @@ Debugger.Helper = (function() {
         return (pad + n).slice(-pad.length);
     }
 
+    /*
+     * Extract the base of a value.
+     *
+     * Supported examples:
+     *
+     * 2 (= base 10)
+     * 2d (= base 10)
+     *
+     * 1b (= base 2)
+     *
+     * 0ABh (= base 16)
+     * 0xAB (= base 16)
+     */
     function extractBase(value) {
-        if (/[0-9]+/.test(value)) {
-            return 10;
-        }
-
-        if (/[0-1]+b/.test(value)) {
+        if (/^-?[0-1]+b$/.test(value)) {
             return 2;
         }
 
-        if (/[0-9a-fA-F]+h/.test(value)) {
+        if (/^-?0[0-9a-fA-F]+h$/.test(value)) {
             return 16;
         }
 
-        if (/0[0-9a-fA-F]+/.test(value)) {
+        if (/^-?0x[0-9a-fA-F]+$/.test(value)) {
             return 16;
+        }
+
+        if (/^-?[0-9]+d?$/.test(value)) {
+            return 10;
         }
 
         return false;
     }
 
+    /*
+     * This function converts a value from one base to another base. Always returns a string, except when toBase is 10,
+     * then a int is returned.
+     *
+     * When converting to base 10 a lot of allowed values are automatically stripped to the right int.
+     * Examples:
+     *
+     * 1b => 1
+     * 0Ah => 10
+     * 0xA => 10
+     * 2d => 2
+     */
     function baseConverter(value, fromBase, toBase) {
         var valueInt = parseInt(value, fromBase);
         var newValue = valueInt.toString(toBase);
