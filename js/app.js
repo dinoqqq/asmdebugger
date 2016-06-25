@@ -6,7 +6,6 @@
 - now adding and subtracting are hardcoded, not looking if param1 is source or destination (Intel syntax)
 - minus numbers in hex. register needs to be fixed
 - what to do when numbers are too large for processor?
-- is toDec needed before we set the flags (because maybe carry flag can not be detected)
  */
 
 var Debugger = Debugger || {};
@@ -219,7 +218,7 @@ Debugger.App = (function() {
             if (type === 'val') {
                 var base = Debugger.Helper.extractBase(param1.value);
                 param1.value = Debugger.Helper.baseConverter(param1.value, base, 10);
-                param1.value = Debugger.Helper.toDec(param1.value);
+                param1.value = Debugger.Helper.limitDec(param1.value);
             }
 
             instructionObject.param1 = param1;
@@ -240,7 +239,7 @@ Debugger.App = (function() {
             if (type === 'val') {
                 var base = Debugger.Helper.extractBase(param2.value);
                 param2.value = Debugger.Helper.baseConverter(param2.value, base, 10);
-                param2.value = Debugger.Helper.toDec(param2.value);
+                param2.value = Debugger.Helper.limitDec(param2.value);
             }
 
             instructionObject.param2 = param2;

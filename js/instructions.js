@@ -34,7 +34,7 @@ Debugger.Instructions = (function() {
                     var operand2 = param2.value;
                 }
 
-                var result = Debugger.Helper.toDec(operand1 + operand2);
+                var result = Debugger.Helper.limitDec(operand1 + operand2);
                 var type = 'add';
 
                 Debugger.Helper.setFlags(type, operand1, operand2, result);
@@ -54,8 +54,7 @@ Debugger.Instructions = (function() {
                     var operand2 = param2.value;
                 }
 
-
-                var result = Debugger.Helper.toDec(operand1 - operand2);
+                var result = Debugger.Helper.limitDec(operand1 - operand2);
                 var type = 'sub';
 
                 Debugger.Helper.setFlags(type, operand1, operand2, result);
@@ -70,7 +69,7 @@ Debugger.Instructions = (function() {
             case 'inc':
                 var operand1 = Debugger.Helper.paramToRegisterValue(param1);
                 var operand2 = 1;
-                var result = Debugger.Helper.toDec(operand1 + operand2);
+                var result = Debugger.Helper.limitDec(operand1 + operand2);
                 var type = 'add';
 
                 Debugger.Helper.setFlags(type, operand1, operand2, result);
@@ -81,7 +80,7 @@ Debugger.Instructions = (function() {
             case 'dec':
                 var operand1 = Debugger.Helper.paramToRegisterValue(param1);
                 var operand2 = 1;
-                var result = Debugger.Helper.toDec(operand1 - operand2);
+                var result = Debugger.Helper.limitDec(operand1 - operand2);
                 var type = 'sub';
 
                 Debugger.Helper.setFlags(type, operand1, operand2, result);
@@ -203,8 +202,8 @@ Debugger.Instructions = (function() {
                 var value4 = Debugger.Helper.baseConverter(value2 + value3, 2, 10);
 
                 // trick to floor
-                var resultEax = ~~(Debugger.Helper.toDec(value4) / value1);
-                var resultEdx = Debugger.Helper.toDec(value4) % value1;
+                var resultEax = ~~(Debugger.Helper.limitDec(value4) / value1);
+                var resultEdx = Debugger.Helper.limitDec(value4) % value1;
 
                 var operand1 = value4;
                 var operand2 = value1;

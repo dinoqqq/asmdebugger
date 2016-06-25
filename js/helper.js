@@ -227,8 +227,8 @@ Debugger.Helper = (function() {
         var base10 = Debugger.Helper.baseConverter(Debugger.Config.registers[register32Bit]['value']['bin'], 2, 10);
 
         // Set the decimal register
-        Debugger.Config.registers[register32Bit]['value']['dec'] = Debugger.Helper.toDec(base10);
-        Debugger.Config.registers[register32Bit]['valueFormat']['dec'] = Debugger.Helper.toDec(base10);
+        Debugger.Config.registers[register32Bit]['value']['dec'] = Debugger.Helper.limitDec(base10);
+        Debugger.Config.registers[register32Bit]['valueFormat']['dec'] = Debugger.Helper.limitDec(base10);
 
         Debugger.Html.drawRegisters();
     }
@@ -332,20 +332,32 @@ Debugger.Helper = (function() {
         }
     }
 
+    /*
+     * This function expects an integer and returns a binary (as string) value with given length.
+     */
     function toBin(value, length) {
-        if (value.length <= 32) {
-            // this trims the value to max. 32 bits
-            value = value >>> 0;
-        }
         return Debugger.Helper.addPadding((value).toString(2), length, 0);
     }
 
+    /*
+     * This function expects an integer and returns a hexidecimal (as string) value with given length.
+     */
     function toHex(value, length) {
         return Debugger.Helper.addPadding((value).toString(16), length, 0);
     }
 
-    function toDec(value, length) {
-        return value % 4294967296;
+    /*
+     * This function limits a decimal number, with a max of 32 bits (default). Getting higher than the second param,
+     * makes the function starts counting at zero again.
+     *
+     * Example:
+     * input 5, 2 => output 1
+     * input 4294967297, 32 => output 1
+     */
+    function limitDec(value, maxLengthInBits) {
+        maxLengthInBits = maxLengthInBits || 32;
+
+        return value % Math.pow(2, maxLengthInBits);
     }
 
     /*
@@ -665,7 +677,7 @@ Debugger.Helper = (function() {
         updateOverflowFlag: updateOverflowFlag,
         toBin: toBin,
         toHex: toHex,
-        toDec: toDec,
+        limitDec: limitDec,
         extractBase: extractBase,
         ensure8BitLow: ensure8BitLow,
         baseConverter: baseConverter,
