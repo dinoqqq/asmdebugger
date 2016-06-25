@@ -132,18 +132,21 @@ Debugger.Helper = (function() {
         return 'reg' === type.substr(0,3);
     }
 
-    function getTypeParam(param) {
+    /*
+     * Throw in a string and find out what type it is.
+     */
+    function getTypeParam(string) {
         // check if we have a register
         var register;
-        if (register = Debugger.Helper.getTypeRegister(param)) {
+        if (register = Debugger.Helper.getTypeRegister(string)) {
             return register;
         }
 
-        if (Debugger.Helper.isLabel(param)) {
+        if (Debugger.Helper.isLabel(string)) {
             return 'label';
         }
 
-        if (Debugger.Helper.extractBase(param) > 0) {
+        if (Debugger.Helper.extractBase(string) > 0) {
             return 'val';
         }
 
@@ -295,16 +298,22 @@ Debugger.Helper = (function() {
         Debugger.Html.drawRegisters();
     }
 
-    function updateSignFlag(result) {
-        var resultBin = Debugger.Helper.toBin(result, 32);
+    /*
+     * Check the sign of the result, based on the size of the register
+     */
+    function updateSignFlag(result, resultSize) {
+        var resultBin = Debugger.Helper.toBin(result, resultSize);
 
-        if (resultBin.length >= 32 && resultBin.substr(-32).substr(0,1) === '1') {
+        if (resultBin.length >= resultSize && resultBin.substr(resultSize * -1).substr(0,1) === '1') {
             Debugger.Helper.setFlag('sf', 1);
         } else {
             Debugger.Helper.setFlag('sf', 0);
         }
     }
 
+    /*
+     * Check if the result is zero
+     */
     function updateZeroFlag(result) {
         if (result === 0) {
             Debugger.Helper.setFlag('zf', 1);
@@ -396,10 +405,10 @@ Debugger.Helper = (function() {
     /*
      * Add padding to a string.
      */
-    function addPadding(n, p, c) {
-        var pad_char = typeof c !== 'undefined' ? c : '0';
-        var pad = new Array(1 + p).join(pad_char);
-        return (pad + n).slice(-pad.length);
+    function addPadding(string, length, paddingChar) {
+        var pad_char = typeof paddingChar !== 'undefined' ? paddingChar : '0';
+        var pad = new Array(1 + length).join(pad_char);
+        return (pad + string).slice(-pad.length);
     }
 
     /*
