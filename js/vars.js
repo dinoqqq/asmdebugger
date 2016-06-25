@@ -49,18 +49,17 @@ Debugger.Vars = (function() {
     var getMulDivValues = function(sizeRegister) {
         switch(sizeRegister) {
             case '32':
-                size = 32;
+                size = sizeRegister;
                 register1 = 'eax';
                 register2 = 'edx';
                 break;
             case '16':
-                size = 16;
+                size = sizeRegister;
                 register1 = 'ax';
                 register2 = 'dx';
                 break;
-            case '8l':
-            case '8h':
-                size = 8;
+            case '8':
+                size = sizeRegister;
                 register1 = 'al';
                 register2 = 'ah';
                 break;

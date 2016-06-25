@@ -596,10 +596,16 @@ Debugger.Helper = (function() {
     }
 
     /*
-     * Returns the size of the register (with "l" and "h" for 8 bit registers)
+     * Returns the size of the register. Optionally it can return with "l" and "h" for 8 bit registers, default not.
      */
-    function getSizeOfRegister(register) {
-        return register.substr(3);
+    function getSizeOfRegister(register, withLowHigh) {
+        withLowHigh = withLowHigh || false;
+
+        if (!withLowHigh && (register.substr(-1) === 'l' || register.substr(-1) === 'h')) {
+            return parseInt(register.substr(3, register.length - 4), 10);
+        }
+
+        return parseInt(register.substr(3), 10);
     }
 
     /*
