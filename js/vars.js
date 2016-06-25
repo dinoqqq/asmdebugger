@@ -68,8 +68,7 @@ Debugger.Vars = (function() {
                 register2 = 'ah';
                 break;
             default:
-                console.log(sizeRegister);
-                console.log('getMulDivValues: sizeRegister not recognized');
+                console.log('getMulDivValues: sizeRegister value "' + sizeRegister + '" not recognized');
                 return false;
         }
 

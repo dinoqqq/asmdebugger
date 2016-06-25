@@ -6,6 +6,7 @@
 - now adding and subtracting are hardcoded, not looking if param1 is source or destination (Intel syntax)
 - minus numbers in hex. register needs to be fixed
 - what to do when numbers are too large for processor?
+- FIXME how to set the flags for multiplication and division?
  */
 
 var Debugger = Debugger || {};

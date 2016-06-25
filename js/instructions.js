@@ -24,40 +24,46 @@ Debugger.Instructions = (function() {
                 break;
 
             case 'add':
+                var operand1 = Debugger.Helper.paramToRegisterValue(param1);
+
                 if (Debugger.Helper.isTypeRegister(param2.type)) {
-                    var operand1 = Debugger.Helper.paramToRegisterValue(param1);
                     var operand2 = Debugger.Helper.paramToRegisterValue(param2);
                 }
 
                 if (param2.type === 'val') {
-                    var operand1 = Debugger.Helper.paramToRegisterValue(param1);
                     var operand2 = param2.value;
                 }
 
                 var result = Debugger.Helper.limitDec(operand1 + operand2);
                 var type = 'add';
 
-                Debugger.Helper.setFlags(type, operand1, operand2, result);
+                /* Here we assume the first parameter always is a register */
+                var resultSize = Debugger.Helper.getSizeOfRegister(Debugger.Helper.getTypeParam(param1.value));
+
+                Debugger.Helper.setFlags(type, operand1, operand2, result, resultSize);
                 Debugger.Helper.setRegister(param1.value, param1.type, result);
 
                 break;
 
             case 'cmp':
             case 'sub':
+                var operand1 = Debugger.Helper.paramToRegisterValue(param1);
+
                 if (Debugger.Helper.isTypeRegister(param2.type)) {
-                    var operand1 = Debugger.Helper.paramToRegisterValue(param1);
                     var operand2 = Debugger.Helper.paramToRegisterValue(param2);
                 }
 
                 if (param2.type === 'val') {
-                    var operand1 = Debugger.Helper.paramToRegisterValue(param1);
                     var operand2 = param2.value;
                 }
 
                 var result = Debugger.Helper.limitDec(operand1 - operand2);
                 var type = 'sub';
 
-                Debugger.Helper.setFlags(type, operand1, operand2, result);
+                /* Here we assume the first parameter always is a register */
+                var resultSize = Debugger.Helper.getSizeOfRegister(Debugger.Helper.getTypeParam(param1.value));
+
+                Debugger.Helper.setFlags(type, operand1, operand2, result, resultSize);
 
                 // do not set registers when using "cmp"
                 if (param0.value === 'sub') {
@@ -72,7 +78,9 @@ Debugger.Instructions = (function() {
                 var result = Debugger.Helper.limitDec(operand1 + operand2);
                 var type = 'add';
 
-                Debugger.Helper.setFlags(type, operand1, operand2, result);
+                var resultSize = Debugger.Helper.getSizeOfRegister(Debugger.Helper.getTypeParam(param1.value));
+
+                Debugger.Helper.setFlags(type, operand1, operand2, result, resultSize);
                 Debugger.Helper.setRegister(param1.value, param1.type, result);
 
                 break;
@@ -83,7 +91,9 @@ Debugger.Instructions = (function() {
                 var result = Debugger.Helper.limitDec(operand1 - operand2);
                 var type = 'sub';
 
-                Debugger.Helper.setFlags(type, operand1, operand2, result);
+                var resultSize = Debugger.Helper.getSizeOfRegister(Debugger.Helper.getTypeParam(param1.value));
+
+                Debugger.Helper.setFlags(type, operand1, operand2, result, resultSize);
                 Debugger.Helper.setRegister(param1.value, param1.type, result);
 
                 break;
@@ -115,10 +125,6 @@ Debugger.Instructions = (function() {
 
                 var sizeRegister = Debugger.Helper.getSizeOfRegister(paramTypeLow);
 
-                var size;
-                var registerResult1;
-                var registerResult2;
-
                 // Get the values to do "mul"
                 var mulDivValues = Debugger.Vars.getMulDivValues(sizeRegister);
 
@@ -135,7 +141,8 @@ Debugger.Instructions = (function() {
                 var operand2 = value2;
                 var type = 'mul';
 
-                Debugger.Helper.setFlags(type, operand1, operand2, result);
+                // FIXME how to set the flags?
+                Debugger.Helper.setFlags(type, operand1, operand2, result, sizeRegister);
 
                 Debugger.Helper.setRegister(
                     mulDivValues.register1,
@@ -201,6 +208,12 @@ Debugger.Instructions = (function() {
                 // concatenate both dividends and convert to base 10
                 var value4 = Debugger.Helper.baseConverter(value2 + value3, 2, 10);
 
+                // throw error when try to divide by 0
+                if (value1 === 0) {
+                    console.log('Cannot divide by 0')
+                    return false;
+                }
+
                 // trick to floor
                 var resultEax = ~~(Debugger.Helper.limitDec(value4) / value1);
                 var resultEdx = Debugger.Helper.limitDec(value4) % value1;
@@ -209,7 +222,8 @@ Debugger.Instructions = (function() {
                 var operand2 = value1;
                 var type = 'div';
 
-                Debugger.Helper.setFlags(type, operand1, operand2, resultEax);
+                // FIXME how to set the flags?
+                Debugger.Helper.setFlags(type, operand1, operand2, resultEax, sizeRegister);
 
                 Debugger.Helper.setRegister(
                     mulDivValues.register1,

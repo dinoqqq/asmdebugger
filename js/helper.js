@@ -51,19 +51,34 @@ Debugger.Helper = (function() {
     }
 
     /*
-     * Only works for 32bit registers (2^32 = 4294967296) FIXME
+     * Will tell if the value is singed, based on the resultSize (in bits).
+     *
+     * Example for for 32bit registers (2^32 = 4294967296)
      * Signed limits 32bit = [-2147483648, 2147483647]
      *
      * So operands in base 10 [0, 2147483647] are +
      * So operands in base 10 [2147483648, 4294967295] are -
      *
      */
-    function _isSignedPositive(value) {
-        return value >= 0 && value <= 2147483647;
+    function _isSignedPositive(value, resultSize) {
+        if (!resultSize) {
+            console.log('_isSignedPositive: Throw in a resultSize');
+            return false;
+        }
+
+        var maxSize = Math.pow(2, resultSize) / 2 - 1;
+        return value >= 0 && value <= maxSize;
     }
 
-    function _isSignedNegative(value) {
-        return value >= 2147483648 && value <= 4294967295;
+    function _isSignedNegative(value, resultSize) {
+        if (!resultSize) {
+            console.log('_isSignedNegative: Throw in a resultSize');
+            return false;
+        }
+        var minSize = Math.pow(2, resultSize) / 2;
+        var maxSize = Math.pow(2, resultSize) - 1;
+
+        return value >= minSize && value <= maxSize;
     }
 
     function assignInstructionPointerToAddressCode(instructionObjects, instructionPointerToAddressCode) {
@@ -153,12 +168,14 @@ Debugger.Helper = (function() {
         return false;
     }
 
-    /* Set the flags and draw new table */
-    function setFlags(type, operand1, operand2, result) {
-        Debugger.Helper.updateSignFlag(result);
+    /*
+     * Set the flags and draw new table.
+     */
+    function setFlags(type, operand1, operand2, result, resultSize) {
+        Debugger.Helper.updateSignFlag(result, resultSize);
         Debugger.Helper.updateZeroFlag(result);
-        Debugger.Helper.updateCarryFlag(result);
-        Debugger.Helper.updateOverflowFlag(type, operand1, operand2, result);
+        Debugger.Helper.updateCarryFlag(result, resultSize);
+        Debugger.Helper.updateOverflowFlag(type, operand1, operand2, result, resultSize);
 
         Debugger.Html.drawFlags();
     }
@@ -322,10 +339,13 @@ Debugger.Helper = (function() {
         }
     }
 
-    /* Only works for 32bit registers (2^32 = 4294967296) */
-    // FIXME
-    function updateCarryFlag(result) {
-        if (result < 0 || result > 4294967295) {
+    /*
+     * Check if the result is < 0 or larger then the size of the resultSize
+     */
+    function updateCarryFlag(result, resultSize) {
+        var maxResult = Math.pow(2, resultSize);
+
+        if (result < 0 || result > (maxResult - 1)) {
             Debugger.Helper.setFlag('cf', 1);
         } else {
             Debugger.Helper.setFlag('cf', 0);
@@ -372,48 +392,76 @@ Debugger.Helper = (function() {
      * - / + = +
      * + / - = +
      *
-     * Only works for 32bit registers (2^32 = 4294967296) FIXME
-     * Signed limits 32bit = [-2147483648, 2147483647]
-     *
-     * So operands in base 10 [0, 2147483647] are +
-     * So operands in base 10 [2147483648, 4294967295] are -
-     *
+     * FIXME: What to do with multiplication?
      */
-    function updateOverflowFlag(type, operand1, operand2, result) {
+    function updateOverflowFlag(type, operand1, operand2, result, resultSize) {
         Debugger.Helper.setFlag('of', 0);
 
-        if (_isSignedPositive(operand1) && _isSignedPositive(operand2) && type === 'add' && _isSignedNegative(result)) {
+        if (type === 'add'
+            && _isSignedPositive(operand1, resultSize)
+            && _isSignedPositive(operand2, resultSize)
+            && _isSignedNegative(result, resultSize))
+        {
             Debugger.Helper.setFlag('of', 1);
         }
 
-        if (_isSignedNegative(operand1) && _isSignedNegative(operand2) && type === 'add' && _isSignedPositive(result)) {
+        if (type === 'add'
+            && _isSignedNegative(operand1, resultSize)
+            && _isSignedNegative(operand2, resultSize)
+            && _isSignedPositive(result, resultSize))
+        {
             Debugger.Helper.setFlag('of', 1);
         }
 
-        if (_isSignedNegative(operand1) && _isSignedPositive(operand2) && type === 'sub' && _isSignedPositive(result)) {
+        if (type === 'sub'
+            && _isSignedNegative(operand1, resultSize)
+            && _isSignedPositive(operand2, resultSize)
+            && _isSignedPositive(result, resultSize))
+        {
             Debugger.Helper.setFlag('of', 1);
         }
 
-        if (_isSignedPositive(operand1) && _isSignedNegative(operand2) && type === 'sub' && _isSignedNegative(result)) {
+        if (type === 'sub'
+            && _isSignedPositive(operand1, resultSize)
+            && _isSignedNegative(operand2, resultSize)
+            && _isSignedNegative(result, resultSize))
+        {
             Debugger.Helper.setFlag('of', 1);
         }
 
-        if (_isSignedPositive(operand1) && _isSignedPositive(operand2) && type === 'div' && _isSignedNegative(result)) {
+        if (type === 'div'
+            && _isSignedPositive(operand1, resultSize)
+            && _isSignedPositive(operand2, resultSize)
+            && _isSignedNegative(result, resultSize))
+        {
             Debugger.Helper.setFlag('of', 1);
         }
 
-        if (_isSignedNegative(operand1) && _isSignedNegative(operand2) && type === 'div' && _isSignedNegative(result)) {
+        if (type === 'div'
+            && _isSignedNegative(operand1, resultSize)
+            && _isSignedNegative(operand2, resultSize)
+            && _isSignedNegative(result, resultSize))
+        {
             Debugger.Helper.setFlag('of', 1);
         }
 
-        if (_isSignedNegative(operand1) && _isSignedPositive(operand2) && type === 'div' && _isSignedPositive(result)) {
+        if (type === 'div'
+            && _isSignedNegative(operand1, resultSize)
+            && _isSignedPositive(operand2, resultSize)
+            && _isSignedPositive(result, resultSize))
+        {
             Debugger.Helper.setFlag('of', 1);
         }
 
-        if (_isSignedPositive(operand1) && _isSignedNegative(operand2) && type === 'div' && _isSignedPositive(result)) {
+        if (type === 'div'
+            && _isSignedPositive(operand1, resultSize)
+            && _isSignedNegative(operand2, resultSize)
+            && _isSignedPositive(result, resultSize))
+        {
             Debugger.Helper.setFlag('of', 1);
         }
     }
+
     /*
      * Add padding to a string.
      */
