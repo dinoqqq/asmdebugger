@@ -99,6 +99,7 @@ Debugger.App = (function() {
      */
     function _extractLabels(instructions) {
         var labels = [];
+        var registers = Debugger.Helper.getAllRegisters();
 
         if (!instructions) {
             console.log('No instructions found');
@@ -109,9 +110,27 @@ Debugger.App = (function() {
         for (var i = 0; i < instructions.length; i++) {
             var instruction = _readNextInstruction(instructions, i);
 
-            if (Debugger.Helper.isLabelName(instruction)) {
-                labels.push(instruction.substr(0, instruction.length-1));
+            // check if this is a label name
+            if (!Debugger.Helper.isLabelName(instruction)) {
+                continue;
             }
+
+            instruction = Debugger.Helper.cleanLabel(instruction);
+
+            // check if it is not an allowed value
+            if (Debugger.Helper.extractBase(instruction) > 0) {
+                console.log('Label name can not be like an allowed numeric value: ' + instruction);
+                continue;
+            }
+
+
+            // check if the name is not like a register
+            if (registers.indexOf(instruction) > 0) {
+                console.log('Label name can not be like a register name: ' + instruction);
+                continue;
+            }
+
+            labels.push(instruction);
         }
 
         return labels;

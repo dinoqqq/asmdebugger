@@ -564,6 +564,33 @@ Debugger.Helper = (function() {
         return register.substr(3);
     }
 
+    /*
+     * Get all available registers and returns them in an array
+     */
+    function getAllRegisters() {
+        var registers = Debugger.Config.registers;
+        var typeList = Debugger.Config.typeList;
+        var allRegisters = [];
+
+        for (var key in registers) {
+            if (!registers.hasOwnProperty(key)) {
+                continue;
+            }
+
+            for (var key2 in typeList) {
+                if (!typeList.hasOwnProperty(key2)) {
+                    continue;
+                }
+
+                if (registers[key][typeList[key2]]) {
+                    allRegisters.push(registers[key][typeList[key2]]);
+                }
+            }
+        }
+
+        return allRegisters;
+    }
+
     return {
         setRegister: setRegister,
         setFlags: setFlags,
@@ -597,6 +624,7 @@ Debugger.Helper = (function() {
         toDec: toDec,
         extractBase: extractBase,
         ensure8BitLow: ensure8BitLow,
-        baseConverter: baseConverter
+        baseConverter: baseConverter,
+        getAllRegisters: getAllRegisters
     };
 })();
