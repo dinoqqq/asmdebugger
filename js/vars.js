@@ -47,22 +47,30 @@ Debugger.Vars = (function() {
      * mul ch (ch * al = ah:al = ax)
      */
     var getMulDivValues = function(sizeRegister) {
+        var size;
+        var register1;
+        var register2;
+
         switch(sizeRegister) {
-            case '32':
+            case 32:
                 size = sizeRegister;
                 register1 = 'eax';
                 register2 = 'edx';
                 break;
-            case '16':
+            case 16:
                 size = sizeRegister;
                 register1 = 'ax';
                 register2 = 'dx';
                 break;
-            case '8':
+            case 8:
                 size = sizeRegister;
                 register1 = 'al';
                 register2 = 'ah';
                 break;
+            default:
+                console.log(sizeRegister);
+                console.log('getMulDivValues: sizeRegister not recognized');
+                return false;
         }
 
         return  {
