@@ -34,6 +34,12 @@ Debugger.App = (function() {
         Debugger.Vars.code = Debugger.Helper.codeCleanup(Debugger.Vars.code);
 
         Debugger.Vars.instructions = Debugger.Helper.splitCode(Debugger.Vars.code);
+
+        // Extract all labels before hand
+        if (!(Debugger.Vars.labels = _extractLabels(Debugger.Vars.instructions))) {
+            return false;
+        }
+
         if (!(Debugger.Vars.instructionObjects = _createInstructionObjects(Debugger.Vars.instructions, Debugger.Vars.instructionPointer))) {
             return false;
         }
@@ -86,6 +92,29 @@ Debugger.App = (function() {
 
     function _readNextInstruction(instructions, index) {
         return instructions[index];
+    }
+
+    /*
+     * Extract all labels, based on a set of instructions
+     */
+    function _extractLabels(instructions) {
+        var labels = [];
+
+        if (!instructions) {
+            console.log('No instructions found');
+            return false;
+        }
+
+        /* Loop over all instructions and check if we have a label */
+        for (var i = 0; i < instructions.length; i++) {
+            var instruction = _readNextInstruction(instructions, i);
+
+            if (Debugger.Helper.isLabelName(instruction)) {
+                labels.push(instruction.substr(0, instruction.length-1));
+            }
+        }
+
+        return labels;
     }
 
     /*

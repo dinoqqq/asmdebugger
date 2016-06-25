@@ -32,6 +32,11 @@ Debugger.Vars = (function() {
     var addresses = {};
 
     /*
+     * Array with all labels of the code in it. Labels are stored without an ending ":"
+     */
+    var labels = [];
+
+    /*
      * Get the values used for multiplication and division.
      *
      * For example: "mul" works like this:
@@ -127,6 +132,7 @@ Debugger.Vars = (function() {
         instructionPointer: instructionPointer,
         instructionPointerToAddressCode: instructionPointerToAddressCode,
         addresses: addresses,
+        labels: labels,
         getMulDivValues: getMulDivValues,
         getRegisterOffsetValues: getRegisterOffsetValues
     }

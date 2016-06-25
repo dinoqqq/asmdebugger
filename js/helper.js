@@ -105,14 +105,24 @@ Debugger.Helper = (function() {
         return !!Debugger.Config.instructionList[mnemonic];
     }
 
-    /* Check if we have a label without a ":" on the end */
-    function isLabelName(param) {
-        return /[a-zA-Z]{1}[a-zA-Z0-9_]*/.test(param);
+    /* Check if the string is available in the labels array */
+    function isLabel(string) {
+        return Debugger.Vars.labels.indexOf(Debugger.Helper.cleanLabel(string)) > -1;
     }
 
     /* Check if we have a label with a ":" on the end */
-    function isLabel(param) {
+    function isLabelName(param) {
         return /[a-zA-Z]{1}[a-zA-Z0-9_]*:/.test(param);
+    }
+
+    /*
+     * Remove the trailing ":" from a label, but only when it has one.
+     */
+    function cleanLabel(label) {
+        if (label.substr(-1) === ':') {
+            return label.substr(0, label.length-1);
+        }
+        return label;
     }
 
     /*
@@ -129,7 +139,7 @@ Debugger.Helper = (function() {
             return register;
         }
 
-        if (Debugger.Helper.isLabelName(param)) {
+        if (Debugger.Helper.isLabel(param)) {
             return 'label';
         }
 
@@ -570,6 +580,7 @@ Debugger.Helper = (function() {
         getTypeParam: getTypeParam,
         isLabel: isLabel,
         isLabelName: isLabelName,
+        cleanLabel: cleanLabel,
         checkMnemonic: checkMnemonic,
         paramToRegisterValue: paramToRegisterValue,
         codeCleanup: codeCleanup,
