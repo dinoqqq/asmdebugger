@@ -356,16 +356,48 @@ Debugger.Helper = (function() {
     }
 
     /*
-     * This function expects an integer and returns a binary (as string) value with given length.
+     * This function expects an integer and returns a binary (as string) value with given length. Handles negative
+     * input integers and returns the binary value in two's complement representation.
      */
     function toBin(value, length) {
+        // return the bin in two's complement representation when value < 0
+        // call twoComplement twice, so we have the value in binary two's complement representation
+        if (value < 0) {
+            var twos = Debugger.Helper.twoComplement(value, length);
+            twos = Debugger.Helper.twoComplement(twos, length, 2);
+
+            return twos;
+        }
+
         return Debugger.Helper.addPadding((value).toString(2), length, 0);
     }
 
     /*
-     * This function expects an integer and returns a hexidecimal (as string) value with given length.
+     * This function expects an integer and returns a hex (as string) value with given length. Handles negative
+     * input integers and returns the hex value.
+     *
+     * Examples:
+     * input 4, 8 output 4
+     * input 255, 8 output FF
+     * input 256, 8 output 0
+     * input 257, 8 output 0
+     * input -4, 8 output FC
+     * input -1, 8 output FF
      */
     function toHex(value, length) {
+        // return the bin in two's complement representation when value < 0
+        // call twoComplement twice, so we have the value in binary two's complement representation
+        if (value < 0) {
+            // calculate the length in binary
+            binLength = length * 4;
+
+            var twos = Debugger.Helper.twoComplement(value, binLength);
+            twos = Debugger.Helper.twoComplement(twos, binLength, 2);
+
+            // convert back to hex and return
+            return Debugger.Helper.baseConverter(twos, 2, 16);
+        }
+
         return Debugger.Helper.addPadding((value).toString(16), length, 0);
     }
 
@@ -588,6 +620,11 @@ Debugger.Helper = (function() {
         // when in base 10 convert to int
         if (toBase === 10) {
             newValue = parseInt(newValue, 10);
+        }
+
+        // when we have a negative number, return the two's complement
+        if (valueInt < 0 && toBase === 2) {
+            Debugger.Helper.twoComplement(valueInt * -1, newValue.length);
         }
 
         return newValue;
@@ -822,14 +859,23 @@ Debugger.Helper = (function() {
     }
 
     /*
-     * Calculathe the two's complement of a value and returns it. Expects an integer as input and returns and integer.
+     * Calculathe the two's complement of a value and returns it. Expects an integer as input and returns a base value
+     * which can be given as third input (default base 10).
+     *
+     * Does not work with negative integers.
      *
      * Examples:
-     * input 8, 3 (= 100)
+     * input 4, 3; (4d = 100b) output 100
      *
      */
-    function twoComplement(value, size) {
-        // get the binary
+    function twoComplement(value, size, toBase) {
+        toBase = toBase || 10;
+
+        // when we have a negative value, just return the positive value
+        if (value < 0) {
+            return Debugger.Helper.baseConverter(value * -1, 10, toBase);
+        }
+
         value = value.toString(2);
 
         value = Debugger.Helper.addPadding(value, size);
@@ -848,6 +894,9 @@ Debugger.Helper = (function() {
 
         // add 1
         value++;
+
+        // get the base given the input
+        value = Debugger.Helper.baseConverter(value, 10, toBase);
 
         return value;
     }
