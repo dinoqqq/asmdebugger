@@ -307,7 +307,6 @@ $('document').ready(function() {
 
     function restart() {
         Debugger.App.init();
-        expandClick();
 
         resetCode = false;
     }
