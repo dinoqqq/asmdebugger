@@ -370,6 +370,43 @@ Debugger.Helper = (function() {
     }
 
     /*
+     * This function limits a signed decimal number, with a max of 32 bits (default). Getting higher or lower than the
+     * second param, makes the function starts counting at the higher/lower boundary again.
+     *
+     * Example:
+     * input -4, 4: 2^4 = 8 possible values, upper bound = 7, lower bound = -8, output = -4
+     * input -9, 4: 2^4 = 8 possible values, upper bound = 7, lower bound = -8, output = 7
+     * input 8, 4: 2^4 = 8 possible values, upper bound = 7, lower bound = -8, output = -8
+     * input -3, 4: output = -3
+     */
+    function limitSDec(value, maxLengthInBits) {
+        maxLengthInBits = maxLengthInBits || 32;
+
+        var possibleValues = Math.pow(2, maxLengthInBits);
+
+        // we only need the lower bound
+        var lowerBound = (possibleValues / 2) * -1;
+        var upperBound = (possibleValues / 2) - 1;
+
+        // when it's between the bounds, return
+        if (value <= upperBound && value >= lowerBound) {
+            return value;
+        }
+
+        var result = value % Math.pow(2, maxLengthInBits);
+
+        if (result >= 0) {
+            result = result - 16;
+        }
+
+        if (result < 0) {
+            result = result + 16;
+        }
+
+        return result;
+    }
+
+    /*
      * This function limits a decimal number, with a max of 32 bits (default). Getting higher than the second param,
      * makes the function starts counting at zero again.
      *
@@ -508,6 +545,31 @@ Debugger.Helper = (function() {
     }
 
     /*
+     * This function converts a value from a binary to a signed int.
+     *
+     * Examples:
+     *
+     * 1001 => -7
+     * 001 => 1
+     * 11111111 => -1
+     */
+    function binToSignedInt(bin) {
+        // check if the MSB is a 0, then just return the normal int value.
+        if (bin.substr(0,1) === '0') {
+            return parseInt(bin, 2);
+        }
+
+        // calculate the lowest possible number
+        var possibleNumbers = Math.pow(2, bin.substr(1).length);
+
+        // calculate the unsigned number (without the sign bit)
+        var valueInt = parseInt(bin.substr(1), 2);
+
+        // all possible numbers - the unsigned number times -1 is the result
+        return ((possibleNumbers - valueInt) * -1);
+    }
+
+    /*
      * This function converts a value from one base to another base. Always returns a string, except when toBase is 10,
      * then a int is returned.
      *
@@ -578,23 +640,80 @@ Debugger.Helper = (function() {
      * input "eax", output "68111" (= 0001 0A0Fh)
      * input "ax", "2", output "101000001111" (= 0A0Fh)
      */
+    function register32AndTypeToRegisterValue(register32, type, base) {
+        var registers = Debugger.Config.registers;
+        var typeList = Debugger.Config.typeList;
+
+        if (!registers.hasOwnProperty(register32)) {
+            console.log('register32AndTypeToRegisterValue: register32 not recognized "' + register32 + '"');
+            return false;
+        }
+
+        if (!registers[register32].hasOwnProperty(type)) {
+            console.log(
+                'register32AndTypeToRegisterValue: type not recognized "' + type + '" for register "' + register32 + '"'
+            );
+            return false;
+        }
+
+        var dec = registers[register32][type]['value']['dec'];
+        return Debugger.Helper.baseConverter(dec, 10, base);
+    }
+
+
+    /*
+     * Throw in a register string and return the value of the register. Optionally the second parameter can be
+     * a base number, defaults to 10;
+     *
+     * Examples:
+     * Register values: eax = 00010A0Fh
+     *
+     * input "ah", output "10" (= 0Ah)
+     * input "al", output "15" (= 0Fh)
+     * input "ax", output "2575" (= 0A0Fh)
+     * input "eax", output "68111" (= 0001 0A0Fh)
+     * input "ax", "2", output "101000001111" (= 0A0Fh)
+     */
+    function registerToRegisterValue(register, base) {
+        var registers = Debugger.Config.registers;
+        var typeList = Debugger.Config.typeList;
+
+        for (var key in registers) {
+            if (!registers.hasOwnProperty(key)) { continue; }
+
+            for (var key2 in typeList) {
+                if (!typeList.hasOwnProperty(key2)) { continue; }
+                if (!registers[key].hasOwnProperty(typeList[key2])) { continue; }
+
+                if (registers[key][typeList[key2]].name === register) {
+                    var dec = registers[key][typeList[key2]]['value']['dec'];
+                    return Debugger.Helper.baseConverter(dec, 10, base);
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /*
+     * Throw in a param object and return the value of the register. Optionally the second parameter can be
+     * a base number, defaults to 10;
+     *
+     * Examples:
+     * Register values: eax = 00010A0Fh
+     *
+     * input { value: "ah", type: "reg8h" }, output "10" (= 0Ah)
+     * input { value: "al", type: "reg8l" } output "15" (= 0Fh)
+     * input { value: "ax", type: "reg16" } output "2575" (= 0A0Fh)
+     * input { value: "eax", type: "reg32" } output "68111" (= 0001 0A0Fh)
+     * input { value: "ax", type: "reg16" }, "2", output "101000001111" (= 0A0Fh)
+     */
     function paramToRegisterValue(param, base) {
         base = base || 10;
 
         var register32Bit = Debugger.Helper.get32BitRegister(param.value, param.type);
-
-        // Get the 32 bit
-        var register32BinValue = Debugger.Config.registers[register32Bit]['value']['bin'];
-        var registerOffsets = Debugger.Vars.getRegisterOffsetValues(param.type);
-
-        // Get part from the string that we need
-        var binValue = Debugger.Helper.getPartOfString(
-            register32BinValue,
-            registerOffsets.binStart,
-            registerOffsets.binEnd
-        );
-
-        return Debugger.Helper.baseConverter(binValue, 2, base);
+        var registerBinValue = Debugger.Config.registers[register32Bit][param.type]['value']['bin'];
+        return Debugger.Helper.baseConverter(registerBinValue, 2, base);
     }
 
     /*
@@ -702,6 +821,37 @@ Debugger.Helper = (function() {
         return allRegisters;
     }
 
+    /*
+     * Calculathe the two's complement of a value and returns it. Expects an integer as input and returns and integer.
+     *
+     * Examples:
+     * input 8, 3 (= 100)
+     *
+     */
+    function twoComplement(value, size) {
+        // get the binary
+        value = value.toString(2);
+
+        value = Debugger.Helper.addPadding(value, size);
+
+        // replace all 1's with #
+        value = value.replace(/1/g, '#');
+
+        // replace all 0's with 1
+        value = value.replace(/0/g, '1');
+
+        // replace all #'s with 0
+        value = value.replace(/#/g, '0');
+
+        // get the decimal
+        value = Debugger.Helper.baseConverter(value, 2, 10);
+
+        // add 1
+        value++;
+
+        return value;
+    }
+
     return {
         setRegister: setRegister,
         setFlags: setFlags,
@@ -720,6 +870,8 @@ Debugger.Helper = (function() {
         isLabelName: isLabelName,
         cleanLabel: cleanLabel,
         checkMnemonic: checkMnemonic,
+        register32AndTypeToRegisterValue: register32AndTypeToRegisterValue,
+        registerToRegisterValue: registerToRegisterValue,
         paramToRegisterValue: paramToRegisterValue,
         codeCleanup: codeCleanup,
         splitCode: splitCode,
@@ -733,9 +885,12 @@ Debugger.Helper = (function() {
         toBin: toBin,
         toHex: toHex,
         limitDec: limitDec,
+        limitSDec: limitSDec,
+        binToSignedInt: binToSignedInt,
         extractBase: extractBase,
         ensure8BitLow: ensure8BitLow,
         baseConverter: baseConverter,
-        getAllRegisters: getAllRegisters
+        getAllRegisters: getAllRegisters,
+        twoComplement: twoComplement
     };
 })();
