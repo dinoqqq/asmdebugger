@@ -186,7 +186,7 @@ Debugger.Instructions = (function() {
 
                 // throw error when try to divide by 0
                 if (value1 === 0) {
-                    console.log('Cannot divide by 0')
+                    console.log('Cannot divide by 0');
                     return false;
                 }
 

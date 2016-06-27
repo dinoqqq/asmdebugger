@@ -265,7 +265,7 @@ Debugger.Helper = (function() {
      */
     function replacePartOfString(string, replace, start, end) {
         if (start < 0 || end < 0) {
-            console.log('Debugger.Helper.getPartOfString: "start" or "end" can not be < 0');
+            console.log('Debugger.Helper.replacePartOfString: "start" or "end" can not be < 0');
             return false;
         }
         return string.substr(0,start) + replace + string.substr(end + 1);
@@ -628,7 +628,7 @@ Debugger.Helper = (function() {
     }
 
     /*
-     * Throw in a param object and return the value of the 32 bit register. Optionally the second parameter can be
+     * Throw in a 32bit register and a type and return the value of the register. Optionally the second parameter can be
      * a base number, defaults to 10;
      *
      * Examples:
@@ -782,16 +782,16 @@ Debugger.Helper = (function() {
     }
 
     /*
-     * Returns the size of the register. Optionally it can return with "l" and "h" for 8 bit registers, default not.
+     * Returns the size of the register type. Optionally it can return with "l" and "h" for 8 bit registers, default not.
      */
-    function getSizeOfRegister(register, withLowHigh) {
+    function getSizeOfRegister(registerType, withLowHigh) {
         withLowHigh = withLowHigh || false;
 
-        if (!withLowHigh && (register.substr(-1) === 'l' || register.substr(-1) === 'h')) {
-            return parseInt(register.substr(3, register.length - 4), 10);
+        if (!withLowHigh && (registerType.substr(-1) === 'l' || registerType.substr(-1) === 'h')) {
+            return parseInt(registerType.substr(3, registerType.length - 4), 10);
         }
 
-        return parseInt(register.substr(3), 10);
+        return parseInt(registerType.substr(3), 10);
     }
 
     /*

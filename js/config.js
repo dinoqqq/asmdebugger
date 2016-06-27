@@ -272,8 +272,7 @@ Debugger.Config = function() {
             ['reg32'],
             ['reg16'],
             ['reg8h'],
-            ['reg8l'],
-            ['reg8']
+            ['reg8l']
         ],
         'mul': [
             ['reg32'],

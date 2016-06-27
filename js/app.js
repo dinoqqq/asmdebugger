@@ -266,6 +266,10 @@ Debugger.App = (function() {
                         continue;
                     }
 
+                    if (param2) {
+                        break;
+                    }
+
                     if (param1.type === chosenInstructionList[i][0])
                     {
                         return true;
