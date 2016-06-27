@@ -17,8 +17,17 @@
     <body>
         <div class="container">
             <div class="code" contenteditable="true">start:
-  add eax, 0x7fffffff
-  add eax, 1b
+  mov ax, 3
+  neg ax
+
+  mov al, 3
+  neg al
+
+  mov ah, 3
+  neg ah
+
+  mov eax, 3
+  neg eax
 
   mov dx, 0
   mov ax, 0xffff

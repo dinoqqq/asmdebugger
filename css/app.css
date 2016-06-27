@@ -12,7 +12,7 @@ html,
   width: 100%; }
 
 .code {
-  width: 40%;
+  width: 35%;
   border: 1px solid;
   line-height: 20px;
   white-space: pre;
@@ -61,7 +61,7 @@ html,
   display: none; }
 
 .right {
-  width: calc(60% - 80px); }
+  width: calc(65% - 80px); }
 
 .github-logo {
   background: url("../img/GitHub-Mark-32px.png") no-repeat;
@@ -96,21 +96,39 @@ table tr:nth-child(odd) {
   background: lightskyblue; }
 
 table th {
-  text-align: left;
+  text-align: right;
   background: deepskyblue; }
+
+table th:first-child {
+  text-align: left; }
 
 table th,
 table td {
   padding: 2px 8px; }
 
+table td {
+  text-align: right; }
+
+table th.reg8h + td + td + td {
+  padding-right: 26px; }
+
+table th.reg8h + td + td + td + td {
+  padding-right: 89px; }
+
 table td:nth-child(n) {
   border-left: 2px solid deepskyblue; }
 
+table th:nth-child(1) {
+  width: 40px; }
+
 table th:nth-child(2) {
-  width: 100px; }
+  width: 110px; }
 
 table th:nth-child(3) {
-  width: 100px; }
+  width: 110px; }
 
 table th:nth-child(4) {
-  width: 360px; }
+  width: 90px; }
+
+table th:nth-child(5) {
+  width: 320px; }
