@@ -46,7 +46,6 @@ Debugger.App = (function() {
 
         Debugger.Helper.assignInstructionPointerToAddressCode(Debugger.Vars.instructionObjects, Debugger.Vars.instructionPointerToAddressCode);
 
-        Debugger.Html.initRegisters('registers');
         Debugger.Html.drawRegisters('registers');
         Debugger.Html.drawRegisters('flags');
 
@@ -303,6 +302,7 @@ Debugger.App = (function() {
 $('document').ready(function() {
     var resetCode = false;
 
+    Debugger.Html.initRegisters('registers');
     Debugger.App.init();
 
     function restart() {
