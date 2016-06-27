@@ -295,6 +295,12 @@ Debugger.Config = function() {
             ['reg8h', 'reg8h'],
             ['reg8l', 'reg8l']
         ],
+        'neg': [
+            ['reg32'],
+            ['reg16'],
+            ['reg8h'],
+            ['reg8l']
+        ],
         'loop': [
             ['label']
         ],

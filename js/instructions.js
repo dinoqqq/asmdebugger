@@ -239,6 +239,25 @@ Debugger.Instructions = (function() {
                 Debugger.Helper.setFlags(type, operand1, operand2, ecx);
                 break;
 
+            /*
+             * Negates the number, it find's the two's complement.
+             */
+            case 'neg':
+                var value1 = Debugger.Helper.paramToRegisterValue(param1);
+                var size = Debugger.Helper.getSizeOfRegister(param1.type);
+
+                var result = Debugger.Helper.twoComplement(value1, size);
+
+                var type = 'neg';
+                var operand1 = value1;
+                var operand2 = result;
+                var resultSize = Debugger.Helper.getSizeOfRegister(Debugger.Helper.getTypeParam(param1.value));
+
+                Debugger.Helper.setFlags(type, operand1, operand2, result, resultSize);
+                Debugger.Helper.setRegister(param1.value, param1.type, result);
+
+                break;
+
             case 'jmp':
                 var address;
                 if (!(address = Debugger.Helper.findLabelAddress(instructionObject.param1.value, instructionObjects))) {
