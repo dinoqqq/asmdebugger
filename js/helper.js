@@ -2,24 +2,6 @@ var Debugger = Debugger || {};
 
 Debugger.Helper = (function() {
 
-    /*
-     * Format a string with spaces after a given number
-     */
-    function _readableFormat(value, spaceAfter) {
-        var newValue = '';
-        var i;
-
-        for(i = 0; i < value.length; i++) {
-            newValue += value[i];
-
-            if (i > 0 && (i+1) % spaceAfter === 0) {
-                newValue += ' ';
-            }
-        }
-
-        return newValue;
-    }
-
     function _removeComments(code) {
         // remove all empty lines
         code = code.replace(/^;.*/mg,'');

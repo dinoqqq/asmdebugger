@@ -2,6 +2,26 @@ var Debugger = Debugger || {};
 
 Debugger.Html = (function() {
 
+    /*
+     * Format a string with spaces after a given number
+     */
+    function _readableFormat(value, spaceAfter) {
+        if (value === null) { return 0 }
+
+        var newValue = '';
+        var i;
+
+        for(i = 0; i < value.length; i++) {
+            newValue += value[i];
+
+            if (i > 0 && (i+1) % spaceAfter === 0) {
+                newValue += ' ';
+            }
+        }
+
+        return newValue;
+    }
+
     function drawFlags() {
         var flags = Debugger.Config.flags;
 
