@@ -11,6 +11,24 @@ html,
   height: 100%;
   width: 100%; }
 
+button.small {
+  vertical-align: top;
+  width: 52.5px;
+  height: 30px;
+  line-height: 30px;
+  background: forestgreen;
+  border: 1px solid black;
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+  outline: none;
+  padding: 0;
+  margin: 0; }
+  button.small:hover {
+    background: green;
+    cursor: hand;
+    cursor: pointer; }
+
 .code {
   width: 35%;
   border: 1px solid;
@@ -36,23 +54,6 @@ html,
 .help {
   float: right;
   margin-left: 20px; }
-
-.help {
-  width: 52.5px;
-  height: 30px;
-  line-height: 30px;
-  background: forestgreen;
-  border: 1px solid black;
-  color: white;
-  font-size: 11px;
-  font-weight: bold;
-  outline: none;
-  padding: 0;
-  margin: 0; }
-  .help:hover {
-    background: green;
-    cursor: hand;
-    cursor: pointer; }
 
 .help.active {
   background: darkgreen; }
@@ -80,7 +81,8 @@ html,
   font-weight: bold;
   outline: none;
   padding: 0;
-  margin: 0; }
+  margin: 0;
+  margin-right: 20px; }
   .next:hover {
     background: green;
     cursor: hand;

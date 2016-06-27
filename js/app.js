@@ -305,15 +305,29 @@ $('document').ready(function() {
 
     Debugger.App.init();
 
+    function restart() {
+        Debugger.App.init();
+        expandClick();
+
+        resetCode = false;
+    }
+
+    function expandClick() {
+        $('.parent .reg-header').on('click', function() {
+            Debugger.Html.toggleExpand($(this).closest('tr'));
+        });
+    }
+
     $('.next').on('click', function() {
         if (resetCode) {
-            Debugger.App.init();
-            expandClick();
-
-            resetCode = false;
+            restart();
         }
 
         Debugger.App.executeNextLine();
+    });
+
+    $('.restart').on('click', function() {
+        restart();
     });
 
     $('.help').on('click', function() {
@@ -324,12 +338,6 @@ $('document').ready(function() {
     $('.code').on('keyup', function() {
         resetCode = true;
     });
-
-    function expandClick() {
-        $('.parent .reg-header').on('click', function() {
-            Debugger.Html.toggleExpand($(this).closest('tr'));
-        });
-    }
 
     expandClick();
 });
