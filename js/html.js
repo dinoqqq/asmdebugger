@@ -2,6 +2,13 @@ var Debugger = Debugger || {};
 
 Debugger.Html = (function() {
 
+    function toggleExpand($row) {
+        $row.toggleClass('open');
+
+        var registerName = $row.data('register-name');
+        $('.parent-' + registerName + ':not(.parent)').toggle();
+    }
+
     /*
      * Format a string with spaces after a given number
      */
@@ -38,14 +45,36 @@ Debugger.Html = (function() {
         }
     }
 
-
-    function drawRegisters() {
+    function initRegisters() {
         var registers = Debugger.Config.registers;
         var typeList = Debugger.Config.typeList;
 
         /* Clear current html */
         $('.registers').html('');
-        $('.registers').append('<tr><th></th><th>dec.</th><th>dec. (s)</th><th>hex.</th><th>bin.</th></tr>');
+        $('.registers').append('<tr class="top-header"><th></th><th>dec.</th><th>dec. (s)</th><th>hex.</th><th>bin.</th></tr>');
+
+        for (var key in registers) {
+            if (!registers.hasOwnProperty(key)) { continue; }
+
+            for (var key2 in typeList) {
+                if (!registers[key].hasOwnProperty(typeList[key2])) { continue; }
+
+                var name = registers[key][typeList[key2]]['name'];
+                var isParent = name === key ? 'parent' : '';
+                var emptyTds = '<td></td><td></td><td></td><td></td>';
+
+                $('.registers').append(
+                    '<tr class="' + isParent + ' ' + 'parent-' + key + ' ' + name + ' '
+                    + typeList[key2] + '" data-register-name="' + name + '"><th class="reg-header">' + name + '</th>'
+                    + emptyTds + '</tr>'
+                );
+            }
+        }
+    }
+
+    function drawRegisters() {
+        var registers = Debugger.Config.registers;
+        var typeList = Debugger.Config.typeList;
 
         for (var key in registers) {
             if (!registers.hasOwnProperty(key)) { continue; }
@@ -54,13 +83,16 @@ Debugger.Html = (function() {
                 if (!registers[key].hasOwnProperty(typeList[key2])) { continue; }
 
                 var tds = '';
+                var name = registers[key][typeList[key2]]['name'];
+                var reg = registers[key][typeList[key2]];
 
-                tds += '<td>' + registers[key][typeList[key2]]['value']['dec'] + '</td>';
-                tds += '<td>' + registers[key][typeList[key2]]['value']['sDec'] + '</td>';
-                tds += '<td>' + _readableFormat(registers[key][typeList[key2]]['value']['hex'], 4) + '</td>';
-                tds += '<td>' + _readableFormat(registers[key][typeList[key2]]['value']['bin'], 8) + '</td>';
+                tds += '<td>' + reg['value']['dec'] + '</td>';
+                tds += '<td>' + reg['value']['sDec'] + '</td>';
+                tds += '<td>' + _readableFormat(reg['value']['hex'], 4) + '</td>';
+                tds += '<td>' + _readableFormat(reg['value']['bin'], 8) + '</td>';
 
-                $('.registers').append('<tr><th class="' + typeList[key2] + '">' + registers[key][typeList[key2]]['name'] + '</th>' + tds + '</tr>');
+                $('.registers .' + name + ' td').remove();
+                $('.registers .' + name).append(tds);
             }
         }
     }
@@ -104,9 +136,11 @@ Debugger.Html = (function() {
 
     return {
         drawFlags: drawFlags,
+        initRegisters: initRegisters,
         drawRegisters: drawRegisters,
         drawCodeLine: drawCodeLine,
         initHelp: initHelp,
-        assignAddressToCode: assignAddressToCode
+        assignAddressToCode: assignAddressToCode,
+        toggleExpand: toggleExpand
     };
 })();

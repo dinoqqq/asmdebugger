@@ -46,6 +46,7 @@ Debugger.App = (function() {
 
         Debugger.Helper.assignInstructionPointerToAddressCode(Debugger.Vars.instructionObjects, Debugger.Vars.instructionPointerToAddressCode);
 
+        Debugger.Html.initRegisters('registers');
         Debugger.Html.drawRegisters('registers');
         Debugger.Html.drawRegisters('flags');
 
@@ -307,6 +308,7 @@ $('document').ready(function() {
     $('.next').on('click', function() {
         if (resetCode) {
             Debugger.App.init();
+            expandClick();
 
             resetCode = false;
         }
@@ -322,4 +324,12 @@ $('document').ready(function() {
     $('.code').on('keyup', function() {
         resetCode = true;
     });
+
+    function expandClick() {
+        $('.parent .reg-header').on('click', function() {
+            Debugger.Html.toggleExpand($(this).closest('tr'));
+        });
+    }
+
+    expandClick();
 });
