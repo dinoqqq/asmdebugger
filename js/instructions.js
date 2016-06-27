@@ -112,14 +112,7 @@ Debugger.Instructions = (function() {
                 // Get the same sized value out of the register in the eax register
                 // Ensure the low 8 bit register
                 var paramTypeLow = Debugger.Helper.ensure8BitLow(param1.type);
-                var value2ParamType = Debugger.Config.registers['eax'][paramTypeLow];
-
-                var paramEax = {
-                    type: paramTypeLow,
-                    value: value2ParamType
-                };
-
-                var value2 = Debugger.Helper.paramToRegisterValue(paramEax);
+                var value2 = Debugger.Helper.register32AndTypeToRegisterValue('eax', paramTypeLow);
 
                 var result = value1 * value2;
 
@@ -172,29 +165,12 @@ Debugger.Instructions = (function() {
                 // When we have reg8h or reg8l, we need "ah" and "al" (ah:al) as dividend
                 // Else take the same register size out of eax and edx
                 if (param1.type === 'reg8h' || param1.type === 'reg8l') {
-                    var value2ParamType = Debugger.Config.registers['eax']['reg8h'];
-                    var value3ParamType = Debugger.Config.registers['eax']['reg8l'];
-                    var value2Type = 'reg8h';
-                    var value3Type = 'reg8l';
+                    var value2 = Debugger.Helper.registerToRegisterValue('ah', 2);
+                    var value3 = Debugger.Helper.registerToRegisterValue('al', 2);
                 } else {
-                    var value2ParamType = Debugger.Config.registers['edx'][param1.type];
-                    var value3ParamType = Debugger.Config.registers['eax'][param1.type];
-                    var value2Type = param1.type;
-                    var value3Type = param1.type;
+                    var value2 = Debugger.Helper.register32AndTypeToRegisterValue('edx', param1.type, 2);
+                    var value3 = Debugger.Helper.register32AndTypeToRegisterValue('eax', param1.type, 2);
                 }
-
-                var paramDividend1 = {
-                    type: value2Type,
-                    value: value2ParamType
-                };
-
-                var paramDividend2 = {
-                    type: value3Type,
-                    value: value3ParamType
-                };
-
-                var value2 = Debugger.Helper.paramToRegisterValue(paramDividend1, 2);
-                var value3 = Debugger.Helper.paramToRegisterValue(paramDividend2, 2);
 
                 var sizeRegister = Debugger.Helper.getSizeOfRegister(param1.type);
 

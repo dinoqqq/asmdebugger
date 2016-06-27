@@ -41,22 +41,27 @@ Debugger.Html = (function() {
 
     function drawRegisters() {
         var registers = Debugger.Config.registers;
+        var typeList = Debugger.Config.typeList;
 
         /* Clear current html */
         $('.registers').html('');
-        $('.registers').append('<tr><th>register</th><th>dec.</th><th>hex.</th><th>bin.</th></tr>');
+        $('.registers').append('<tr><th></th><th>dec.</th><th>dec. (s)</th><th>hex.</th><th>bin.</th></tr>');
 
         for (var key in registers) {
             if (!registers.hasOwnProperty(key)) { continue; }
 
-            var tds = '';
-            for (var key2 in registers[key]['valueFormat']) {
-                if (!registers[key]['valueFormat'].hasOwnProperty(key2)) { continue; }
+            for (var key2 in typeList) {
+                if (!registers[key].hasOwnProperty(typeList[key2])) { continue; }
 
-                tds += '<td>' + registers[key]['valueFormat'][key2] + '</td>';
+                var tds = '';
+
+                tds += '<td>' + registers[key][typeList[key2]]['value']['dec'] + '</td>';
+                tds += '<td>' + registers[key][typeList[key2]]['value']['sDec'] + '</td>';
+                tds += '<td>' + _readableFormat(registers[key][typeList[key2]]['value']['hex'], 4) + '</td>';
+                tds += '<td>' + _readableFormat(registers[key][typeList[key2]]['value']['bin'], 8) + '</td>';
+
+                $('.registers').append('<tr><th class="' + typeList[key2] + '">' + registers[key][typeList[key2]]['name'] + '</th>' + tds + '</tr>');
             }
-
-            $('.registers').append('<tr><th>' + key + '</th>' + tds + '</tr>');
         }
     }
 

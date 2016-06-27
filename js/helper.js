@@ -189,45 +189,69 @@ Debugger.Helper = (function() {
      */
     function setRegister(register, type, value) {
         // Determine how many positions need to be edited per base
-        var hexStart;
-        var hexEnd;
-        var binStart;
-        var binEnd;
-
         var registerOffsets = Debugger.Vars.getRegisterOffsetValues(type);
 
+        /* First update the 32 bit register with it's new value. Then cut off every 16 bit / 8 bit register parts and
+         * assign those to the other registers. */
+        var typeList = Debugger.Config.typeList;
+        var reg32bit = Debugger.Helper.get32BitRegister(register, type);
+
+        // Calculate the bin and hex values
         var hex = Debugger.Helper.toHex(value, (registerOffsets.hexEnd - registerOffsets.hexStart + 1));
         var bin = Debugger.Helper.toBin(value, (registerOffsets.binEnd - registerOffsets.binStart + 1));
 
-        var register32Bit = Debugger.Helper.get32BitRegister(register, type);
-
-        // Set the hex register
+        // Set the 32 bit hex register
         var hexValue = Debugger.Helper.replacePartOfString(
-            Debugger.Config.registers[register32Bit]['value']['hex'],
+            Debugger.Config.registers[reg32bit]['reg32']['value']['hex'],
             hex,
             registerOffsets.hexStart,
             registerOffsets.hexEnd
         );
-        Debugger.Config.registers[register32Bit]['value']['hex'] = hexValue;
-        Debugger.Config.registers[register32Bit]['valueFormat']['hex'] = _readableFormat(hexValue, 4);
 
-        // Set the bin register
+        // Set the 32 bit bin register
         var binValue = Debugger.Helper.replacePartOfString(
-            Debugger.Config.registers[register32Bit]['value']['bin'],
+            Debugger.Config.registers[reg32bit]['reg32']['value']['bin'],
             bin,
             registerOffsets.binStart,
             registerOffsets.binEnd
         );
 
-        Debugger.Config.registers[register32Bit]['value']['bin'] = binValue;
-        Debugger.Config.registers[register32Bit]['valueFormat']['bin'] = _readableFormat(binValue, 8);
+        // Now iterate over all registers, and get the part of the string we need, and set the new register value.
+        for (var key in typeList) {
+            if (!typeList.hasOwnProperty(key)) { continue; }
 
-        // Always take the whole 32 bit value of the register to show in the decimal register
-        var base10 = Debugger.Helper.baseConverter(Debugger.Config.registers[register32Bit]['value']['bin'], 2, 10);
+            var regType = typeList[key];
+            if (!Debugger.Config.registers[reg32bit].hasOwnProperty(regType)) { continue; }
 
-        // Set the decimal register
-        Debugger.Config.registers[register32Bit]['value']['dec'] = Debugger.Helper.limitDec(base10);
-        Debugger.Config.registers[register32Bit]['valueFormat']['dec'] = Debugger.Helper.limitDec(base10);
+
+            var registerOffsetsPerType = Debugger.Vars.getRegisterOffsetValues(regType);
+
+            // Get the part of the string
+            var binValuePerType = Debugger.Helper.getPartOfString(
+                binValue,
+                registerOffsetsPerType.binStart,
+                registerOffsetsPerType.binEnd
+            );
+
+            // Get the part of the string
+            var hexValuePerType = Debugger.Helper.getPartOfString(
+                hexValue,
+                registerOffsetsPerType.hexStart,
+                registerOffsetsPerType.hexEnd
+            );
+
+            // set bin value
+            Debugger.Config.registers[reg32bit][regType]['value']['bin'] = binValuePerType;
+            // set hex value
+            Debugger.Config.registers[reg32bit][regType]['value']['hex'] = hexValuePerType;
+
+            // set dec value
+            Debugger.Config.registers[reg32bit][regType]['value']['dec'] =
+                Debugger.Helper.limitDec(Debugger.Helper.baseConverter(binValuePerType, 2, 10));
+            // set sDec value
+            Debugger.Config.registers[reg32bit][regType]['value']['sDec'] =
+                Debugger.Helper.limitSDec(Debugger.Helper.binToSignedInt(binValuePerType));
+        }
 
         Debugger.Html.drawRegisters();
     }
@@ -275,23 +299,20 @@ Debugger.Helper = (function() {
      * Set all the registers to 0.
      */
     function resetRegisters() {
+        var typeList = Debugger.Config.typeList;
+
         for (var key in Debugger.Config.registers) {
             if (!Debugger.Config.registers.hasOwnProperty(key)) { continue; }
 
-            for (var key2 in Debugger.Config.registers[key]['value']) {
-                if (!Debugger.Config.registers[key]['value'].hasOwnProperty(key2)) { continue; }
+            for (var key2 in typeList) {
+                if (!Debugger.Config.registers[key].hasOwnProperty(typeList[key2])) { continue; }
 
-                if (key2 === 'dec') {
-                    Debugger.Config.registers[key]['value'][key2] = 0;
-                    Debugger.Config.registers[key]['valueFormat'][key2] = 0;
-                } else if (key2 === 'hex') {
-                    Debugger.Config.registers[key]['value'][key2] = '00000000';
-                    Debugger.Config.registers[key]['valueFormat'][key2] = _readableFormat('00000000', 4);
-                } else if (key2 === 'bin') {
-                    Debugger.Config.registers[key]['value'][key2] = '00000000000000000000000000000000';
-                    Debugger.Config.registers[key]['valueFormat'][key2] = _readableFormat('00000000000000000000000000000000', 8);
-                }
+                var size = Debugger.Helper.getSizeOfRegister(typeList[key2]);
 
+                Debugger.Config.registers[key][typeList[key2]]['value']['dec'] = 0;
+                Debugger.Config.registers[key][typeList[key2]]['value']['sDec'] = 0;
+                Debugger.Config.registers[key][typeList[key2]]['value']['hex'] = Debugger.Helper.addPadding('0', size/4);
+                Debugger.Config.registers[key][typeList[key2]]['value']['bin'] = Debugger.Helper.addPadding('0', size);
             }
         }
         Debugger.Html.drawRegisters();
@@ -592,9 +613,10 @@ Debugger.Helper = (function() {
             if (!registers.hasOwnProperty(key)) { continue; }
 
             for (var key2 in typeList) {
-                if (!typeList.hasOwnProperty(key2)) { continue; }
-
-                if (registers[key][typeList[key2]] && registers[key][typeList[key2]] === register) {
+                if (registers[key][typeList[key2]]
+                    && registers[key][typeList[key2]]['name']
+                    && registers[key][typeList[key2]]['name'] === register)
+                {
                     return typeList[key2];
                 }
             }
@@ -616,7 +638,10 @@ Debugger.Helper = (function() {
         for (var key in Debugger.Config.registers) {
             if (!Debugger.Config.registers.hasOwnProperty(key)) { continue; }
 
-            if (Debugger.Config.registers[key][type] && Debugger.Config.registers[key][type] === register) {
+            if (Debugger.Config.registers[key][type]
+                && Debugger.Config.registers[key][type]['name']
+                && Debugger.Config.registers[key][type]['name'] === register)
+            {
                 return key;
             }
         }
@@ -668,8 +693,8 @@ Debugger.Helper = (function() {
                     continue;
                 }
 
-                if (registers[key][typeList[key2]]) {
-                    allRegisters.push(registers[key][typeList[key2]]);
+                if (registers[key][typeList[key2]] && registers[key][typeList[key2]]['name']) {
+                    allRegisters.push(registers[key][typeList[key2]]['name']);
                 }
             }
         }

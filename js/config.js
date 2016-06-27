@@ -7,95 +7,195 @@ Debugger.Config = function() {
      */
     var registers = {
         'eax': {
-            reg32: 'eax',
-            reg16: 'ax',
-            reg8h: 'ah',
-            reg8l: 'al',
-            value: {
-                dec: null,
-                hex: null,
-                bin: null
+            reg32: {
+                name: 'eax',
+                value: {
+                    dec: null,
+                    sDec: null,
+                    hex: null,
+                    bin: null
+                }
             },
-            valueFormat: {
-                dec: null,
-                hex: null,
-                bin: null
+            reg16: {
+                name: 'ax',
+                value: {
+                    dec: null,
+                    sDec: null,
+                    hex: null,
+                    bin: null
+                }
+            },
+            reg8h: {
+                name: 'ah',
+                value: {
+                    dec: null,
+                    sDec: null,
+                    hex: null,
+                    bin: null
+                }
+            },
+            reg8l: {
+                name: 'al',
+                value: {
+                    dec: null,
+                    sDec: null,
+                    hex: null,
+                    bin: null
+                }
             }
         },
         'ebx': {
-            reg32: 'ebx',
-            reg16: 'bx',
-            reg8h: 'bh',
-            reg8l: 'bl',
-            value: {
-                dec: null,
-                hex: null,
-                bin: null
+            reg32: {
+                name: 'ebx',
+                value: {
+                    dec: null,
+                    sDec: null,
+                    hex: null,
+                    bin: null
+                }
             },
-            valueFormat: {
-                dec: null,
-                hex: null,
-                bin: null
+            reg16: {
+                name: 'bx',
+                value: {
+                    dec: null,
+                    sDec: null,
+                    hex: null,
+                    bin: null
+                }
+            },
+            reg8h: {
+                name: 'bh',
+                value: {
+                    dec: null,
+                    sDec: null,
+                    hex: null,
+                    bin: null
+                }
+            },
+            reg8l: {
+                name: 'bl',
+                value: {
+                    dec: null,
+                    sDec: null,
+                    hex: null,
+                    bin: null
+                }
             }
         },
         'ecx': {
-            reg32: 'ecx',
-            reg16: 'cx',
-            reg8h: 'ch',
-            reg8l: 'cl',
-            value: {
-                dec: null,
-                hex: null,
-                bin: null
+            reg32: {
+                name: 'ecx',
+                value: {
+                    dec: null,
+                    sDec: null,
+                    hex: null,
+                    bin: null
+                }
             },
-            valueFormat: {
-                dec: null,
-                hex: null,
-                bin: null
+            reg16: {
+                name: 'cx',
+                value: {
+                    dec: null,
+                    sDec: null,
+                    hex: null,
+                    bin: null
+                }
+            },
+            reg8h: {
+                name: 'ch',
+                value: {
+                    dec: null,
+                    sDec: null,
+                    hex: null,
+                    bin: null
+                }
+            },
+            reg8l: {
+                name: 'cl',
+                value: {
+                    dec: null,
+                    sDec: null,
+                    hex: null,
+                    bin: null
+                }
             }
         },
         'edx': {
-            reg32: 'edx',
-            reg16: 'dx',
-            reg8h: 'dh',
-            reg8l: 'dl',
-            value: {
-                dec: null,
-                hex: null,
-                bin: null
+            reg32: {
+                name: 'edx',
+                value: {
+                    dec: null,
+                    sDec: null,
+                    hex: null,
+                    bin: null
+                }
             },
-            valueFormat: {
-                dec: null,
-                hex: null,
-                bin: null
+            reg16: {
+                name: 'dx',
+                value: {
+                    dec: null,
+                    sDec: null,
+                    hex: null,
+                    bin: null
+                }
+            },
+            reg8h: {
+                name: 'dh',
+                value: {
+                    dec: null,
+                    sDec: null,
+                    hex: null,
+                    bin: null
+                }
+            },
+            reg8l: {
+                name: 'dl',
+                value: {
+                    dec: null,
+                    sDec: null,
+                    hex: null,
+                    bin: null
+                }
             }
         },
         'esi': {
-            reg32: 'esi',
-            reg16: 'si',
-            value: {
-                dec: null,
-                hex: null,
-                bin: null
+            reg32: {
+                name: 'esi',
+                value: {
+                    dec: null,
+                    sDec: null,
+                    hex: null,
+                    bin: null
+                }
             },
-            valueFormat: {
-                dec: null,
-                hex: null,
-                bin: null
+            reg16: {
+                name: 'si',
+                value: {
+                    dec: null,
+                    sDec: null,
+                    hex: null,
+                    bin: null
+                }
             }
         },
         'edi': {
-            reg32: 'edi',
-            reg16: 'di',
-            value: {
-                dec: null,
-                hex: null,
-                bin: null
+            reg32: {
+                name: 'edi',
+                value: {
+                    dec: null,
+                    sDec: null,
+                    hex: null,
+                    bin: null
+                }
             },
-            valueFormat: {
-                dec: null,
-                hex: null,
-                bin: null
+            reg16: {
+                name: 'di',
+                value: {
+                    dec: null,
+                    sDec: null,
+                    hex: null,
+                    bin: null
+                }
             }
         }
     };
