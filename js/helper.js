@@ -3,8 +3,8 @@ var Debugger = Debugger || {};
 Debugger.Helper = (function() {
 
     function _removeComments(code) {
-        // remove all empty lines
-        code = code.replace(/^;.*/mg,'');
+        // remove all comments
+        code = code.replace(/;.*/g,'');
 
         return code;
     }
