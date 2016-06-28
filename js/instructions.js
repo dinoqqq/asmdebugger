@@ -9,14 +9,11 @@ Debugger.Instructions = (function() {
         switch(param0.value) {
             case 'mov':
                 if (Debugger.Helper.isTypeRegister(param2.type)) {
-                    var value = Debugger.Config.registers[param2.value]['dec'];
-
-                    Debugger.Helper.setRegister(param1.value, param1.type, value);
+                    var value = Debugger.Helper.registerToRegisterValue(param2.value);
                 }
 
                 if (param2.type === 'val') {
                     value = param2.value;
-                    Debugger.Helper.setRegister(param1.value, param1.type, param2.value);
                 }
 
                 Debugger.Helper.setRegister(param1.value, param1.type, value);
@@ -223,7 +220,7 @@ Debugger.Instructions = (function() {
                     return false;
                 }
 
-                var ecx = Debugger.Config.registers['ecx']['dec'];
+                var ecx = Debugger.Helper.registerToRegisterValue('ecx');
 
                 if (ecx !== 0) {
                     Debugger.Vars.instructionPointer = address;

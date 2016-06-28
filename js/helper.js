@@ -712,6 +712,8 @@ Debugger.Helper = (function() {
      * input "ax", "2", output "101000001111" (= 0A0Fh)
      */
     function registerToRegisterValue(register, base) {
+        base = base || 10;
+
         var registers = Debugger.Config.registers;
         var typeList = Debugger.Config.typeList;
 
