@@ -24,13 +24,14 @@ Debugger.App = (function() {
         Debugger.Vars.instructionPointerToAddressCode = {};
         Debugger.Vars.addresses = {};
 
+        Debugger.Html.cleanupUserInput();
+        Debugger.Html.cleanupCodePaste();
+
         Debugger.Vars.code = $('.code').text();
         if (!Debugger.Vars.code) {
             console.log('We need some code!');
             return false;
         }
-
-        Debugger.Html.cleanupCodePaste();
 
         var codeAddress = Debugger.Html.assignAddressToCode(Debugger.Vars.code);
         Debugger.Vars.code = Debugger.Helper.codeCleanup(Debugger.Vars.code);

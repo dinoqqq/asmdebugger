@@ -145,19 +145,23 @@ Debugger.Html = (function() {
         $('.code').on('paste', function () {
             var element = this;
             setTimeout(function () {
-                var codeHtml = $('.code').html();
-
-                // replace <br> with \n
-                codeHtml = codeHtml.replace(/(<br ?\/?>)+/mg,"\n");
-
-                // add a container (needed for text() function)
-                codeHtml = '<div>' + codeHtml + '</div>';
-
-                // remove all html
-                var codeText = $(codeHtml).text();
-                $('.code').text(codeText);
+                Debugger.Html.cleanupUserInput();
             }, 100);
         });
+    }
+
+    function cleanupUserInput() {
+        var codeHtml = $('.code').html();
+
+        // replace <br> with \n
+        codeHtml = codeHtml.replace(/(<br ?\/?>)+/mg,"\n");
+
+        // add a container (needed for text() function)
+        codeHtml = '<div>' + codeHtml + '</div>';
+
+        // remove all html
+        var codeText = $(codeHtml).text();
+        $('.code').text(codeText);
     }
 
     return {
@@ -168,6 +172,7 @@ Debugger.Html = (function() {
         initHelp: initHelp,
         assignAddressToCode: assignAddressToCode,
         toggleExpand: toggleExpand,
-        cleanupCodePaste: cleanupCodePaste
+        cleanupCodePaste: cleanupCodePaste,
+        cleanupUserInput: cleanupUserInput
     };
 })();
