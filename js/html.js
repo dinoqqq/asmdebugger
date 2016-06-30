@@ -70,6 +70,8 @@ Debugger.Html = (function() {
                 );
             }
         }
+
+        Debugger.Html.toggleExpand($('.eax'));
     }
 
     function drawRegisters() {
