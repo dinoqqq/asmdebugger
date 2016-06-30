@@ -252,6 +252,10 @@ Debugger.Config = function() {
             ['reg16', 'reg8l'],
             ['reg16', 'reg8h']
         ],
+        'cbw': [],
+        'cwde': [],
+        'cwd': [],
+        'cdq': [],
         'sub': [
             ['reg32', 'reg32'],
             ['reg16', 'reg16'],

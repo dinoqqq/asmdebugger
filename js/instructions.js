@@ -47,6 +47,81 @@ Debugger.Instructions = (function() {
 
                 break;
 
+            /*
+             * Convert byte to word.
+             *
+             * Takes the value in al and sign extends it into ax.
+             */
+            case 'cbw':
+                var value = Debugger.Helper.register32AndTypeToRegisterValue('eax', 'reg8l');
+
+                var fromSize = 8;
+                var toSize = 16;
+                var newValue = Debugger.Helper.signExtend(value, fromSize, toSize);
+
+                if (newValue === false) {
+                    console.log('Could not sign extend');
+                    return false;
+                }
+
+                Debugger.Helper.setRegister('ax', 'reg16', newValue);
+
+                break;
+
+            /*
+             * Convert word to double word.
+             *
+             * Takes the value in ax and sign extends it into eax.
+             */
+            case 'cwde':
+                var value = Debugger.Helper.register32AndTypeToRegisterValue('eax', 'reg16');
+
+                var fromSize = 16;
+                var toSize = 32;
+                var newValue = Debugger.Helper.signExtend(value, fromSize, toSize);
+
+                if (newValue === false) {
+                    console.log('Could not sign extend');
+                    return false;
+                }
+
+                Debugger.Helper.setRegister('eax', 'reg32', newValue);
+
+                break;
+
+            /*
+             * Convert word to double word.
+             *
+             * Takes the value in ax and sign extends it into dx:ax.
+             */
+            case 'cwd':
+                var value = Debugger.Helper.register32AndTypeToRegisterValue('eax', 'reg16');
+
+                if (Debugger.Helper.isSignedNegative(value, 16)) {
+                    Debugger.Helper.setRegister('dx', 'reg16', (Math.pow(2, 16)-1));
+                } else {
+                    Debugger.Helper.setRegister('dx', 'reg16', 0);
+                }
+
+                break;
+
+
+            /*
+             * Convert double word to quad word
+             *
+             * Takes the value in eax and sign extends it into edx:eax.
+             */
+            case 'cdq':
+                var value = Debugger.Helper.register32AndTypeToRegisterValue('eax', 'reg32');
+
+                if (Debugger.Helper.isSignedNegative(value, 32)) {
+                    Debugger.Helper.setRegister('edx', 'reg32', (Math.pow(2, 32)-1));
+                } else {
+                    Debugger.Helper.setRegister('edx', 'reg32', 0);
+                }
+
+                break;
+
             case 'add':
                 var operand1 = Debugger.Helper.paramToRegisterValue(param1);
 
