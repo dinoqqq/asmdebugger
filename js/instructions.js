@@ -20,6 +20,15 @@ Debugger.Instructions = (function() {
 
                 break;
 
+            case 'movzx':
+                if (Debugger.Helper.isTypeRegister(param2.type)) {
+                    var value = Debugger.Helper.registerToRegisterValue(param2.value);
+                }
+
+                Debugger.Helper.setRegister(param1.value, param1.type, value);
+
+                break;
+
             case 'add':
                 var operand1 = Debugger.Helper.paramToRegisterValue(param1);
 

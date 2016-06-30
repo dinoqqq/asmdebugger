@@ -238,6 +238,13 @@ Debugger.Config = function() {
             ['reg8h', 'val'],
             ['reg8l', 'val']
         ],
+        'movzx': [
+            ['reg32', 'reg16'],
+            ['reg32', 'reg8l'],
+            ['reg32', 'reg8h'],
+            ['reg16', 'reg8l'],
+            ['reg16', 'reg8h']
+        ],
         'sub': [
             ['reg32', 'reg32'],
             ['reg16', 'reg16'],
