@@ -123,10 +123,15 @@ Debugger.App = (function() {
                 continue;
             }
 
-
             // check if the name is not like a register
             if (registers.indexOf(instruction) > 0) {
                 console.log('Label name can not be like a register name: ' + instruction);
+                continue;
+            }
+
+            // check if the name is not like a mnemonic
+            if (Debugger.Helper.checkMnemonic(instruction)) {
+                console.log('Label name can not be like a mnemonic name: ' + instruction);
                 continue;
             }
 
@@ -219,7 +224,6 @@ Debugger.App = (function() {
             if (type === 'val') {
                 var base = Debugger.Helper.extractBase(param1.value);
                 param1.value = Debugger.Helper.baseConverter(param1.value, base, 10);
-                param1.value = Debugger.Helper.limitDec(param1.value);
             }
 
             instructionObject.param1 = param1;
@@ -240,7 +244,6 @@ Debugger.App = (function() {
             if (type === 'val') {
                 var base = Debugger.Helper.extractBase(param2.value);
                 param2.value = Debugger.Helper.baseConverter(param2.value, base, 10);
-                param2.value = Debugger.Helper.limitDec(param2.value);
             }
 
             instructionObject.param2 = param2;
@@ -249,6 +252,34 @@ Debugger.App = (function() {
         return instructionObject;
     }
 
+    /*
+     * Validate params
+     */
+    function _validateParams(param0, param1, param2) {
+        param2 = param2 || null;
+        var returnValue = true;
+
+        // check if the value is greater then 2^32
+        var maxSize = Math.pow(2, 32);
+
+        if (param1.type === 'val' && param1.value > maxSize) {
+            console.log('Out of range error: value ' + param1.value + ' is too large');
+            returnValue = false;
+        }
+
+        if (param2 && param2.type === 'val' && param2.value > maxSize) {
+            console.log('Out of range error: value ' + param2.value + ' is too large');
+            returnValue = false;
+        }
+
+        return returnValue;
+    }
+
+    /*
+     * Validate if this instruction is allowed in the config
+     *
+     * Also check if the params are valid (_validParams)
+     */
     function _validateInstruction(instructionObject) {
         var param0 = instructionObject.param0;
         var param1 = instructionObject.param1;
@@ -270,8 +301,11 @@ Debugger.App = (function() {
                         break;
                     }
 
-                    if (param1.type === chosenInstructionList[i][0])
-                    {
+                    if (!_validateParams(param0, param1)) {
+                        return false;
+                    }
+
+                    if (param1.type === chosenInstructionList[i][0]) {
                         return true;
                     }
                     break;
@@ -280,8 +314,11 @@ Debugger.App = (function() {
                         continue;
                     }
 
-                    if (param1.type === chosenInstructionList[i][0] && param2.type === chosenInstructionList[i][1])
-                    {
+                    if (!_validateParams(param0, param1, param2)) {
+                        return false;
+                    }
+
+                    if (param1.type === chosenInstructionList[i][0] && param2.type === chosenInstructionList[i][1]) {
                         return true;
                     }
                     break;
