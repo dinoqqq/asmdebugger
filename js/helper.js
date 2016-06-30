@@ -33,7 +33,7 @@ Debugger.Helper = (function() {
     }
 
     /*
-     * Will tell if the value is singed, based on the resultSize (in bits).
+     * Will tell if the value is signed, based on the resultSize (in bits).
      *
      * Example for for 32bit registers (2^32 = 4294967296)
      * Signed limits 32bit = [-2147483648, 2147483647]
@@ -42,9 +42,9 @@ Debugger.Helper = (function() {
      * So operands in base 10 [2147483648, 4294967295] are -
      *
      */
-    function _isSignedPositive(value, resultSize) {
+    function isSignedPositive(value, resultSize) {
         if (!resultSize) {
-            console.log('_isSignedPositive: Throw in a resultSize');
+            console.log('isSignedPositive: Throw in a resultSize');
             return false;
         }
 
@@ -52,9 +52,9 @@ Debugger.Helper = (function() {
         return value >= 0 && value <= maxSize;
     }
 
-    function _isSignedNegative(value, resultSize) {
+    function isSignedNegative(value, resultSize) {
         if (!resultSize) {
-            console.log('_isSignedNegative: Throw in a resultSize');
+            console.log('isSignedNegative: Throw in a resultSize');
             return false;
         }
         var minSize = Math.pow(2, resultSize) / 2;
@@ -478,65 +478,65 @@ Debugger.Helper = (function() {
         Debugger.Helper.setFlag('of', 0);
 
         if (type === 'add'
-            && _isSignedPositive(operand1, resultSize)
-            && _isSignedPositive(operand2, resultSize)
-            && _isSignedNegative(result, resultSize))
+            && Debugger.Helper.isSignedPositive(operand1, resultSize)
+            && Debugger.Helper.isSignedPositive(operand2, resultSize)
+            && Debugger.Helper.isSignedNegative(result, resultSize))
         {
             Debugger.Helper.setFlag('of', 1);
         }
 
         if (type === 'add'
-            && _isSignedNegative(operand1, resultSize)
-            && _isSignedNegative(operand2, resultSize)
-            && _isSignedPositive(result, resultSize))
+            && Debugger.Helper.isSignedNegative(operand1, resultSize)
+            && Debugger.Helper.isSignedNegative(operand2, resultSize)
+            && Debugger.Helper.isSignedPositive(result, resultSize))
         {
             Debugger.Helper.setFlag('of', 1);
         }
 
         if (type === 'sub'
-            && _isSignedNegative(operand1, resultSize)
-            && _isSignedPositive(operand2, resultSize)
-            && _isSignedPositive(result, resultSize))
+            && Debugger.Helper.isSignedNegative(operand1, resultSize)
+            && Debugger.Helper.isSignedPositive(operand2, resultSize)
+            && Debugger.Helper.isSignedPositive(result, resultSize))
         {
             Debugger.Helper.setFlag('of', 1);
         }
 
         if (type === 'sub'
-            && _isSignedPositive(operand1, resultSize)
-            && _isSignedNegative(operand2, resultSize)
-            && _isSignedNegative(result, resultSize))
+            && Debugger.Helper.isSignedPositive(operand1, resultSize)
+            && Debugger.Helper.isSignedNegative(operand2, resultSize)
+            && Debugger.Helper.isSignedNegative(result, resultSize))
         {
             Debugger.Helper.setFlag('of', 1);
         }
 
         if (type === 'div'
-            && _isSignedPositive(operand1, resultSize)
-            && _isSignedPositive(operand2, resultSize)
-            && _isSignedNegative(result, resultSize))
+            && Debugger.Helper.isSignedPositive(operand1, resultSize)
+            && Debugger.Helper.isSignedPositive(operand2, resultSize)
+            && Debugger.Helper.isSignedNegative(result, resultSize))
         {
             Debugger.Helper.setFlag('of', 1);
         }
 
         if (type === 'div'
-            && _isSignedNegative(operand1, resultSize)
-            && _isSignedNegative(operand2, resultSize)
-            && _isSignedNegative(result, resultSize))
+            && Debugger.Helper.isSignedNegative(operand1, resultSize)
+            && Debugger.Helper.isSignedNegative(operand2, resultSize)
+            && Debugger.Helper.isSignedNegative(result, resultSize))
         {
             Debugger.Helper.setFlag('of', 1);
         }
 
         if (type === 'div'
-            && _isSignedNegative(operand1, resultSize)
-            && _isSignedPositive(operand2, resultSize)
-            && _isSignedPositive(result, resultSize))
+            && Debugger.Helper.isSignedNegative(operand1, resultSize)
+            && Debugger.Helper.isSignedPositive(operand2, resultSize)
+            && Debugger.Helper.isSignedPositive(result, resultSize))
         {
             Debugger.Helper.setFlag('of', 1);
         }
 
         if (type === 'div'
-            && _isSignedPositive(operand1, resultSize)
-            && _isSignedNegative(operand2, resultSize)
-            && _isSignedPositive(result, resultSize))
+            && Debugger.Helper.isSignedPositive(operand1, resultSize)
+            && Debugger.Helper.isSignedNegative(operand2, resultSize)
+            && Debugger.Helper.isSignedPositive(result, resultSize))
         {
             Debugger.Helper.setFlag('of', 1);
         }
@@ -923,6 +923,8 @@ Debugger.Helper = (function() {
         echoInstruction: echoInstruction,
         getTypeRegister: getTypeRegister,
         get32BitRegister: get32BitRegister,
+        isSignedPositive: isSignedPositive,
+        isSignedNegative: isSignedNegative,
         isTypeRegister: isTypeRegister,
         addPadding: addPadding,
         getTypeParam: getTypeParam,

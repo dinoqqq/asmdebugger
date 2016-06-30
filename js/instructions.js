@@ -29,6 +29,28 @@ Debugger.Instructions = (function() {
 
                 break;
 
+            case 'movsx':
+                if (Debugger.Helper.isTypeRegister(param2.type)) {
+                    var value = Debugger.Helper.registerToRegisterValue(param2.value);
+                }
+
+                var param2Size = Debugger.Helper.getSizeOfRegister(param2.type);
+
+                if (Debugger.Helper.isSignedPositive(value, param2Size)) {
+                    // when it's positive, just set it
+                    Debugger.Helper.setRegister(param1.value, param1.type, value);
+                } else {
+                    // when it's negative add leading 1's
+                    var param1Size = Debugger.Helper.getSizeOfRegister(param2.type);
+
+                    var newValue = Debugger.Helper.toBin(value, param1Size, '1');
+                    newValue = Debugger.Helper.binToSignedInt(newValue);
+
+                    Debugger.Helper.setRegister(param1.value, param1.type, newValue);
+                }
+
+                break;
+
             case 'add':
                 var operand1 = Debugger.Helper.paramToRegisterValue(param1);
 
