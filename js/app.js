@@ -137,7 +137,7 @@ Debugger.App = (function() {
                 continue;
             }
 
-            labels.push(instruction);
+            labels.push(instruction.toLowerCase());
         }
 
         return labels;
@@ -193,7 +193,7 @@ Debugger.App = (function() {
         }
 
         if (instructionParams[0]) {
-            var value = instructionParams[0];
+            var value = instructionParams[0].toLowerCase();
             var param0 = {
                 value: value
             };
@@ -219,7 +219,7 @@ Debugger.App = (function() {
 
             var param1 = {
                 type: type,
-                value: instructionParams[1]
+                value: instructionParams[1].toLowerCase()
             };
 
             // save all values as base 10
@@ -239,7 +239,7 @@ Debugger.App = (function() {
 
             var param2 = {
                 type: type,
-                value: instructionParams[2]
+                value: instructionParams[2].toLowerCase()
             };
 
             // save all values as base 10

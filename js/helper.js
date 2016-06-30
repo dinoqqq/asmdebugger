@@ -98,8 +98,11 @@ Debugger.Helper = (function() {
         return code;
     }
 
+    /*
+     * Check if this is a mnemonic from the Config object. Compare case insensitive.
+     */
     function checkMnemonic(mnemonic) {
-        return !!Debugger.Config.instructionList[mnemonic];
+        return !!Debugger.Config.instructionList[mnemonic.toLowerCase()];
     }
 
     /* Check if the string is available in the labels array */
@@ -767,6 +770,7 @@ Debugger.Helper = (function() {
      * input "al", output "reg8l"
      * input "bh", output "reg8h"
      * input "eax", output "reg32"
+     * input "EAX", output "reg32"
      */
     function getTypeRegister(register) {
         var registers = Debugger.Config.registers;
@@ -778,7 +782,7 @@ Debugger.Helper = (function() {
             for (var key2 in typeList) {
                 if (registers[key][typeList[key2]]
                     && registers[key][typeList[key2]]['name']
-                    && registers[key][typeList[key2]]['name'] === register)
+                    && registers[key][typeList[key2]]['name'] === register.toLowerCase())
                 {
                     return typeList[key2];
                 }
