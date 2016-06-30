@@ -134,6 +134,30 @@ Debugger.Html = (function() {
         $('.code').html(code);
     }
 
+
+    /*
+     * Create a listener on pasting of text in the code block. Remove all html.
+     */
+    function cleanupCodePaste() {
+        // When code is pasted into the code block, sometimes HTML is copied together with it. Remove it.
+        $('.code').on('paste', function () {
+            var element = this;
+            setTimeout(function () {
+                var codeHtml = $('.code').html();
+
+                // replace <br> with \n
+                codeHtml = codeHtml.replace(/(<br ?\/?>)+/mg,"\n");
+
+                // add a container (needed for text() function)
+                codeHtml = '<div>' + codeHtml + '</div>';
+
+                // remove all html
+                var codeText = $(codeHtml).text();
+                $('.code').text(codeText);
+            }, 100);
+        });
+    }
+
     return {
         drawFlags: drawFlags,
         initRegisters: initRegisters,
@@ -141,6 +165,7 @@ Debugger.Html = (function() {
         drawCodeLine: drawCodeLine,
         initHelp: initHelp,
         assignAddressToCode: assignAddressToCode,
-        toggleExpand: toggleExpand
+        toggleExpand: toggleExpand,
+        cleanupCodePaste: cleanupCodePaste
     };
 })();

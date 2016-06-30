@@ -30,6 +30,8 @@ Debugger.App = (function() {
             return false;
         }
 
+        Debugger.Html.cleanupCodePaste();
+
         var codeAddress = Debugger.Html.assignAddressToCode(Debugger.Vars.code);
         Debugger.Vars.code = Debugger.Helper.codeCleanup(Debugger.Vars.code);
 
