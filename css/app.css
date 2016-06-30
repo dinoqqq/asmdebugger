@@ -13,7 +13,6 @@ html,
 
 button.small {
   vertical-align: top;
-  width: 52.5px;
   height: 30px;
   line-height: 27px;
   background: forestgreen;
@@ -22,7 +21,8 @@ button.small {
   font-size: 11px;
   font-weight: bold;
   outline: none;
-  margin: 0; }
+  margin: 0;
+  padding: 0 5.6px; }
   button.small:hover {
     background: green;
     cursor: hand;
@@ -70,7 +70,6 @@ button.small {
   display: block; }
 
 .next {
-  width: 150px;
   height: 40px;
   line-height: 36px;
   background: forestgreen;
@@ -80,6 +79,7 @@ button.small {
   font-weight: bold;
   outline: none;
   margin: 0;
+  padding: 0 16px;
   margin-right: 20px; }
   .next:hover {
     background: green;
