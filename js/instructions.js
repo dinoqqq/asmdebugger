@@ -34,20 +34,16 @@ Debugger.Instructions = (function() {
                     var value = Debugger.Helper.registerToRegisterValue(param2.value);
                 }
 
+                var param1Size = Debugger.Helper.getSizeOfRegister(param1.type);
                 var param2Size = Debugger.Helper.getSizeOfRegister(param2.type);
+                var newValue = Debugger.Helper.signExtend(value, param2Size, param1Size);
 
-                if (Debugger.Helper.isSignedPositive(value, param2Size)) {
-                    // when it's positive, just set it
-                    Debugger.Helper.setRegister(param1.value, param1.type, value);
-                } else {
-                    // when it's negative add leading 1's
-                    var param1Size = Debugger.Helper.getSizeOfRegister(param2.type);
-
-                    var newValue = Debugger.Helper.toBin(value, param1Size, '1');
-                    newValue = Debugger.Helper.binToSignedInt(newValue);
-
-                    Debugger.Helper.setRegister(param1.value, param1.type, newValue);
+                if (newValue === false) {
+                    console.log('Could not sign extend');
+                    return false;
                 }
+
+                Debugger.Helper.setRegister(param1.value, param1.type, newValue);
 
                 break;
 

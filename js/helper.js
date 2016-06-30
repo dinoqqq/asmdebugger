@@ -368,7 +368,8 @@ Debugger.Helper = (function() {
      * This function expects an integer and returns a binary (as string) value with given length. Handles negative
      * input integers and returns the binary value in two's complement representation.
      */
-    function toBin(value, length) {
+    function toBin(value, length, paddingChar) {
+        paddingChar = paddingChar || '0';
         // return the bin in two's complement representation when value < 0
         // call twoComplement twice, so we have the value in binary two's complement representation
         if (value < 0) {
@@ -378,7 +379,7 @@ Debugger.Helper = (function() {
             return twos;
         }
 
-        return Debugger.Helper.addPadding((value).toString(2), length, 0);
+        return Debugger.Helper.addPadding((value).toString(2), length, paddingChar);
     }
 
     /*
@@ -607,6 +608,20 @@ Debugger.Helper = (function() {
 
         // all possible numbers - the unsigned number times -1 is the result
         return ((possibleNumbers - valueInt) * -1);
+    }
+
+    /*
+     * Sign extends a decimal number from the given size, to the given size.
+     *
+     * When the number is positive, return the normal number.
+     */
+    function signExtend(value, fromSize, toSize) {
+        if (Debugger.Helper.isSignedPositive(value, fromSize)) {
+            return value;
+        } else {
+            var newValue = Debugger.Helper.toBin(value, toSize, '1');
+            return Debugger.Helper.binToSignedInt(newValue);
+        }
     }
 
     /*
@@ -925,6 +940,7 @@ Debugger.Helper = (function() {
         get32BitRegister: get32BitRegister,
         isSignedPositive: isSignedPositive,
         isSignedNegative: isSignedNegative,
+        signExtend: signExtend,
         isTypeRegister: isTypeRegister,
         addPadding: addPadding,
         getTypeParam: getTypeParam,
