@@ -291,6 +291,10 @@ Debugger.App = (function() {
         // check if the types are allowed with this instruction
         var chosenInstructionList = Debugger.Config.instructionList[param0.value];
 
+        if (chosenInstructionList && chosenInstructionList.length === 0) {
+            return true;
+        }
+
         for (i=0; i<chosenInstructionList.length; i++) {
             var length = chosenInstructionList[i].length;
 

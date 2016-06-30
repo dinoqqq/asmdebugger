@@ -619,8 +619,10 @@ Debugger.Helper = (function() {
         if (Debugger.Helper.isSignedPositive(value, fromSize)) {
             return value;
         } else {
-            var newValue = Debugger.Helper.toBin(value, toSize, '1');
-            return Debugger.Helper.binToSignedInt(newValue);
+            // cut off the part of the bin we need
+            value = value.toString(2);
+            value = value.substr(-1 * fromSize);
+            return Debugger.Helper.binToSignedInt(value);
         }
     }
 
@@ -694,13 +696,15 @@ Debugger.Helper = (function() {
      * Examples:
      * Register values: eax = 00010A0Fh
      *
-     * input "ah", output "10" (= 0Ah)
-     * input "al", output "15" (= 0Fh)
-     * input "ax", output "2575" (= 0A0Fh)
-     * input "eax", output "68111" (= 0001 0A0Fh)
-     * input "ax", "2", output "101000001111" (= 0A0Fh)
+     * input "eax", "reg8h" output "10" (= 0Ah)
+     * input "eax", "reg8l" output "15" (= 0Fh)
+     * input "eax", "reg16", output "2575" (= 0A0Fh)
+     * input "eax", "reg32", output "68111" (= 0001 0A0Fh)
+     * input "eax", "reg32", "16" output 00010A0F
      */
     function register32AndTypeToRegisterValue(register32, type, base) {
+        base = base || 10;
+
         var registers = Debugger.Config.registers;
         var typeList = Debugger.Config.typeList;
 
