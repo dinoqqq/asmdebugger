@@ -15,14 +15,13 @@ button.small {
   vertical-align: top;
   width: 52.5px;
   height: 30px;
-  line-height: 30px;
+  line-height: 27px;
   background: forestgreen;
   border: 1px solid black;
   color: white;
   font-size: 11px;
   font-weight: bold;
   outline: none;
-  padding: 0;
   margin: 0; }
   button.small:hover {
     background: green;
@@ -73,14 +72,13 @@ button.small {
 .next {
   width: 150px;
   height: 40px;
-  line-height: 40px;
+  line-height: 36px;
   background: forestgreen;
   border: 1px solid black;
   color: white;
   font-size: 16px;
   font-weight: bold;
   outline: none;
-  padding: 0;
   margin: 0;
   margin-right: 20px; }
   .next:hover {
@@ -111,7 +109,6 @@ table tr.parent th::after {
   -webkit-border-radius: 50%;
   -moz-border-radius: 50%;
   border-radius: 50%;
-  border-color: black;
   width: 15px;
   height: 15px;
   display: block;
@@ -121,7 +118,8 @@ table tr.parent th::after {
   top: 3px;
   font-weight: bold;
   color: white;
-  font-size: 13px; }
+  font-size: 13px;
+  line-height: 15px; }
 
 table.registers tr:not(.parent):not(.top-header) {
   display: none; }
