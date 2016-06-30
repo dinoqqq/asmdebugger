@@ -156,7 +156,7 @@ Debugger.Helper = (function() {
     function setFlags(type, operand1, operand2, result, resultSize) {
         Debugger.Helper.updateSignFlag(result, resultSize);
         Debugger.Helper.updateZeroFlag(result);
-        Debugger.Helper.updateCarryFlag(result, resultSize);
+        Debugger.Helper.updateCarryFlag(type, result, resultSize);
         Debugger.Helper.updateOverflowFlag(type, operand1, operand2, result, resultSize);
 
         Debugger.Html.drawFlags();
@@ -344,8 +344,14 @@ Debugger.Helper = (function() {
 
     /*
      * Check if the result is < 0 or larger then the size of the resultSize
+     *
+     * Do not set carry flag for inc/dec operations
+     *
      */
-    function updateCarryFlag(result, resultSize) {
+    function updateCarryFlag(type, result, resultSize) {
+        if (type === 'dec') { return true; }
+        if (type === 'inc') { return true; }
+
         var maxResult = Math.pow(2, resultSize);
 
         if (result < 0 || result > (maxResult - 1)) {
@@ -464,7 +470,6 @@ Debugger.Helper = (function() {
      * - / + = +
      * + / - = +
      *
-     * FIXME: What to do with multiplication?
      */
     function updateOverflowFlag(type, operand1, operand2, result, resultSize) {
         Debugger.Helper.setFlag('of', 0);

@@ -131,8 +131,7 @@ Debugger.Instructions = (function() {
                 var operand2 = value2;
                 var type = 'mul';
 
-                // FIXME how to set the flags?
-                Debugger.Helper.setFlags(type, operand1, operand2, result, sizeRegister);
+                // Never set any flags
 
                 Debugger.Helper.setRegister(
                     mulDivValues.register1,
@@ -195,8 +194,7 @@ Debugger.Instructions = (function() {
                 var operand2 = value1;
                 var type = 'div';
 
-                // FIXME how to set the flags?
-                Debugger.Helper.setFlags(type, operand1, operand2, resultEax, sizeRegister);
+                // Never set any flags
 
                 Debugger.Helper.setRegister(
                     mulDivValues.register1,
