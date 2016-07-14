@@ -33,7 +33,7 @@ Debugger.Helper = (function() {
     }
 
     /*
-     * Will tell if the value is signed, based on the resultSize (in bits).
+     * Will tell if the value is signed, based on the resultSize (in bits). Expects a decimal.
      *
      * Example for for 32bit registers (2^32 = 4294967296)
      * Signed limits 32bit = [-2147483648, 2147483647]
@@ -43,8 +43,13 @@ Debugger.Helper = (function() {
      *
      */
     function isSignedPositive(value, resultSize) {
-        if (!resultSize) {
-            console.log('isSignedPositive: Throw in a resultSize');
+        if (typeof value !== 'number') {
+            console.log('isSignedPositive: value must be a number');
+            return false;
+        }
+
+        if (typeof resultSize !== 'number') {
+            console.log('isSignedPositive: resultSize must be a number');
             return false;
         }
 
@@ -547,6 +552,16 @@ Debugger.Helper = (function() {
      * Add padding to a string.
      */
     function addPadding(string, length, paddingChar) {
+        if (typeof string !== 'string') {
+            console.log('addPadding: string must be a string');
+            return false;
+        }
+
+        if (typeof length !== 'number') {
+            console.log('addPadding: length must be a number');
+            return false;
+        }
+
         var pad_char = typeof paddingChar !== 'undefined' ? paddingChar : '0';
         var pad = new Array(1 + length).join(pad_char);
         return (pad + string).slice(-pad.length);
@@ -595,6 +610,11 @@ Debugger.Helper = (function() {
      * 11111111 => -1
      */
     function binToSignedInt(bin) {
+        if (bin.length > 32) {
+            console.log('binToSignedInt: bin cannot be longer than 32');
+            return false;
+        }
+
         // check if the MSB is a 0, then just return the normal int value.
         if (bin.substr(0,1) === '0') {
             return parseInt(bin, 2);
@@ -616,25 +636,51 @@ Debugger.Helper = (function() {
      * When the number is positive, return the normal number.
      */
     function signExtend(value, fromSize, toSize, fromBase, toBase) {
+        if (typeof value !== 'string') {
+            console.log('signExtend: value should be a string');
+            return false;
+        }
+
+        if (typeof fromSize !== 'number') {
+            console.log('signExtend: fromSize should be a number');
+            return false;
+        }
+
+        if (typeof toSize !== 'number') {
+            console.log('signExtend: toSize should be a number');
+            return false;
+        }
+
         fromBase = fromBase || 10;
         toBase = toBase || 10;
 
+        // calculate with base 10
+        var value = Debugger.Helper.baseConverter(value, fromBase, 10);
+
         if (Debugger.Helper.isSignedPositive(value, fromSize)) {
-            return Debugger.Helper.baseConverter(value, fromBase, toBase);
-        } else {
-            value = Debugger.Helper.baseConverter(value, fromBase, 10);
-
-            // cut off the part of the bin we need
-            value = value.toString(2);
-            value = value.substr(-1 * fromSize);
-            value = Debugger.Helper.addPadding(value, toSize, '1');
-
-            if (toBase === 10) {
-                return Debugger.Helper.binToSignedInt(value);
+            // make sure we return leading zero's when we need base 2
+            if (toBase === 2) {
+                value = Debugger.Helper.baseConverter(value, 10, 2);
+                return Debugger.Helper.addPadding(value, toSize, '0');
             }
 
-            return Debugger.Helper.baseConverter(value, 2, toBase);
+            return Debugger.Helper.baseConverter(value, 10, toBase);
         }
+
+        // calculate with base 2
+        value = Debugger.Helper.baseConverter(value, 10, 2);
+
+        // zero extend this value, so our MSB reflects the rights sign when we cut it off in the next step
+        value = Debugger.Helper.addPadding(value, 64, '0');
+        // cut off the part of the bin we need
+        value = value.substr(-1 * fromSize);
+        value = Debugger.Helper.addPadding(value, toSize, '1');
+
+        if (toBase === 10) {
+            return Debugger.Helper.binToSignedInt(value);
+        }
+
+        return Debugger.Helper.baseConverter(value, 2, toBase);
     }
 
     /*
