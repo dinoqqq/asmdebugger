@@ -611,18 +611,29 @@ Debugger.Helper = (function() {
     }
 
     /*
-     * Sign extends a decimal number from the given size, to the given size.
+     * Sign extends a value from one size, to another. Optionally a fromBase and toBase can be provided.
      *
      * When the number is positive, return the normal number.
      */
-    function signExtend(value, fromSize, toSize) {
+    function signExtend(value, fromSize, toSize, fromBase, toBase) {
+        fromBase = fromBase || 10;
+        toBase = toBase || 10;
+
         if (Debugger.Helper.isSignedPositive(value, fromSize)) {
-            return value;
+            return Debugger.Helper.baseConverter(value, fromBase, toBase);
         } else {
+            value = Debugger.Helper.baseConverter(value, fromBase, 10);
+
             // cut off the part of the bin we need
             value = value.toString(2);
             value = value.substr(-1 * fromSize);
-            return Debugger.Helper.binToSignedInt(value);
+            value = Debugger.Helper.addPadding(value, toSize, '1');
+
+            if (toBase === 10) {
+                return Debugger.Helper.binToSignedInt(value);
+            }
+
+            return Debugger.Helper.baseConverter(value, 2, toBase);
         }
     }
 
