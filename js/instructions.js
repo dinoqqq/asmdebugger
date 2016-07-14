@@ -257,6 +257,12 @@ Debugger.Instructions = (function() {
             case 'div':
                 var value1 = Debugger.Helper.paramToRegisterValue(param1);
 
+                // throw error when try to divide by 0
+                if (value1 === 0) {
+                    console.log('Cannot divide by 0');
+                    return false;
+                }
+
                 // When we have reg8h or reg8l, we need "ah" and "al" (ah:al) as dividend
                 // Else take the same register size out of eax and edx
                 if (param1.type === 'reg8h' || param1.type === 'reg8l') {
