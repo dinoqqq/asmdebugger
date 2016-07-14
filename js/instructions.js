@@ -213,25 +213,22 @@ Debugger.Instructions = (function() {
                 var paramTypeLow = Debugger.Helper.ensure8BitLow(param1.type);
                 var value2 = Debugger.Helper.register32AndTypeToRegisterValue('eax', paramTypeLow);
 
-                var result = value1 * value2;
-
                 var sizeRegister = Debugger.Helper.getSizeOfRegister(paramTypeLow);
 
                 // Get the values to do "mul"
                 var mulDivValues = Debugger.Vars.getMulDivValues(sizeRegister);
 
+                // Calculate with bigInt's, in case we have a 64 bit answer
+                var resultBin = bigInt(bigInt(value1).times(value2)).toString(2);
+
                 /* create a double so long string */
-                var resultBin = Debugger.Helper.toBin(result, mulDivValues.size * 2);
+                resultBin = Debugger.Helper.addPadding(resultBin, mulDivValues.size * 2, '0');
 
                 var result1 = resultBin.substr(mulDivValues.size * -1);
                 var result2 = resultBin.substr(0, mulDivValues.size);
 
                 var result1Dec = Debugger.Helper.baseConverter(result1, 2, 10);
                 var result2Dec = Debugger.Helper.baseConverter(result2, 2, 10);
-
-                var operand1 = value1;
-                var operand2 = value2;
-                var type = 'mul';
 
                 // Never set any flags
 
@@ -279,34 +276,19 @@ Debugger.Instructions = (function() {
                 value2 = Debugger.Helper.addPadding(value2, mulDivValues.size);
                 value3 = Debugger.Helper.addPadding(value3, mulDivValues.size);
 
-                // concatenate both dividends and convert to base 10
-                var value4 = Debugger.Helper.baseConverter(value2 + value3, 2, 10);
-
-                // throw error when try to divide by 0
-                if (value1 === 0) {
-                    console.log('Cannot divide by 0');
-                    return false;
-                }
-
-                // trick to floor
-                var resultEax = ~~(Debugger.Helper.limitDec(value4) / value1);
-                var resultEdx = Debugger.Helper.limitDec(value4) % value1;
-
-                var operand1 = value4;
-                var operand2 = value1;
-                var type = 'div';
+                var result = bigInt(bigInt(value2+value3, 2).divmod(value1));
 
                 // Never set any flags
 
                 Debugger.Helper.setRegister(
                     mulDivValues.register1,
                     Debugger.Helper.getTypeRegister(mulDivValues.register1),
-                    resultEax
+                    result.quotient
                 );
                 Debugger.Helper.setRegister(
                     mulDivValues.register2,
                     Debugger.Helper.getTypeRegister(mulDivValues.register2),
-                    resultEdx
+                    result.remainder
                 );
 
                 break;
