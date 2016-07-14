@@ -628,7 +628,7 @@ Debugger.Helper = (function() {
 
     /*
      * This function converts a value from one base to another base. Always returns a string, except when toBase is 10,
-     * then a int is returned.
+     * then an int is returned.
      *
      * When converting to base 10 a lot of allowed values are automatically stripped to the right int.
      * Examples:
@@ -702,8 +702,15 @@ Debugger.Helper = (function() {
      * input "eax", "reg32", output "68111" (= 0001 0A0Fh)
      * input "eax", "reg32", "16" output 00010A0F
      */
-    function register32AndTypeToRegisterValue(register32, type, base) {
-        base = base || 10;
+    function register32AndTypeToRegisterValue(register32, type, base, valueType) {
+        if (base && valueType) {
+            console.log('register32AndTypeToRegisterValue: only set base or valueType');
+            return false;
+        }
+
+        if (!base && !valueType) {
+            base = 10;
+        }
 
         var registers = Debugger.Config.registers;
         var typeList = Debugger.Config.typeList;
@@ -720,14 +727,19 @@ Debugger.Helper = (function() {
             return false;
         }
 
-        var dec = registers[register32][type]['value']['dec'];
-        return Debugger.Helper.baseConverter(dec, 10, base);
+        if (valueType && valueType === 'sDec') {
+            return registers[register32][type]['value'][valueType];
+        }
+
+        var value = registers[register32][type]['value']['dec'];
+        return Debugger.Helper.baseConverter(value, 10, base);
     }
 
 
     /*
      * Throw in a register string and return the value of the register. Optionally the second parameter can be
-     * a base number, defaults to 10;
+     * a base number, defaults to 10. Optionally the third parameter can be a value type (dec, sDec, bin, hex). Defaults
+     * to 'dec'.
      *
      * Examples:
      * Register values: eax = 00010A0Fh
@@ -738,8 +750,15 @@ Debugger.Helper = (function() {
      * input "eax", output "68111" (= 0001 0A0Fh)
      * input "ax", "2", output "101000001111" (= 0A0Fh)
      */
-    function registerToRegisterValue(register, base) {
-        base = base || 10;
+    function registerToRegisterValue(register, base, valueType) {
+        if (base && valueType) {
+            console.log('registerToRegisterValue: only set base or valueType');
+            return false;
+        }
+
+        if (!base && !valueType) {
+            base = 10;
+        }
 
         var registers = Debugger.Config.registers;
         var typeList = Debugger.Config.typeList;
@@ -752,8 +771,13 @@ Debugger.Helper = (function() {
                 if (!registers[key].hasOwnProperty(typeList[key2])) { continue; }
 
                 if (registers[key][typeList[key2]].name === register) {
-                    var dec = registers[key][typeList[key2]]['value']['dec'];
-                    return Debugger.Helper.baseConverter(dec, 10, base);
+
+                    if (valueType && valueType === 'sDec') {
+                        return registers[key][typeList[key2]]['value'][valueType];
+                    }
+
+                    var value = registers[key][typeList[key2]]['value']['dec'];
+                    return Debugger.Helper.baseConverter(value, 10, base);
                 }
             }
         }
@@ -763,7 +787,8 @@ Debugger.Helper = (function() {
 
     /*
      * Throw in a param object and return the value of the register. Optionally the second parameter can be
-     * a base number, defaults to 10;
+     * a base number, defaults to 10. Optionally the third parameter can be a value type (dec, sDec, bin, hex). Defaults
+     * to 'dec'.
      *
      * Examples:
      * Register values: eax = 00010A0Fh
@@ -774,12 +799,24 @@ Debugger.Helper = (function() {
      * input { value: "eax", type: "reg32" } output "68111" (= 0001 0A0Fh)
      * input { value: "ax", type: "reg16" }, "2", output "101000001111" (= 0A0Fh)
      */
-    function paramToRegisterValue(param, base) {
-        base = base || 10;
+    function paramToRegisterValue(param, base, valueType) {
+        if (base && valueType) {
+            console.log('registerToRegisterValue: only set base or valueType');
+            return false;
+        }
+
+        if (!base && !valueType) {
+            base = 10;
+        }
 
         var register32Bit = Debugger.Helper.get32BitRegister(param.value, param.type);
-        var registerBinValue = Debugger.Config.registers[register32Bit][param.type]['value']['bin'];
-        return Debugger.Helper.baseConverter(registerBinValue, 2, base);
+
+        if (valueType && valueType === 'sDec') {
+            return Debugger.Config.registers[register32Bit][param.type]['value'][valueType];
+        }
+
+        var value = Debugger.Config.registers[register32Bit][param.type]['value']['dec'];
+        return Debugger.Helper.baseConverter(value, 10, base);
     }
 
     /*
@@ -931,6 +968,27 @@ Debugger.Helper = (function() {
         return value;
     }
 
+    /*
+     * Converts a value type (dec, sDec, bin, hex) to the base.
+     */
+    function valueTypeToBase(valueType) {
+        switch(valueType) {
+            case 'dec':
+            case 'sDec':
+                return 10;
+                break;
+            case 'bin':
+                return 2;
+                break;
+            case 'hex':
+                return 16;
+                break;
+            default:
+                console.log('valueTypeToBase: can not determine valueType');
+                return false;
+        }
+    }
+
     return {
         setRegister: setRegister,
         setFlags: setFlags,
@@ -973,6 +1031,7 @@ Debugger.Helper = (function() {
         ensure8BitLow: ensure8BitLow,
         baseConverter: baseConverter,
         getAllRegisters: getAllRegisters,
-        twoComplement: twoComplement
+        twoComplement: twoComplement,
+        valueTypeToBase: valueTypeToBase
     };
 })();
