@@ -670,7 +670,7 @@ Debugger.Helper = (function() {
         // calculate with base 2
         value = Debugger.Helper.baseConverter(value, 10, 2);
 
-        // zero extend this value, so our MSB reflects the rights sign when we cut it off in the next step
+        // zero extend this value, so our MSB reflects the right sign when we cut it off in the next step
         value = Debugger.Helper.addPadding(value, 64, '0');
         // cut off the part of the bin we need
         value = value.substr(-1 * fromSize);
@@ -747,8 +747,11 @@ Debugger.Helper = (function() {
     }
 
     /*
-     * Throw in a 32bit register and a type and return the value of the register. Optionally the second parameter can be
-     * a base number, defaults to 10;
+     * Throw in a 32bit register and a type and return the value of the register.
+     * The second parameter must be a type of register "reg32", "reg8h" etc.
+     * Optionally the third parameter can be a base number, defaults to 10.
+     * Optionally the fourth parameter can be a value type (dec, sDec, bin, hex). Defaults to 'dec'.
+     * Throw in a third AND a fourth parameter is not allowed.
      *
      * Examples:
      * Register values: eax = 00010A0Fh
@@ -788,15 +791,20 @@ Debugger.Helper = (function() {
             return registers[register32][type]['value'][valueType];
         }
 
+        if (valueType) {
+            base = Debugger.Helper.valueTypeToBase(valueType);
+        }
+
         var value = registers[register32][type]['value']['dec'];
         return Debugger.Helper.baseConverter(value, 10, base);
     }
 
 
     /*
-     * Throw in a register string and return the value of the register. Optionally the second parameter can be
-     * a base number, defaults to 10. Optionally the third parameter can be a value type (dec, sDec, bin, hex). Defaults
-     * to 'dec'.
+     * Throw in a register string and return the value of the register.
+     * Optionally the second parameter can be a base number, defaults to 10.
+     * Optionally the third parameter can be a value type (dec, sDec, bin, hex). Defaults to 'dec'.
+     * Throw in a second AND a third parameter is not allowed.
      *
      * Examples:
      * Register values: eax = 00010A0Fh
@@ -833,6 +841,10 @@ Debugger.Helper = (function() {
                         return registers[key][typeList[key2]]['value'][valueType];
                     }
 
+                    if (valueType) {
+                        base = Debugger.Helper.valueTypeToBase(valueType);
+                    }
+
                     var value = registers[key][typeList[key2]]['value']['dec'];
                     return Debugger.Helper.baseConverter(value, 10, base);
                 }
@@ -843,9 +855,11 @@ Debugger.Helper = (function() {
     }
 
     /*
-     * Throw in a param object and return the value of the register. Optionally the second parameter can be
-     * a base number, defaults to 10. Optionally the third parameter can be a value type (dec, sDec, bin, hex). Defaults
-     * to 'dec'.
+     * Throw in a param object and return the value of the register.
+     * Optionally the second parameter can be a base number, defaults to 10.
+     * Optionally the third parameter can be a value type (dec, sDec, bin, hex). Defaults to 'dec'.
+     * Throw in a second AND a third parameter is not allowed.
+     *
      *
      * Examples:
      * Register values: eax = 00010A0Fh
@@ -870,6 +884,10 @@ Debugger.Helper = (function() {
 
         if (valueType && valueType === 'sDec') {
             return Debugger.Config.registers[register32Bit][param.type]['value'][valueType];
+        }
+
+        if (valueType) {
+            base = Debugger.Helper.valueTypeToBase(valueType);
         }
 
         var value = Debugger.Config.registers[register32Bit][param.type]['value']['dec'];
@@ -989,7 +1007,11 @@ Debugger.Helper = (function() {
      * Does not work with negative integers.
      *
      * Examples:
-     * input 4, 3; (4d = 100b) output 100
+     * input 4, 4; output: 12 (= 1100b)
+     * input 4, 5; output: 12 (= 11100b)
+     * input 4, 3, 2; output: 100
+     * input 4, 8, 2; output: 11111100
+     * input 4, 3; (should raise error)
      *
      */
     function twoComplement(value, size, toBase) {
