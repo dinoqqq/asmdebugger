@@ -304,6 +304,18 @@ Debugger.Config = function() {
             ['reg8h'],
             ['reg8l']
         ],
+        'imul': [
+            ['reg32'],
+            ['reg16'],
+            ['reg8h'],
+            ['reg8l']
+        ],
+        'idiv': [
+            ['reg32'],
+            ['reg16'],
+            ['reg8h'],
+            ['reg8l']
+        ],
         'cmp': [
             ['reg32', 'reg32'],
             ['reg16', 'reg16'],

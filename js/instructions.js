@@ -221,9 +221,92 @@ Debugger.Instructions = (function() {
                 // Calculate with bigInt's, in case we have a 64 bit answer
                 var resultBin = bigInt(bigInt(value1).times(value2)).toString(2);
 
-                /* create a double so long string */
+                // create a double so long string
                 resultBin = Debugger.Helper.addPadding(resultBin, mulDivValues.size * 2, '0');
 
+                var result1 = resultBin.substr(mulDivValues.size * -1);
+                var result2 = resultBin.substr(0, mulDivValues.size);
+
+                var result1Dec = Debugger.Helper.baseConverter(result1, 2, 10);
+                var result2Dec = Debugger.Helper.baseConverter(result2, 2, 10);
+
+                // Never set any flags
+
+                Debugger.Helper.setRegister(
+                    mulDivValues.register1,
+                    Debugger.Helper.getTypeRegister(mulDivValues.register1),
+                    result1Dec
+                );
+                Debugger.Helper.setRegister(
+                    mulDivValues.register2,
+                    Debugger.Helper.getTypeRegister(mulDivValues.register2),
+                    result2Dec
+                );
+
+                break;
+
+            /*
+             * Signed multiplication works like this:
+             *
+             * mul ecx (ecx * eax = edx:eax)
+             * mul cx (cx * ax = dx:ax)
+             * mul cl (cl * al = ah:al = ax)
+             * mul ch (ch * al = ah:al = ax)
+             *
+             * 1. First get both sDec numbers.
+             * 2. Check if the result needs to be positive or negative
+             * 3. Remove minus signs if necessary
+             * 4. Multiply
+             * 5. Add padding to binary numbers to the length of the registers
+             * 6. When result needs to be negative, calculate the two's complement
+             * 7. Split the result in 2 parts
+             *
+             */
+            case 'imul':
+                // 1.
+                var value1SDec = Debugger.Helper.paramToRegisterValue(param1, null, 'sDec');
+
+                // Get the same sized value out of the register in the eax register
+                // Ensure the low 8 bit register
+                var paramTypeLow = Debugger.Helper.ensure8BitLow(param1.type);
+                var value2SDec = Debugger.Helper.register32AndTypeToRegisterValue('eax', paramTypeLow, null, 'sDec');
+
+                var sizeRegister = Debugger.Helper.getSizeOfRegister(paramTypeLow);
+
+                // Get the values to do "mul"
+                var mulDivValues = Debugger.Vars.getMulDivValues(sizeRegister);
+
+                // 2.
+                // Note that we don't include 0 in this equation, because we don't want the result to be negative
+                // when one of the values is zero.
+                var negativeResult = false;
+                if ((value1SDec > 0 && value2SDec < 0) || (value1SDec < 0 && value2SDec > 0)) {
+                    negativeResult = true;
+                }
+
+                // 3.
+                if (value1SDec < 0) {
+                    value1SDec *= -1;
+                }
+
+                if (value2SDec < 0) {
+                    value2SDec *= -1;
+                }
+
+                // 4.
+                // Calculate with bigInt's, in case we have a 64 bit answer
+                var resultDec = bigInt(value1SDec).times(value2SDec);
+                var resultBin = bigInt(resultDec).toString(2);
+
+                // 5.
+                resultBin = Debugger.Helper.addPadding(resultBin, 64, '0');
+
+                // 6.
+                if (negativeResult) {
+                    resultBin = Debugger.Helper.twoComplement64Bit(resultBin);
+                }
+
+                // 7.
                 var result1 = resultBin.substr(mulDivValues.size * -1);
                 var result2 = resultBin.substr(0, mulDivValues.size);
 
@@ -283,6 +366,122 @@ Debugger.Instructions = (function() {
                 value3 = Debugger.Helper.addPadding(value3, mulDivValues.size);
 
                 var result = bigInt(bigInt(value2+value3, 2).divmod(value1));
+
+                // Never set any flags
+
+                Debugger.Helper.setRegister(
+                    mulDivValues.register1,
+                    Debugger.Helper.getTypeRegister(mulDivValues.register1),
+                    result.quotient
+                );
+                Debugger.Helper.setRegister(
+                    mulDivValues.register2,
+                    Debugger.Helper.getTypeRegister(mulDivValues.register2),
+                    result.remainder
+                );
+
+                break;
+
+            /*
+             * Signed divison works like this
+             *
+             * div ecx (edx:eax / ecx) remainder: edx, division: eax
+             * div cx (dx:ax / cx) remainder: dx, division: ax
+             * div cl (ah:al / cl) remainder: ah, division: al
+             * div ch (ah:al / ch) remainder: ah, division: al
+             *
+             *
+             * 1. Get the binary of the divisor
+             * 2. Get the binary values of the dividend from two registers
+             * 3. Extend all binaries with zeros to the max length
+             * 4. Concatenate the two registers that make up the dividend
+             * 5. Check both values if they are negative
+             * 6. Check if the result should be negative
+             * 7. When the dividend or divisor is negative, make ik positive via the two's complement
+             * 8. Divide
+             * 9. When result should be negative, take the two's complement
+             *
+             */
+            case 'idiv':
+                // 1.
+                var value1Bin = Debugger.Helper.paramToRegisterValue(param1, null, 'bin');
+                var value1SDec = Debugger.Helper.paramToRegisterValue(param1, null, 'sDec');
+
+                // throw error when try to divide by 0
+                if (value1SDec === 0) {
+                    console.log('Cannot divide by 0');
+                    return false;
+                }
+
+                // 2.
+                // When we have reg8h or reg8l, we need "ah" and "al" (ah:al) as dividend
+                // Else take the same register size out of eax and edx
+                if (param1.type === 'reg8h' || param1.type === 'reg8l') {
+                    var value2Bin = Debugger.Helper.registerToRegisterValue('ah', 2);
+                    var value3Bin = Debugger.Helper.registerToRegisterValue('al', 2);
+                } else {
+                    var value2Bin = Debugger.Helper.register32AndTypeToRegisterValue('edx', param1.type, 2);
+                    var value3Bin = Debugger.Helper.register32AndTypeToRegisterValue('eax', param1.type, 2);
+                }
+
+                var sizeRegister = Debugger.Helper.getSizeOfRegister(param1.type);
+
+                // Get the values to do "div"
+                var mulDivValues = Debugger.Vars.getMulDivValues(sizeRegister);
+
+                // 3.
+                value1Bin = Debugger.Helper.addPadding(value1Bin, sizeRegister, '0');
+                value2Bin = Debugger.Helper.addPadding(value2Bin, sizeRegister, '0');
+                value3Bin = Debugger.Helper.addPadding(value3Bin, sizeRegister, '0');
+
+                // 4.
+                var value4Bin = value2Bin+value3Bin;
+
+                // 5.
+                // check if value 1 is negative by checking MSB === 1
+                var value1Negative = false;
+                if (value1Bin.substr(0,1) === '1')  {
+                    value1Negative = true;
+                }
+
+                // check if value 4 is negative by checking MSB === 1
+                var value4Negative = false;
+                if (value4Bin.substr(0,1) === '1')  {
+                    value4Negative = true;
+                }
+
+                var value2Dec = Debugger.Helper.baseConverter(value2Bin, 2, 10);
+                var value3Dec = Debugger.Helper.baseConverter(value3Bin, 2, 10);
+
+                // 6.
+                // Check if we need to flip the sign in the end
+                // Note: When the divisor is 0, do not set negativeResult to true
+                var negativeResult = false;
+                if (((!value1Negative && value4Negative) || (value1Negative && !value4Negative))
+                    && (value2Dec !== 0 || value3Dec !== 0))
+                {
+                    negativeResult = true;
+                }
+
+                // 7.
+                if (value1Negative) {
+                    value1Bin = Debugger.Helper.twoComplement64Bit(value1Bin);
+                }
+
+                if (value4Negative) {
+                    value4Bin = Debugger.Helper.twoComplement64Bit(value4Bin);
+                }
+
+                var value1 = bigInt(value1Bin, 2);
+                var value4 = bigInt(value4Bin, 2);
+
+                // 8.
+                var result = bigInt(value4).divmod(value1);
+
+                // 9.
+                if (negativeResult) {
+                    result.quotient = Debugger.Helper.twoComplement(result.quotient, sizeRegister);
+                }
 
                 // Never set any flags
 
