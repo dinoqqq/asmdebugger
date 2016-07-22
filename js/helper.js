@@ -1053,6 +1053,29 @@ Debugger.Helper = (function() {
     }
 
     /*
+     * Calculathe the two's complement of a 64 bit value and returns it. Expects a binary string and returns a binary
+     * string.
+     */
+    function twoComplement64Bit(value) {
+        // replace all 1's with #
+        value = value.replace(/1/g, '#');
+
+        // replace all 0's with 1
+        value = value.replace(/0/g, '1');
+
+        // replace all #'s with 0
+        value = value.replace(/#/g, '0');
+
+        // get the decimal
+        value = bigInt(value, 2);
+
+        // add 1
+        value = bigInt(value).add(1);
+
+        return value.toString(2);
+    }
+
+    /*
      * Converts a value type (dec, sDec, bin, hex) to the base.
      */
     function valueTypeToBase(valueType) {
@@ -1116,6 +1139,7 @@ Debugger.Helper = (function() {
         baseConverter: baseConverter,
         getAllRegisters: getAllRegisters,
         twoComplement: twoComplement,
+        twoComplement64Bit: twoComplement64Bit,
         valueTypeToBase: valueTypeToBase
     };
 })();
