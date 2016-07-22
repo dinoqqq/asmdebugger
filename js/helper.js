@@ -1022,7 +1022,12 @@ Debugger.Helper = (function() {
             return Debugger.Helper.baseConverter(value * -1, 10, toBase);
         }
 
-        value = value.toString(2);
+        var valueBin = value = value.toString(2);
+
+        if (valueBin.length >= size) {
+            console.log('Cannot twoComplement positive bin: ' + valueBin + ' in only a size of: ' + size);
+            return false;
+        }
 
         value = Debugger.Helper.addPadding(value, size);
 
