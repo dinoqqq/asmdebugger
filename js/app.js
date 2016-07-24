@@ -155,7 +155,7 @@ Debugger.App = (function() {
             return false;
         }
 
-        if (instructionPointer >= instructions.length) {
+        if (instructionPointer > instructions.length) {
             console.log('No more instructions');
             return false;
         }
