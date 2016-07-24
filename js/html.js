@@ -88,10 +88,10 @@ Debugger.Html = (function() {
                 var name = registers[key][typeList[key2]]['name'];
                 var reg = registers[key][typeList[key2]];
 
-                tds += '<td>' + reg['value']['dec'] + '</td>';
-                tds += '<td>' + reg['value']['sDec'] + '</td>';
-                tds += '<td>' + _readableFormat(reg['value']['hex'], 4) + '</td>';
-                tds += '<td>' + _readableFormat(reg['value']['bin'], 8) + '</td>';
+                tds += '<td class="dec ' + name + '">' + reg['value']['dec'] + '</td>';
+                tds += '<td class="sdec ' + name + '">' + reg['value']['sDec'] + '</td>';
+                tds += '<td class="hex ' + name + '">' + _readableFormat(reg['value']['hex'], 4) + '</td>';
+                tds += '<td class="bin ' + name + '">' + _readableFormat(reg['value']['bin'], 8) + '</td>';
 
                 $('.registers .' + name + ' td').remove();
                 $('.registers .' + name).append(tds);
