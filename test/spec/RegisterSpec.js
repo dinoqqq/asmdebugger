@@ -1,4 +1,7 @@
 describe("registers:", function() {
+    beforeEach(function() {
+        Test.clear();
+    });
 
     describe("basic", function() {
         it("should work with 1 instruction", function() {
@@ -223,6 +226,126 @@ describe("registers:", function() {
             Test.next();
 
             expect(Test.reg('esi.dec')).toEqual('4294967295');
+        });
+
+        xit("should set 1 on 8 bit registers when setting -0xff", function() {
+            Test.code('mov dl, -0xff');
+            Test.next();
+
+            expect(Test.reg('dl.dec')).toEqual('1');
+            expect(Test.reg('dl.sdec')).toEqual('1');
+            expect(Test.reg('dl.hex')).toEqual('01');
+            expect(Test.reg('dl.bin')).toEqual('00000001');
+        });
+
+        xit("should set 1 on 16 bit registers when setting -0xffff", function() {
+            Test.code('mov dx, -0xffff');
+            Test.next();
+
+            expect(Test.reg('dx.dec')).toEqual('1');
+            expect(Test.reg('dx.sdec')).toEqual('1');
+            expect(Test.reg('dx.hex')).toEqual('0001');
+            expect(Test.reg('dx.bin')).toEqual('00000000 00000001');
+        });
+
+        xit("should set 1 on 32 bit registers when setting -0xffffffff", function() {
+            Test.code('mov edx, -0xffffffff');
+            Test.next();
+
+            expect(Test.reg('edx.dec')).toEqual('1');
+            expect(Test.reg('edx.sdec')).toEqual('1');
+            expect(Test.reg('edx.hex')).toEqual('0000 0001');
+            expect(Test.reg('edx.bin')).toEqual('00000000 00000000 00000000 00000001');
+        });
+
+        it("should set 0xf1 on 8 bit registers when setting -0xf", function() {
+            Test.code('mov dl, -0xf');
+            Test.next();
+
+            expect(Test.reg('dl.dec')).toEqual('241');
+            expect(Test.reg('dl.sdec')).toEqual('-15');
+            expect(Test.reg('dl.hex')).toEqual('f1');
+            expect(Test.reg('dl.bin')).toEqual('11110001');
+        });
+
+        it("should set 0xf001 on 16 bit registers when setting -0xfff", function() {
+            Test.code('mov dx, -0xfff');
+            Test.next();
+
+            expect(Test.reg('dx.dec')).toEqual('61441');
+            expect(Test.reg('dx.sdec')).toEqual('-4095');
+            expect(Test.reg('dx.hex')).toEqual('f001');
+            expect(Test.reg('dx.bin')).toEqual('11110000 00000001');
+        });
+
+        it("should set 0xf0000001 on 32 bit registers when setting -0xfffffff", function() {
+            Test.code('mov edx, -0xfffffff');
+            Test.next();
+
+            expect(Test.reg('edx.dec')).toEqual('4026531841');
+            expect(Test.reg('edx.sdec')).toEqual('-268435455');
+            expect(Test.reg('edx.hex')).toEqual('f000 0001');
+            expect(Test.reg('edx.bin')).toEqual('11110000 00000000 00000000 00000001');
+        });
+
+        it("should set 0x9c on 8 bit registers when setting -10d", function() {
+            Test.code('mov dl, -100d');
+            Test.next();
+
+            expect(Test.reg('dl.dec')).toEqual('156');
+            expect(Test.reg('dl.sdec')).toEqual('-100');
+            expect(Test.reg('dl.hex')).toEqual('9c');
+            expect(Test.reg('dl.bin')).toEqual('10011100');
+        });
+
+        it("should set 0xd8f0 on 16 bit registers when setting -10000d", function() {
+            Test.code('mov dx, -10000d');
+            Test.next();
+
+            expect(Test.reg('dx.dec')).toEqual('55536');
+            expect(Test.reg('dx.sdec')).toEqual('-10000');
+            expect(Test.reg('dx.hex')).toEqual('d8f0');
+            expect(Test.reg('dx.bin')).toEqual('11011000 11110000');
+        });
+
+        it("should set 0xc4653600 on 32 bit registers when setting -1000000000d", function() {
+            Test.code('mov edx, -1000000000d');
+            Test.next();
+
+            expect(Test.reg('edx.dec')).toEqual('3294967296');
+            expect(Test.reg('edx.sdec')).toEqual('-1000000000');
+            expect(Test.reg('edx.hex')).toEqual('c465 3600');
+            expect(Test.reg('edx.bin')).toEqual('11000100 01100101 00110110 00000000');
+        });
+
+        it("should set 0xfe on 8 bit registers when setting -10b", function() {
+            Test.code('mov dl, -10b');
+            Test.next();
+
+            expect(Test.reg('dl.dec')).toEqual('254');
+            expect(Test.reg('dl.sdec')).toEqual('-2');
+            expect(Test.reg('dl.hex')).toEqual('fe');
+            expect(Test.reg('dl.bin')).toEqual('11111110');
+        });
+
+        it("should set 0xfff0 on 16 bit registers when setting -10000b", function() {
+            Test.code('mov dx, -10000b');
+            Test.next();
+
+            expect(Test.reg('dx.dec')).toEqual('65520');
+            expect(Test.reg('dx.sdec')).toEqual('-16');
+            expect(Test.reg('dx.hex')).toEqual('fff0');
+            expect(Test.reg('dx.bin')).toEqual('11111111 11110000');
+        });
+
+        it("should set 0xc4653600 on 32 bit registers when setting -1000000000b", function() {
+            Test.code('mov edx, -1000000000b');
+            Test.next();
+
+            expect(Test.reg('edx.dec')).toEqual('4294966784');
+            expect(Test.reg('edx.sdec')).toEqual('-512');
+            expect(Test.reg('edx.hex')).toEqual('ffff fe00');
+            expect(Test.reg('edx.bin')).toEqual('11111111 11111111 11111110 00000000');
         });
     });
 

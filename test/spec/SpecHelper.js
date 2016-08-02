@@ -17,16 +17,13 @@ Test = function() {
     }
 
     function code(code) {
-        $('.code').text(code + "\n");
+        var oldText = $('.code').text();
+        $('.code').text(oldText + code + "\n");
         $('.code').keyup();
     }
 
-    function next(times) {
-        times = times || 1;
-
-        for (i = 0; i < times; i++) {
-            $('.next').click();
-        }
+    function next() {
+        $('.next').click();
     }
 
     function reg(regValueType) {
@@ -42,12 +39,17 @@ Test = function() {
         return $('.' + reg + '.' + valueType).text().trim();
     }
 
+    function clear() {
+        $('.code').text('');
+    }
+
     return {
           code: code,
           next: next,
           reg: reg,
           getConsoleLog: getConsoleLog,
-          logConsoleLog: logConsoleLog
+          logConsoleLog: logConsoleLog,
+          clear: clear
     }
 }();
 

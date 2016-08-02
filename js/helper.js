@@ -1017,7 +1017,7 @@ Debugger.Helper = (function() {
     function twoComplement(value, size, toBase) {
         toBase = toBase || 10;
 
-        // when we have a negative value, just return the positive value
+        // when we have a negative dec value, just return the positive value
         if (value < 0) {
             return Debugger.Helper.baseConverter(value * -1, 10, toBase);
         }
