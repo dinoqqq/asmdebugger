@@ -106,8 +106,6 @@ table th.reg-header {
 table tr.parent th::after {
   content: "+";
   background: forestgreen;
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
   border-radius: 50%;
   width: 15px;
   height: 15px;

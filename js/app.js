@@ -263,12 +263,13 @@ Debugger.App = (function() {
         var returnValue = true;
 
         // check if the value is greater then 2^32
-        var maxSize = Math.pow(2, 32);
+        var maxSize = Math.pow(2, 32) - 1;
 
         if (param1.type === 'val' && param1.value > maxSize) {
             console.log('Out of range error: value ' + param1.value + ' is too large');
             returnValue = false;
         }
+
 
         if (param2 && param2.type === 'val' && param2.value > maxSize) {
             console.log('Out of range error: value ' + param2.value + ' is too large');
