@@ -1,32 +1,42 @@
+@mixin button($size_font: 20, $size_width: 20, $size_height: 20) {
+  height: $size_height * 2px;
+  line-height: $size_font * 1.8px;
+  background: forestgreen;
+  border: 1px solid black;
+  color: white;
+  font-size: $size_font - 4px;
+  font-weight: bold;
+  outline: none;
+  margin: 0;
+  padding: 0 ($size_width * 0.8px);
+
+  &:hover {
+    background: green;
+    cursor: hand;
+    cursor: pointer;
+  }
+}
+
 body,
 html {
   margin: 0;
   font-family: monospace;
-  font-size: 15px; }
+  font-size: 15px;
+}
 
 body,
 html,
 .container,
 .code {
   height: 100%;
-  width: 100%; }
+  width: 100%;
+}
 
 button.small {
   vertical-align: top;
-  height: 30px;
-  line-height: 27px;
-  background: forestgreen;
-  border: 1px solid black;
-  color: white;
-  font-size: 11px;
-  font-weight: bold;
-  outline: none;
-  margin: 0;
-  padding: 0 5.6px; }
-  button.small:hover {
-    background: green;
-    cursor: hand;
-    cursor: pointer; }
+
+  @include button(15, 7, 15);
+}
 
 .code {
   width: 35%;
@@ -35,73 +45,74 @@ button.small {
   white-space: pre;
   height: calc(100% - 40px);
   max-height: calc(100% - 40px);
-  overflow: auto; }
+  overflow: auto;
+}
 
 .code,
 .right {
   margin-top: 20px;
   margin-left: 20px;
   display: inline-block;
-  vertical-align: top; }
+  vertical-align: top;
+}
 
 .code .active {
   background: deepskyblue;
   display: inline-block;
-  width: calc(100% - 1px); }
+  width: calc(100% - 1px);
+}
 
 .github-logo,
 .help {
   float: right;
-  margin-left: 20px; }
+  margin-left: 20px;
+}
 
 .help.active {
-  background: darkgreen; }
+  background: darkgreen;
+}
 
 .help-content {
-  display: none; }
+  display: none;
+}
 
 .right {
-  width: calc(65% - 80px); }
+  width: calc(65% - 80px);
+}
 
 .github-logo {
   background: url("../img/GitHub-Mark-32px.png") no-repeat;
   width: 32px;
   height: 32px;
-  display: block; }
+  display: block;
+}
 
 .next {
-  height: 40px;
-  line-height: 36px;
-  background: forestgreen;
-  border: 1px solid black;
-  color: white;
-  font-size: 16px;
-  font-weight: bold;
-  outline: none;
-  margin: 0;
-  padding: 0 16px;
-  margin-right: 20px; }
-  .next:hover {
-    background: green;
-    cursor: hand;
-    cursor: pointer; }
+  @include button();
+
+  margin-right: 20px;
+}
 
 table {
-  border-collapse: collapse; }
+  border-collapse: collapse;
+}
 
 table tr:nth-child(even) {
-  background: aliceblue; }
-
+  background: aliceblue;
+}
 table tr:nth-child(odd) {
-  background: lightskyblue; }
+  background: lightskyblue;
+}
 
 table th {
   text-align: right;
-  background: deepskyblue; }
+  background: deepskyblue;
+}
 
 table th.reg-header {
   text-align: left;
-  position: relative; }
+  position: relative;
+}
 
 table tr.parent th::after {
   content: "+";
@@ -119,48 +130,64 @@ table tr.parent th::after {
   font-weight: bold;
   color: white;
   font-size: 13px;
-  line-height: 15px; }
+  line-height: 15px;
+}
 
 table.registers tr:not(.parent):not(.top-header) {
-  display: none; }
+  display: none;
+}
 
 table tr.open.parent .reg-header::after {
-  content: "-"; }
+  content: "-";
+}
 
 table tr.parent {
-  border-top: 2px solid dodgerblue; }
+  border-top: 2px solid dodgerblue;
+}
 
 table tr.parent .reg-header:hover {
   cursor: hand;
-  cursor: pointer; }
+  cursor: pointer;
+}
 
 table th,
 table td {
-  padding: 2px 8px; }
+  padding: 2px 8px;
+}
 
 table td {
-  text-align: right; }
+  text-align: right;
+}
 
 table tr.reg8h th + td + td + td {
-  padding-right: 26px; }
+  padding-right: 26px;
+}
 
 table tr.reg8h th + td + td + td + td {
-  padding-right: 89px; }
+  padding-right: 89px;
+}
 
 table td:nth-child(n) {
-  border-left: 2px solid deepskyblue; }
+  border-left: 2px solid deepskyblue;
+}
 
 table th:nth-child(1) {
-  width: 40px; }
+  width: 40px;
+}
 
 table th:nth-child(2) {
-  width: 110px; }
+  width: 110px;
+}
 
 table th:nth-child(3) {
-  width: 110px; }
+  width: 110px;
+}
 
 table th:nth-child(4) {
-  width: 90px; }
+  width: 90px;
+}
 
 table th:nth-child(5) {
-  width: 320px; }
+  width: 320px;
+}
+
