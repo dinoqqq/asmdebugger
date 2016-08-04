@@ -24,7 +24,7 @@ describe("code:", function() {
             Test.code('mov eax, 1');
             Test.next();
 
-            expect(Test.getConsoleLog(2)).not.toEqual('Could not validate instruction (obj): start: ');
+            expect(Test.getError()).not.toEqual('Could not validate instruction (obj): start: ');
         });
     });
 

@@ -16,6 +16,10 @@ Test = function() {
         return consoleLogMessages.slice(-1 * number)[0]
     }
 
+    function getError() {
+        return getConsoleLog(2);
+    }
+
     function code(code) {
         var oldText = $('.code').text();
         $('.code').text(oldText + code + "\n");
@@ -53,8 +57,10 @@ Test = function() {
           reg: reg,
           getConsoleLog: getConsoleLog,
           logConsoleLog: logConsoleLog,
-          clear: clear
+          clear: clear,
+          getError: getError
     }
 }();
 
+// Start the console.log
 Test.logConsoleLog();

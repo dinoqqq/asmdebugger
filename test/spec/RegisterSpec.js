@@ -405,7 +405,7 @@ describe("registers:", function() {
             Test.next();
 
             expect(Test.reg('eax.hex')).toEqual('0000 0000');
-            expect(Test.getConsoleLog(2)).toEqual('Out of range error: value 4294967296 is too large');
+            expect(Test.getError()).toEqual('Out of range error: value 4294967296 is too large');
             expect(Test.getConsoleLog(1)).toEqual('Could not validate instruction: mov eax 0x100000000');
         });
 
@@ -414,7 +414,7 @@ describe("registers:", function() {
             Test.next();
 
             expect(Test.reg('eax.hex')).toEqual('0000 0000');
-            expect(Test.getConsoleLog(2)).toEqual('Out of range error: value 4294967297 is too large');
+            expect(Test.getError()).toEqual('Out of range error: value 4294967297 is too large');
             expect(Test.getConsoleLog(1)).toEqual('Could not validate instruction: mov eax 0x100000001');
         });
     });
