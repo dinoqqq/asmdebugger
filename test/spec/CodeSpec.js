@@ -30,13 +30,28 @@ describe("code:", function() {
         });
     });
 
-    xdescribe("current line", function() {
+    describe("current line", function() {
         it("should be selected", function() {
+            Test.code('mov eax, 1');
+            Test.next();
 
+            expect($('.code span:first-child').hasClass('active')).toEqual(true);
         });
 
         it("should be selected on the last instruction", function() {
+            Test.code('mov eax, 1');
+            Test.code('mov eax, 2');
+            Test.next();
+            Test.next();
 
+            expect($('.code span:nth-child(2)').hasClass('active')).toEqual(true);
+        });
+
+        xit("should be selected with whitespace behind the instruction", function() {
+            Test.code('mov eax, 1   ');
+            Test.next();
+
+            expect($('.code span:first-child').hasClass('active')).toEqual(true);
         });
     });
 });
