@@ -333,7 +333,7 @@ Debugger.App = (function() {
             }
         }
 
-        Debugger.Helper.echoInstruction(instructionObject, 'No instruction found for: ');
+        Debugger.Helper.echoInstruction(instructionObject, 'No instruction found for:');
         return false;
     }
 

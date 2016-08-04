@@ -21,7 +21,7 @@ Debugger.Html = (function() {
         for(i = 0; i < value.length; i++) {
             newValue += value[i];
 
-            if (i > 0 && (i+1) % spaceAfter === 0) {
+            if (i > 0 && (i+1) < value.length && (i+1) % spaceAfter === 0) {
                 newValue += ' ';
             }
         }
