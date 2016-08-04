@@ -14,9 +14,7 @@ describe("code:", function() {
         it("should work with whitespace before/after multiple instructions", function() {
             Test.code('    mov eax, 1  ');
             Test.code('  mov eax, 2  ');
-            Test.next();
-            Test.next();
-
+            Test.next(2);
 
             expect($('.eax.dec').text()).toEqual('2');
         });
@@ -71,8 +69,7 @@ describe("code:", function() {
         it("should be selected on the last instruction", function() {
             Test.code('mov eax, 1');
             Test.code('mov eax, 2');
-            Test.next();
-            Test.next();
+            Test.next(2);
 
             expect($('.code span:nth-child(2)').hasClass('active')).toEqual(true);
         });

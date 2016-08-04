@@ -22,8 +22,12 @@ Test = function() {
         $('.code').keyup();
     }
 
-    function next() {
-        $('.next').click();
+    function next(times) {
+        times = times || 1;
+
+        for (var i=0; i<times; i++) {
+            $('.next').click();
+        }
     }
 
     function reg(regValueType) {
