@@ -30,6 +30,36 @@ describe("code:", function() {
         });
     });
 
+    describe("capitals", function() {
+        it("should work with capitalized instruction", function() {
+            Test.code('MOV eax, 3');
+            Test.next();
+
+            expect($('.eax.dec').text()).toEqual('3');
+        });
+
+        it("should work with some capitalized instruction characters", function() {
+            Test.code('MoV eax, 3');
+            Test.next();
+
+            expect($('.eax.dec').text()).toEqual('3');
+        });
+
+        it("should work with capitalized registers", function() {
+            Test.code('mov EAX, 3');
+            Test.next();
+
+            expect($('.eax.dec').text()).toEqual('3');
+        });
+
+        it("should work with some capitalized register characters", function() {
+            Test.code('mov EAx, 3');
+            Test.next();
+
+            expect($('.eax.dec').text()).toEqual('3');
+        });
+    });
+
     describe("current line", function() {
         it("should be selected", function() {
             Test.code('mov eax, 1');
