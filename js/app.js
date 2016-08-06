@@ -7,6 +7,7 @@
 - minus numbers in hex. register needs to be fixed
 - what to do when numbers are too large for processor?
 - FIXME how to set the flags for multiplication and division?
+- What to do when we have two the same label names
  */
 
 var Debugger = Debugger || {};
