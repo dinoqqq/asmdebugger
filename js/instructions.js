@@ -577,6 +577,9 @@ Debugger.Instructions = (function() {
                 }
                 break;
 
+            /**
+             * Jump below: unsigned comparsion and occurs when CF = 1
+             */
             case 'jb':
                 if (!(address = Debugger.Helper.findLabelAddress(instructionObject.param1.value, instructionObjects))) {
                     console.log('Jump to, but label not found');
@@ -588,6 +591,9 @@ Debugger.Instructions = (function() {
                 }
                 break;
 
+            /**
+             * Jump below equal: unsigned comparsion and occurs when CF = 1 || ZF = 1
+             */
             case 'jbe':
                 if (!(address = Debugger.Helper.findLabelAddress(instructionObject.param1.value, instructionObjects))) {
                     console.log('Jump to, but label not found');
@@ -599,6 +605,9 @@ Debugger.Instructions = (function() {
                 }
                 break;
 
+            /**
+             * Jump above: unsigned comparsion and occurs when CF = 0 && ZF = 0
+             */
             case 'ja':
                 if (!(address = Debugger.Helper.findLabelAddress(instructionObject.param1.value, instructionObjects))) {
                     console.log('Jump to, but label not found');
@@ -610,6 +619,9 @@ Debugger.Instructions = (function() {
                 }
                 break;
 
+            /**
+             * Jump above equal: unsigned comparsion and occurs when CF = 0
+             */
             case 'jae':
                 if (!(address = Debugger.Helper.findLabelAddress(instructionObject.param1.value, instructionObjects))) {
                     console.log('Jump to, but label not found');
@@ -621,6 +633,9 @@ Debugger.Instructions = (function() {
                 }
                 break;
 
+            /**
+             * Jump less: signed comparsion and occurs when SF != OF
+             */
             case 'jl':
                 if (!(address = Debugger.Helper.findLabelAddress(instructionObject.param1.value, instructionObjects))) {
                     console.log('Jump to, but label not found');
@@ -632,6 +647,9 @@ Debugger.Instructions = (function() {
                 }
                 break;
 
+            /**
+             * Jump less equal: signed comparsion and occurs when SF != OF || ZF = 1
+             */
             case 'jle':
                 if (!(address = Debugger.Helper.findLabelAddress(instructionObject.param1.value, instructionObjects))) {
                     console.log('Jump to, but label not found');
@@ -643,6 +661,9 @@ Debugger.Instructions = (function() {
                 }
                 break;
 
+            /**
+             * Jump greater: signed comparsion and occurs when SF = OF && ZF = 0
+             */
             case 'jg':
                 if (!(address = Debugger.Helper.findLabelAddress(instructionObject.param1.value, instructionObjects))) {
                     console.log('Jump to, but label not found');
@@ -654,6 +675,9 @@ Debugger.Instructions = (function() {
                 }
                 break;
 
+            /**
+             * Jump greater equal: signed comparsion and occurs when SF = OF
+             */
             case 'jge':
                 if (!(address = Debugger.Helper.findLabelAddress(instructionObject.param1.value, instructionObjects))) {
                     console.log('Jump to, but label not found');
