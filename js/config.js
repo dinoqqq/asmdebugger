@@ -333,6 +333,12 @@ Debugger.Config = function() {
         'loop': [
             ['label']
         ],
+        'jc': [
+            ['label']
+        ],
+        'jnc': [
+            ['label']
+        ],
         'jz': [
             ['label']
         ],
