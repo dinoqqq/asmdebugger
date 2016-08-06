@@ -51,6 +51,10 @@ Test = function() {
         $('.code').text('');
     }
 
+    function selectedLineAddress() {
+        return $('.code span.active').data('address');
+    }
+
     return {
           code: code,
           next: next,
@@ -58,7 +62,8 @@ Test = function() {
           getConsoleLog: getConsoleLog,
           logConsoleLog: logConsoleLog,
           clear: clear,
-          getError: getError
+          getError: getError,
+          selectedLineAddress
     }
 }();
 
