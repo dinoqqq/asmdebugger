@@ -162,13 +162,13 @@ describe("instruction sub:", function() {
             expect($('.eax.sdec').text()).toEqual('-1');
         });
 
-        xit("should set dec register right, when difference is negative", function() {
+        it("should set dec register right, when difference is negative", function() {
             Test.code('mov eax, 5');
-            Test.code('mov ebx, -6');
+            Test.code('mov ebx, 6');
             Test.code('sub eax, ebx');
             Test.next(3);
 
-            expect($('.eax.dec').text()).toEqual('4294967294');
+            expect($('.eax.dec').text()).toEqual('4294967295');
         });
     });
 
