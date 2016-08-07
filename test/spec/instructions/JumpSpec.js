@@ -676,5 +676,502 @@ describe("jumps:", function() {
             expect(Test.selectedLineAddress()).toEqual(6);
         });
     });
+
+    describe("jl", function() {
+        it("should jump to a label when cmp 3, 5 (signed)", function() {
+            Test.code('one:');
+            Test.code('mov eax, 3');
+            Test.code('mov ebx, 5');
+            Test.code('cmp eax, ebx');
+            Test.code('jl one');
+            Test.code('two:');
+            Test.next(6);
+
+            expect(Test.selectedLineAddress()).toEqual(1);
+        });
+
+        it("should not jump to a label when cmp 5, 3 (signed)", function() {
+            Test.code('one:');
+            Test.code('mov eax, 5');
+            Test.code('mov ebx, 3');
+            Test.code('cmp eax, ebx');
+            Test.code('jl one');
+            Test.code('two:');
+            Test.next(6);
+
+            expect(Test.selectedLineAddress()).toEqual(6);
+        });
+
+        it("should jump to a label when cmp -3, 5 (signed)", function() {
+            Test.code('one:');
+            Test.code('mov eax, -3');
+            Test.code('mov ebx, 5');
+            Test.code('cmp eax, ebx');
+            Test.code('jl one');
+            Test.code('two:');
+            Test.next(6);
+
+            expect(Test.selectedLineAddress()).toEqual(1);
+        });
+
+        it("should not jump to a label when cmp 5, -3 (signed)", function() {
+            Test.code('one:');
+            Test.code('mov eax, 5');
+            Test.code('mov ebx, -3');
+            Test.code('cmp eax, ebx');
+            Test.code('jl one');
+            Test.code('two:');
+            Test.next(6);
+
+            expect(Test.selectedLineAddress()).toEqual(6);
+        });
+
+        it("should not jump to a label when cmp 0xfffffffe, -2 (signed)", function() {
+            Test.code('one:');
+            Test.code('mov eax, 0xfffffffe');
+            Test.code('mov ebx, -2');
+            Test.code('cmp eax, ebx');
+            Test.code('jl one');
+            Test.code('two:');
+            Test.next(6);
+
+            expect(Test.selectedLineAddress()).toEqual(6);
+        });
+
+        it("should jump to a label when cmp 0xfffffffa, -2 (signed)", function() {
+            Test.code('one:');
+            Test.code('mov eax, 0xfffffffa');
+            Test.code('mov ebx, -2');
+            Test.code('cmp eax, ebx');
+            Test.code('jl one');
+            Test.code('two:');
+            Test.next(6);
+
+            expect(Test.selectedLineAddress()).toEqual(1);
+        });
+
+        it("should jump to a label when flag sf != of (sf = 0, of = 1)", function() {
+            Test.code('one:');
+            Test.code('mov eax, 1');
+            Test.code('two:');
+            Test.code('mov ebx, eax');
+            Test.code('jl two');
+
+            Test.next(4);
+            Debugger.Helper.setFlag('sf', 0);
+            Debugger.Helper.setFlag('of', 1);
+            Test.next(2);
+
+            expect(Test.selectedLineAddress()).toEqual(3);
+        });
+
+        it("should jump to a label when flag sf != of (sf = 1, of = 0)", function() {
+            Test.code('one:');
+            Test.code('mov eax, 1');
+            Test.code('two:');
+            Test.code('mov ebx, eax');
+            Test.code('jl two');
+
+            Test.next(4);
+            Debugger.Helper.setFlag('sf', 1);
+            Debugger.Helper.setFlag('of', 0);
+            Test.next(2);
+
+            expect(Test.selectedLineAddress()).toEqual(3);
+        });
+
+        it("should not jump to a label when flag sf = of", function() {
+            Test.code('one:');
+            Test.code('mov eax, 1');
+            Test.code('two:');
+            Test.code('mov ebx, eax');
+            Test.code('jl two');
+            Test.code('mov eax, 7');
+
+            Test.next(4);
+            Debugger.Helper.setFlag('sf', 1);
+            Debugger.Helper.setFlag('of', 1);
+            Test.next(2);
+
+            expect(Test.selectedLineAddress()).toEqual(6);
+        });
+    });
+
+    describe("jle", function() {
+        it("should jump to a label when cmp 3, 5 (signed)", function() {
+            Test.code('one:');
+            Test.code('mov eax, 3');
+            Test.code('mov ebx, 5');
+            Test.code('cmp eax, ebx');
+            Test.code('jle one');
+            Test.code('two:');
+            Test.next(6);
+
+            expect(Test.selectedLineAddress()).toEqual(1);
+        });
+
+        it("should jump to a label when cmp 3, 3 (signed)", function() {
+            Test.code('one:');
+            Test.code('mov eax, 3');
+            Test.code('mov ebx, 3');
+            Test.code('cmp eax, ebx');
+            Test.code('jle one');
+            Test.code('two:');
+            Test.next(6);
+
+            expect(Test.selectedLineAddress()).toEqual(1);
+        });
+
+        it("should not jump to a label when cmp 5, 3 (signed)", function() {
+            Test.code('one:');
+            Test.code('mov eax, 5');
+            Test.code('mov ebx, 3');
+            Test.code('cmp eax, ebx');
+            Test.code('jle one');
+            Test.code('two:');
+            Test.next(6);
+
+            expect(Test.selectedLineAddress()).toEqual(6);
+        });
+
+        it("should jump to a label when cmp -3, 5 (signed)", function() {
+            Test.code('one:');
+            Test.code('mov eax, -3');
+            Test.code('mov ebx, 5');
+            Test.code('cmp eax, ebx');
+            Test.code('jle one');
+            Test.code('two:');
+            Test.next(6);
+
+            expect(Test.selectedLineAddress()).toEqual(1);
+        });
+
+        it("should jump to a label when cmp 0xfffffffe, -2 (signed)", function() {
+            Test.code('one:');
+            Test.code('mov eax, 0xfffffffe');
+            Test.code('mov ebx, -2');
+            Test.code('cmp eax, ebx');
+            Test.code('jle one');
+            Test.code('two:');
+            Test.next(6);
+
+            expect(Test.selectedLineAddress()).toEqual(1);
+        });
+
+        it("should jump to a label when cmp 0xfffffffa, -2 (signed)", function() {
+            Test.code('one:');
+            Test.code('mov eax, 0xfffffffe');
+            Test.code('mov ebx, -2');
+            Test.code('cmp eax, ebx');
+            Test.code('jle one');
+            Test.code('two:');
+            Test.next(6);
+
+            expect(Test.selectedLineAddress()).toEqual(1);
+        });
+
+        it("should not jump to a label when cmp 5, -3 (signed)", function() {
+            Test.code('one:');
+            Test.code('mov eax, 5');
+            Test.code('mov ebx, -3');
+            Test.code('cmp eax, ebx');
+            Test.code('jle one');
+            Test.code('two:');
+            Test.next(6);
+
+            expect(Test.selectedLineAddress()).toEqual(6);
+        });
+
+        it("should jump to a label when flag sf != of || zf = 1 (zf = 1)", function() {
+            Test.code('one:');
+            Test.code('mov eax, 1');
+            Test.code('two:');
+            Test.code('mov ebx, eax');
+            Test.code('jle two');
+
+            Test.next(4);
+            Debugger.Helper.setFlag('zf', 1);
+            Test.next(2);
+
+            expect(Test.selectedLineAddress()).toEqual(3);
+        });
+
+        it("should jump to a label when flag sf != of || zf = 1 (sf != of)", function() {
+            Test.code('one:');
+            Test.code('mov eax, 1');
+            Test.code('two:');
+            Test.code('mov ebx, eax');
+            Test.code('jle two');
+
+            Test.next(4);
+            Debugger.Helper.setFlag('sf', 0);
+            Debugger.Helper.setFlag('of', 1);
+            Test.next(2);
+
+            expect(Test.selectedLineAddress()).toEqual(3);
+        });
+
+        it("should not jump to a label when flag sf = of && zf = 0", function() {
+            Test.code('one:');
+            Test.code('mov eax, 1');
+            Test.code('two:');
+            Test.code('mov ebx, eax');
+            Test.code('jle two');
+            Test.code('mov eax, 7');
+
+            Test.next(4);
+            Debugger.Helper.setFlag('of', 1);
+            Debugger.Helper.setFlag('sf', 1);
+            Debugger.Helper.setFlag('zf', 0);
+            Test.next(2);
+
+            expect(Test.selectedLineAddress()).toEqual(6);
+        });
+    });
+
+    describe("jg", function() {
+        it("should jump to a label when cmp 5, 3 (signed)", function() {
+            Test.code('one:');
+            Test.code('mov eax, 5');
+            Test.code('mov ebx, 3');
+            Test.code('cmp eax, ebx');
+            Test.code('jg one');
+            Test.code('two:');
+            Test.next(6);
+
+            expect(Test.selectedLineAddress()).toEqual(1);
+        });
+
+        it("should not jump to a label when cmp 3, 5 (signed)", function() {
+            Test.code('one:');
+            Test.code('mov eax, 3');
+            Test.code('mov ebx, 5');
+            Test.code('cmp eax, ebx');
+            Test.code('jg one');
+            Test.code('two:');
+            Test.next(6);
+
+            expect(Test.selectedLineAddress()).toEqual(6);
+        });
+
+        it("should jump to a label when cmp 5, -3 (signed)", function() {
+            Test.code('one:');
+            Test.code('mov eax, 5');
+            Test.code('mov ebx, -3');
+            Test.code('cmp eax, ebx');
+            Test.code('jg one');
+            Test.code('two:');
+            Test.next(6);
+
+            expect(Test.selectedLineAddress()).toEqual(1);
+        });
+
+        it("should not jump to a label when cmp -3, 5 (signed)", function() {
+            Test.code('one:');
+            Test.code('mov eax, -3');
+            Test.code('mov ebx, 5');
+            Test.code('cmp eax, ebx');
+            Test.code('jg one');
+            Test.code('two:');
+            Test.next(6);
+
+            expect(Test.selectedLineAddress()).toEqual(6);
+        });
+
+        it("should jump to a label when cmp 0xffffffff, -2 (signed)", function() {
+            Test.code('one:');
+            Test.code('mov eax, 0xffffffff');
+            Test.code('mov ebx, -2');
+            Test.code('cmp eax, ebx');
+            Test.code('jg one');
+            Test.code('two:');
+            Test.next(6);
+
+            expect(Test.selectedLineAddress()).toEqual(1);
+        });
+
+        it("should jump to a label when cmp -2, 0xfffffffa (signed)", function() {
+            Test.code('one:');
+            Test.code('mov eax, -2');
+            Test.code('mov ebx, 0xfffffffa');
+            Test.code('cmp eax, ebx');
+            Test.code('jg one');
+            Test.code('two:');
+            Test.next(6);
+
+            expect(Test.selectedLineAddress()).toEqual(1);
+        });
+
+        it("should jump to a label when flag sf = of && zf = 0", function() {
+            Test.code('one:');
+            Test.code('mov eax, 1');
+            Test.code('two:');
+            Test.code('mov ebx, eax');
+            Test.code('jg two');
+
+            Test.next(4);
+            Debugger.Helper.setFlag('sf', 1);
+            Debugger.Helper.setFlag('of', 1);
+            Debugger.Helper.setFlag('zf', 0);
+            Test.next(2);
+
+            expect(Test.selectedLineAddress()).toEqual(3);
+        });
+
+        it("should not jump to a label when flag sf = of && zf = 1", function() {
+            Test.code('one:');
+            Test.code('mov eax, 1');
+            Test.code('two:');
+            Test.code('mov ebx, eax');
+            Test.code('jg two');
+            Test.code('mov eax, 7');
+
+            Test.next(4);
+            Debugger.Helper.setFlag('sf', 1);
+            Debugger.Helper.setFlag('of', 1);
+            Debugger.Helper.setFlag('zf', 1);
+            Test.next(2);
+
+            expect(Test.selectedLineAddress()).toEqual(6);
+        });
+
+        it("should not jump to a label when flag zf = 1", function() {
+            Test.code('one:');
+            Test.code('mov eax, 1');
+            Test.code('two:');
+            Test.code('mov ebx, eax');
+            Test.code('jg two');
+            Test.code('mov eax, 7');
+
+            Test.next(4);
+            Debugger.Helper.setFlag('zf', 1);
+            Test.next(2);
+
+            expect(Test.selectedLineAddress()).toEqual(6);
+        });
+
+        it("should not jump to a label when flag sf != of && zf = 0", function() {
+            Test.code('one:');
+            Test.code('mov eax, 1');
+            Test.code('two:');
+            Test.code('mov ebx, eax');
+            Test.code('jg two');
+            Test.code('mov eax, 7');
+
+            Test.next(4);
+            Debugger.Helper.setFlag('sf', 0);
+            Debugger.Helper.setFlag('of', 1);
+            Debugger.Helper.setFlag('zf', 0);
+            Test.next(2);
+
+            expect(Test.selectedLineAddress()).toEqual(6);
+        });
+    });
+
+    describe("jge", function() {
+        it("should jump to a label when cmp 5, 3 (signed)", function() {
+            Test.code('one:');
+            Test.code('mov eax, 5');
+            Test.code('mov ebx, 3');
+            Test.code('cmp eax, ebx');
+            Test.code('jge one');
+            Test.code('two:');
+            Test.next(6);
+
+            expect(Test.selectedLineAddress()).toEqual(1);
+        });
+
+        it("should jump to a label when cmp 3, 3 (signed)", function() {
+            Test.code('one:');
+            Test.code('mov eax, 3');
+            Test.code('mov ebx, 3');
+            Test.code('cmp eax, ebx');
+            Test.code('jge one');
+            Test.code('two:');
+            Test.next(6);
+
+            expect(Test.selectedLineAddress()).toEqual(1);
+        });
+
+        it("should not jump to a label when cmp 3, 5 (signed)", function() {
+            Test.code('one:');
+            Test.code('mov eax, 3');
+            Test.code('mov ebx, 5');
+            Test.code('cmp eax, ebx');
+            Test.code('jge one');
+            Test.code('two:');
+            Test.next(6);
+
+            expect(Test.selectedLineAddress()).toEqual(6);
+        });
+
+        it("should jump to a label when cmp 5, -3 (signed)", function() {
+            Test.code('one:');
+            Test.code('mov eax, 5');
+            Test.code('mov ebx, -3');
+            Test.code('cmp eax, ebx');
+            Test.code('jge one');
+            Test.code('two:');
+            Test.next(6);
+
+            expect(Test.selectedLineAddress()).toEqual(1);
+        });
+
+        it("should jump to a label when cmp 0xfffffffe, -2 (signed)", function() {
+            Test.code('one:');
+            Test.code('mov eax, 0xfffffffe');
+            Test.code('mov ebx, -2');
+            Test.code('cmp eax, ebx');
+            Test.code('jge one');
+            Test.code('two:');
+            Test.next(6);
+
+            expect(Test.selectedLineAddress()).toEqual(1);
+        });
+
+        it("should jump to a label when cmp -2, 0xfffffffa (signed)", function() {
+            Test.code('one:');
+            Test.code('mov eax, -2');
+            Test.code('mov ebx, 0xfffffffa');
+            Test.code('cmp eax, ebx');
+            Test.code('jge one');
+            Test.code('two:');
+            Test.next(6);
+
+            expect(Test.selectedLineAddress()).toEqual(1);
+        });
+
+        it("should jump to a label when flag sf = of", function() {
+            Test.code('one:');
+            Test.code('mov eax, 1');
+            Test.code('two:');
+            Test.code('mov ebx, eax');
+            Test.code('jge two');
+            Test.code('two:');
+
+            Test.next(4);
+            Debugger.Helper.setFlag('sf', 1);
+            Debugger.Helper.setFlag('of', 1);
+            Test.next(2);
+
+            expect(Test.selectedLineAddress()).toEqual(3);
+        });
+
+        it("should not jump to a label when flag sf != of", function() {
+            Test.code('one:');
+            Test.code('mov eax, 1');
+            Test.code('two:');
+            Test.code('mov ebx, eax');
+            Test.code('jge two');
+            Test.code('two:');
+
+            Test.next(4);
+            Debugger.Helper.setFlag('sf', 0);
+            Debugger.Helper.setFlag('of', 1);
+            Test.next(2);
+
+            expect(Test.selectedLineAddress()).toEqual(6);
+        });
+    });
 });
 
