@@ -39,7 +39,7 @@ Debugger.Html = (function() {
             if (!flags.hasOwnProperty(key)) { continue; }
 
             var tds = '';
-            tds += '<td>' + flags[key] + '</td>';
+            tds += '<td class="' + key + '">' + flags[key] + '</td>';
 
             $('.flags').append('<tr><th>' + key + '</th>' + tds + '</tr>');
         }

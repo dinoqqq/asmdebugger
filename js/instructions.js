@@ -159,7 +159,7 @@ Debugger.Instructions = (function() {
                 var result = Debugger.Helper.limitDec(operand1 - operand2);
                 var type = 'sub';
 
-                /* Here we assume the first parameter always is a register */
+                // Here we assume the first parameter always is a register
                 var resultSize = Debugger.Helper.getSizeOfRegister(Debugger.Helper.getTypeParam(param1.value));
 
                 Debugger.Helper.setFlags(type, operand1, operand2, result, resultSize);
