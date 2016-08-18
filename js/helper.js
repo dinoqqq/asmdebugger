@@ -363,6 +363,7 @@ Debugger.Helper = (function() {
         var maxResult = Math.pow(2, resultSize);
 
         if (result < 0 || result > (maxResult - 1)) {
+        //if (Debugger.Helper.isSignedNegative(result, resultSize) || result > (maxResult - 1)) {
             Debugger.Helper.setFlag('cf', 1);
         } else {
             Debugger.Helper.setFlag('cf', 0);

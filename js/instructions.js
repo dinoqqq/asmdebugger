@@ -156,6 +156,7 @@ Debugger.Instructions = (function() {
                     var operand2 = param2.value;
                 }
 
+                // FIXME: only works for positive integers, not when operand2 = signed int
                 var result = Debugger.Helper.limitDec(operand1 - operand2);
                 var type = 'sub';
 
