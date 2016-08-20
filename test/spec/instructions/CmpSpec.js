@@ -54,7 +54,7 @@ describe("instruction cmp:", function() {
             Test.code('cmp eax, ebx');
             Test.next(3);
 
-            expect($('.cf').text()).toEqual('1');
+            expect(Test.reg('cf')).toEqual('1');
         });
 
         it("should set the carry flag when result is < 0 (0x80000000 - -3)", function() {
@@ -63,7 +63,7 @@ describe("instruction cmp:", function() {
             Test.code('cmp eax, ebx');
             Test.next(3);
 
-            expect($('.cf').text()).toEqual('1');
+            expect(Test.reg('cf')).toEqual('1');
         });
 
         it("should not set the carry flag when result is > 0 (7 - 6)", function() {
@@ -72,7 +72,7 @@ describe("instruction cmp:", function() {
             Test.code('cmp eax, ebx');
             Test.next(3);
 
-            expect($('.cf').text()).toEqual('0');
+            expect(Test.reg('cf')).toEqual('0');
         });
 
         it("should not set the carry flag when result is > 0 (-2 - -4)", function() {
@@ -81,7 +81,7 @@ describe("instruction cmp:", function() {
             Test.code('cmp eax, ebx');
             Test.next(3);
 
-            expect($('.cf').text()).toEqual('0');
+            expect(Test.reg('cf')).toEqual('0');
         });
 
         it("should set the sign flag when result is negative (4 - 8)", function() {
@@ -90,7 +90,7 @@ describe("instruction cmp:", function() {
             Test.code('cmp eax, ebx');
             Test.next(3);
 
-            expect($('.sf').text()).toEqual('1');
+            expect(Test.reg('sf')).toEqual('1');
         });
 
         it("should set the sign flag when result is negative (0x80000000 - -3)", function() {
@@ -99,7 +99,7 @@ describe("instruction cmp:", function() {
             Test.code('cmp eax, ebx');
             Test.next(3);
 
-            expect($('.sf').text()).toEqual('1');
+            expect(Test.reg('sf')).toEqual('1');
         });
 
         it("should not set the sign flag when result is positive (8 - 4)", function() {
@@ -108,7 +108,7 @@ describe("instruction cmp:", function() {
             Test.code('cmp eax, ebx');
             Test.next(3);
 
-            expect($('.sf').text()).toEqual('0');
+            expect(Test.reg('sf')).toEqual('0');
         });
 
         it("should not set the sign flag when result is positive (-3 - 0x80000000)", function() {
@@ -117,7 +117,7 @@ describe("instruction cmp:", function() {
             Test.code('cmp eax, ebx');
             Test.next(3);
 
-            expect($('.sf').text()).toEqual('0');
+            expect(Test.reg('sf')).toEqual('0');
         });
 
         it("should set the zero flag when result is 0 (4 - 4)", function() {
@@ -126,7 +126,7 @@ describe("instruction cmp:", function() {
             Test.code('cmp eax, ebx');
             Test.next(3);
 
-            expect($('.zf').text()).toEqual('1');
+            expect(Test.reg('zf')).toEqual('1');
         });
 
         it("should set the zero flag when result is 0 (-1 - 0xffffffff)", function() {
@@ -135,7 +135,7 @@ describe("instruction cmp:", function() {
             Test.code('cmp eax, ebx');
             Test.next(3);
 
-            expect($('.zf').text()).toEqual('1');
+            expect(Test.reg('zf')).toEqual('1');
         });
 
         it("should not set the zero flag when result is 1 (4 - 3)", function() {
@@ -144,7 +144,7 @@ describe("instruction cmp:", function() {
             Test.code('cmp eax, ebx');
             Test.next(3);
 
-            expect($('.zf').text()).toEqual('0');
+            expect(Test.reg('zf')).toEqual('0');
         });
 
         it("should not set the zero flag when result is 1 (-1 - 0xfffffffe)", function() {
@@ -153,7 +153,7 @@ describe("instruction cmp:", function() {
             Test.code('cmp eax, ebx');
             Test.next(3);
 
-            expect($('.zf').text()).toEqual('0');
+            expect(Test.reg('zf')).toEqual('0');
         });
 
         it("should set the overflow flag when - - + = + (0x80000000 - 6)", function() {
@@ -162,7 +162,7 @@ describe("instruction cmp:", function() {
             Test.code('cmp eax, ebx');
             Test.next(3);
 
-            expect($('.of').text()).toEqual('1');
+            expect(Test.reg('of')).toEqual('1');
         });
 
         it("should set the overflow flag when - - + = + (-3 - 0x7fffffff)", function() {
@@ -171,7 +171,7 @@ describe("instruction cmp:", function() {
             Test.code('cmp eax, ebx');
             Test.next(3);
 
-            expect($('.of').text()).toEqual('1');
+            expect(Test.reg('of')).toEqual('1');
         });
 
         xit("should set the overflow flag when + - - = - (6 - 0x80000000)", function() {
@@ -180,7 +180,7 @@ describe("instruction cmp:", function() {
             Test.code('cmp eax, ebx');
             Test.next(3);
 
-            expect($('.of').text()).toEqual('1');
+            expect(Test.reg('of')).toEqual('1');
         });
 
         xit("should set the overflow flag when + - - = - (0x7fffffff - -3)", function() {
@@ -189,7 +189,7 @@ describe("instruction cmp:", function() {
             Test.code('cmp eax, ebx');
             Test.next(3);
 
-            expect($('.of').text()).toEqual('1');
+            expect(Test.reg('of')).toEqual('1');
         });
 
         it("should not set the overflow flag when + - + = - (10 - 12)", function() {
@@ -198,7 +198,7 @@ describe("instruction cmp:", function() {
             Test.code('cmp eax, ebx');
             Test.next(3);
 
-            expect($('.of').text()).toEqual('0');
+            expect(Test.reg('of')).toEqual('0');
         });
 
         it("should not set the overflow flag when + - + = - (0x7fffffffe - 0x7fffffff)", function() {
@@ -207,7 +207,7 @@ describe("instruction cmp:", function() {
             Test.code('cmp eax, ebx');
             Test.next(3);
 
-            expect($('.of').text()).toEqual('0');
+            expect(Test.reg('of')).toEqual('0');
         });
 
         it("should not set the overflow flag when + - + = + (10 - 8)", function() {
@@ -216,7 +216,7 @@ describe("instruction cmp:", function() {
             Test.code('cmp eax, ebx');
             Test.next(3);
 
-            expect($('.of').text()).toEqual('0');
+            expect(Test.reg('of')).toEqual('0');
         });
 
         it("should not set the overflow flag when + - + = + (0x7fffffff - 0x7ffffffe)", function() {
@@ -225,7 +225,7 @@ describe("instruction cmp:", function() {
             Test.code('cmp eax, ebx');
             Test.next(3);
 
-            expect($('.of').text()).toEqual('0');
+            expect(Test.reg('of')).toEqual('0');
         });
 
         it("should not set the overflow flag when - - - = - (-3 - 0xffffffff)", function() {
@@ -234,7 +234,7 @@ describe("instruction cmp:", function() {
             Test.code('cmp eax, ebx');
             Test.next(3);
 
-            expect($('.of').text()).toEqual('0');
+            expect(Test.reg('of')).toEqual('0');
         });
 
         it("should not set the overflow flag when - - - = - (0x80000000 - 0xffffffff)", function() {
@@ -243,7 +243,7 @@ describe("instruction cmp:", function() {
             Test.code('cmp eax, ebx');
             Test.next(3);
 
-            expect($('.of').text()).toEqual('0');
+            expect(Test.reg('of')).toEqual('0');
         });
 
         it("should not set the overflow flag when - - - = + (0xffffffff - 0x80000000)", function() {
@@ -252,7 +252,7 @@ describe("instruction cmp:", function() {
             Test.code('cmp eax, ebx');
             Test.next(3);
 
-            expect($('.of').text()).toEqual('0');
+            expect(Test.reg('of')).toEqual('0');
         });
 
         it("should not set the overflow flag when - - - = + (-3 - 0x80000000)", function() {
@@ -261,7 +261,7 @@ describe("instruction cmp:", function() {
             Test.code('cmp eax, ebx');
             Test.next(3);
 
-            expect($('.of').text()).toEqual('0');
+            expect(Test.reg('of')).toEqual('0');
         });
 
         it("should not set the overflow flag when - - + = - (0xffffffff - 10)", function() {
@@ -270,7 +270,7 @@ describe("instruction cmp:", function() {
             Test.code('cmp eax, ebx');
             Test.next(3);
 
-            expect($('.of').text()).toEqual('0');
+            expect(Test.reg('of')).toEqual('0');
         });
 
         it("should not set the overflow flag when: - - + = - (-5 - 2)", function() {
@@ -279,7 +279,7 @@ describe("instruction cmp:", function() {
             Test.code('cmp eax, ebx');
             Test.next(3);
 
-            expect($('.of').text()).toEqual('0');
+            expect(Test.reg('of')).toEqual('0');
         });
 
 
@@ -289,7 +289,7 @@ describe("instruction cmp:", function() {
             Test.code('cmp eax, ebx');
             Test.next(3);
 
-            expect($('.of').text()).toEqual('0');
+            expect(Test.reg('of')).toEqual('0');
         });
 
         it("should not set the overflow flag when + - - = + (0x7ffffff0 - -6)", function() {
@@ -298,7 +298,7 @@ describe("instruction cmp:", function() {
             Test.code('cmp eax, ebx');
             Test.next(3);
 
-            expect($('.of').text()).toEqual('0');
+            expect(Test.reg('of')).toEqual('0');
         });
     });
 });

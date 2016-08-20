@@ -9,7 +9,7 @@ describe("instruction cbw:", function() {
             Test.code('cbw');
             Test.next(2);
 
-            expect($('.eax.bin').text()).toEqual('00000000 00000000 00000000 00001111');
+            expect(Test.reg('eax.bin')).toEqual('00000000 00000000 00000000 00001111');
         });
 
         xit("should take value into al and sign extend it into ax with 1", function() {
@@ -17,7 +17,7 @@ describe("instruction cbw:", function() {
             Test.code('cbw');
             Test.next(2);
 
-            expect($('.eax.bin').text()).toEqual('00000000 00000000 11111111 10001111');
+            expect(Test.reg('eax.bin')).toEqual('00000000 00000000 11111111 10001111');
         });
 
         it("should not do anything with other registers", function() {
@@ -29,11 +29,11 @@ describe("instruction cbw:", function() {
             Test.code('cbw');
             Test.next(6);
 
-            expect($('.ebx.bin').text()).toEqual('00000000 00000000 00000000 11111111');
-            expect($('.ecx.bin').text()).toEqual('00000000 00000000 00000000 11111111');
-            expect($('.edx.bin').text()).toEqual('00000000 00000000 00000000 11111111');
-            expect($('.esi.bin').text()).toEqual('00000000 00000000 00000000 11111111');
-            expect($('.edi.bin').text()).toEqual('00000000 00000000 00000000 11111111');
+            expect(Test.reg('ebx.bin')).toEqual('00000000 00000000 00000000 11111111');
+            expect(Test.reg('ecx.bin')).toEqual('00000000 00000000 00000000 11111111');
+            expect(Test.reg('edx.bin')).toEqual('00000000 00000000 00000000 11111111');
+            expect(Test.reg('esi.bin')).toEqual('00000000 00000000 00000000 11111111');
+            expect(Test.reg('edi.bin')).toEqual('00000000 00000000 00000000 11111111');
         });
     });
 });

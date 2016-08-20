@@ -9,7 +9,7 @@ describe("instruction cwde:", function() {
             Test.code('cwde');
             Test.next(2);
 
-            expect($('.eax.bin').text()).toEqual('00000000 00000000 00001111 00001111');
+            expect(Test.reg('eax.bin')).toEqual('00000000 00000000 00001111 00001111');
         });
 
         xit("should take value into ax and sign extend it into eax with 1", function() {
@@ -17,7 +17,7 @@ describe("instruction cwde:", function() {
             Test.code('cwde');
             Test.next(2);
 
-            expect($('.eax.bin').text()).toEqual('11111111 11111111  10001111 00001111');
+            expect(Test.reg('eax.bin')).toEqual('11111111 11111111  10001111 00001111');
         });
 
         it("should not do anything with other registers", function() {
@@ -29,11 +29,11 @@ describe("instruction cwde:", function() {
             Test.code('cwde');
             Test.next(6);
 
-            expect($('.ebx.bin').text()).toEqual('00000000 00000000 11111111 00000000');
-            expect($('.ecx.bin').text()).toEqual('00000000 00000000 11111111 00000000');
-            expect($('.edx.bin').text()).toEqual('00000000 00000000 11111111 00000000');
-            expect($('.esi.bin').text()).toEqual('00000000 00000000 11111111 00000000');
-            expect($('.edi.bin').text()).toEqual('00000000 00000000 11111111 00000000');
+            expect(Test.reg('ebx.bin')).toEqual('00000000 00000000 11111111 00000000');
+            expect(Test.reg('ecx.bin')).toEqual('00000000 00000000 11111111 00000000');
+            expect(Test.reg('edx.bin')).toEqual('00000000 00000000 11111111 00000000');
+            expect(Test.reg('esi.bin')).toEqual('00000000 00000000 11111111 00000000');
+            expect(Test.reg('edi.bin')).toEqual('00000000 00000000 11111111 00000000');
         });
     });
 });

@@ -8,7 +8,7 @@ describe("registers:", function() {
             Test.code('mov eax, 1');
             Test.next();
 
-            expect($('.eax.dec').text()).toEqual('1');
+            expect(Test.reg('eax.dec')).toEqual('1');
         });
     });
 

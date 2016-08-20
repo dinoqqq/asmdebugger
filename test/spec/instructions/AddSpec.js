@@ -10,7 +10,7 @@ describe("instruction add:", function() {
             Test.code('add eax, ebx');
             Test.next(3);
 
-            expect($('.eax.dec').text()).toEqual('7');
+            expect(Test.reg('eax.dec')).toEqual('7');
         });
 
         it("should add reg16 with reg16", function() {
@@ -19,7 +19,7 @@ describe("instruction add:", function() {
             Test.code('add ax, bx');
             Test.next(3);
 
-            expect($('.ax.dec').text()).toEqual('20');
+            expect(Test.reg('ax.dec')).toEqual('20');
         });
 
         it("should add reg8h with reg8h", function() {
@@ -28,7 +28,7 @@ describe("instruction add:", function() {
             Test.code('add ah, bh');
             Test.next(3);
 
-            expect($('.ah.dec').text()).toEqual('8');
+            expect(Test.reg('ah.dec')).toEqual('8');
         });
 
         it("should add reg8l with reg8l", function() {
@@ -37,7 +37,7 @@ describe("instruction add:", function() {
             Test.code('add al, bl');
             Test.next(3);
 
-            expect($('.al.dec').text()).toEqual('6');
+            expect(Test.reg('al.dec')).toEqual('6');
         });
 
         it("should add reg8h with reg8l", function() {
@@ -46,7 +46,7 @@ describe("instruction add:", function() {
             Test.code('add ah, bl');
             Test.next(3);
 
-            expect($('.ah.dec').text()).toEqual('7');
+            expect(Test.reg('ah.dec')).toEqual('7');
         });
 
         it("should add reg8l with reg8h", function() {
@@ -55,7 +55,7 @@ describe("instruction add:", function() {
             Test.code('add al, bh');
             Test.next(3);
 
-            expect($('.al.dec').text()).toEqual('9');
+            expect(Test.reg('al.dec')).toEqual('9');
         });
 
         it("should add value with reg32", function() {
@@ -63,7 +63,7 @@ describe("instruction add:", function() {
             Test.code('add eax, 2');
             Test.next(2);
 
-            expect($('.eax.dec').text()).toEqual('8');
+            expect(Test.reg('eax.dec')).toEqual('8');
         });
 
         it("should add value with reg16", function() {
@@ -71,7 +71,7 @@ describe("instruction add:", function() {
             Test.code('add ax, 3');
             Test.next(2);
 
-            expect($('.eax.dec').text()).toEqual('9');
+            expect(Test.reg('eax.dec')).toEqual('9');
         });
 
         it("should add value with reg8h", function() {
@@ -79,7 +79,7 @@ describe("instruction add:", function() {
             Test.code('add ah, 3');
             Test.next(2);
 
-            expect($('.ah.dec').text()).toEqual('12');
+            expect(Test.reg('ah.dec')).toEqual('12');
         });
 
         it("should add value with reg8l", function() {
@@ -87,7 +87,7 @@ describe("instruction add:", function() {
             Test.code('add al, 3');
             Test.next(2);
 
-            expect($('.al.dec').text()).toEqual('13');
+            expect(Test.reg('al.dec')).toEqual('13');
         });
 
         it("should not add reg16 with reg32", function() {
@@ -130,7 +130,7 @@ describe("instruction add:", function() {
             Test.code('add eax, ebx');
             Test.next(3);
 
-            expect($('.ebx.dec').text()).toEqual('2');
+            expect(Test.reg('ebx.dec')).toEqual('2');
         });
     });
 
@@ -141,7 +141,7 @@ describe("instruction add:", function() {
             Test.code('add eax, ebx');
             Test.next(3);
 
-            expect($('.eax.sdec').text()).toEqual('-1');
+            expect(Test.reg('eax.sdec')).toEqual('-1');
         });
 
         it("should add with one negative summend: 5 + -6", function() {
@@ -150,7 +150,7 @@ describe("instruction add:", function() {
             Test.code('add eax, ebx');
             Test.next(3);
 
-            expect($('.eax.sdec').text()).toEqual('-1');
+            expect(Test.reg('eax.sdec')).toEqual('-1');
         });
 
         it("should add with two negative summends: -5 + -4", function() {
@@ -159,7 +159,7 @@ describe("instruction add:", function() {
             Test.code('add eax, ebx');
             Test.next(3);
 
-            expect($('.eax.sdec').text()).toEqual('-9');
+            expect(Test.reg('eax.sdec')).toEqual('-9');
         });
 
         it("should set dec register right, when difference is negative", function() {
@@ -168,7 +168,7 @@ describe("instruction add:", function() {
             Test.code('add eax, ebx');
             Test.next(3);
 
-            expect($('.eax.dec').text()).toEqual('4294967295');
+            expect(Test.reg('eax.dec')).toEqual('4294967295');
         });
     });
 
@@ -179,7 +179,7 @@ describe("instruction add:", function() {
             Test.code('add eax, ebx');
             Test.next(3);
 
-            expect($('.eax.sdec').text()).toEqual('6');
+            expect(Test.reg('eax.sdec')).toEqual('6');
         });
 
         it("should add dec with bin", function() {
@@ -188,7 +188,7 @@ describe("instruction add:", function() {
             Test.code('add eax, ebx');
             Test.next(3);
 
-            expect($('.eax.sdec').text()).toEqual('13');
+            expect(Test.reg('eax.sdec')).toEqual('13');
         });
 
         it("should add bin with hex", function() {
@@ -197,7 +197,7 @@ describe("instruction add:", function() {
             Test.code('add eax, ebx');
             Test.next(3);
 
-            expect($('.eax.sdec').text()).toEqual('509');
+            expect(Test.reg('eax.sdec')).toEqual('509');
         });
     });
 });

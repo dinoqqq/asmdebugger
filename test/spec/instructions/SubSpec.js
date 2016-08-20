@@ -10,7 +10,7 @@ describe("instruction sub:", function() {
             Test.code('sub eax, ebx');
             Test.next(3);
 
-            expect($('.eax.dec').text()).toEqual('3');
+            expect(Test.reg('eax.dec')).toEqual('3');
         });
 
         it("should sub reg16 from reg16", function() {
@@ -19,7 +19,7 @@ describe("instruction sub:", function() {
             Test.code('sub ax, bx');
             Test.next(3);
 
-            expect($('.ax.dec').text()).toEqual('2');
+            expect(Test.reg('ax.dec')).toEqual('2');
         });
 
         it("should sub reg8h from reg8h", function() {
@@ -28,7 +28,7 @@ describe("instruction sub:", function() {
             Test.code('sub ah, bh');
             Test.next(3);
 
-            expect($('.ah.dec').text()).toEqual('4');
+            expect(Test.reg('ah.dec')).toEqual('4');
         });
 
         it("should sub reg8l from reg8l", function() {
@@ -37,7 +37,7 @@ describe("instruction sub:", function() {
             Test.code('sub al, bl');
             Test.next(3);
 
-            expect($('.al.dec').text()).toEqual('2');
+            expect(Test.reg('al.dec')).toEqual('2');
         });
 
         it("should sub reg8h from reg8l", function() {
@@ -46,7 +46,7 @@ describe("instruction sub:", function() {
             Test.code('sub ah, bl');
             Test.next(3);
 
-            expect($('.ah.dec').text()).toEqual('3');
+            expect(Test.reg('ah.dec')).toEqual('3');
         });
 
         it("should sub reg8l from reg8h", function() {
@@ -55,7 +55,7 @@ describe("instruction sub:", function() {
             Test.code('sub al, bh');
             Test.next(3);
 
-            expect($('.al.dec').text()).toEqual('3');
+            expect(Test.reg('al.dec')).toEqual('3');
         });
 
         it("should sub value from reg32", function() {
@@ -63,7 +63,7 @@ describe("instruction sub:", function() {
             Test.code('sub eax, 2');
             Test.next(2);
 
-            expect($('.eax.dec').text()).toEqual('4');
+            expect(Test.reg('eax.dec')).toEqual('4');
         });
 
         it("should sub value from reg16", function() {
@@ -71,7 +71,7 @@ describe("instruction sub:", function() {
             Test.code('sub ax, 3');
             Test.next(2);
 
-            expect($('.eax.dec').text()).toEqual('3');
+            expect(Test.reg('eax.dec')).toEqual('3');
         });
 
         it("should sub value from reg8h", function() {
@@ -79,7 +79,7 @@ describe("instruction sub:", function() {
             Test.code('sub ah, 3');
             Test.next(2);
 
-            expect($('.ah.dec').text()).toEqual('6');
+            expect(Test.reg('ah.dec')).toEqual('6');
         });
 
         it("should sub value from reg8l", function() {
@@ -87,7 +87,7 @@ describe("instruction sub:", function() {
             Test.code('sub al, 3');
             Test.next(2);
 
-            expect($('.al.dec').text()).toEqual('7');
+            expect(Test.reg('al.dec')).toEqual('7');
         });
 
         it("should not sub reg16 from reg32", function() {
@@ -130,7 +130,7 @@ describe("instruction sub:", function() {
             Test.code('sub eax, ebx');
             Test.next(3);
 
-            expect($('.ebx.dec').text()).toEqual('2');
+            expect(Test.reg('ebx.dec')).toEqual('2');
         });
     });
 
@@ -141,7 +141,7 @@ describe("instruction sub:", function() {
             Test.code('sub eax, ebx');
             Test.next(3);
 
-            expect($('.eax.sdec').text()).toEqual('-9');
+            expect(Test.reg('eax.sdec')).toEqual('-9');
         });
 
         xit("should sub with a negative subtrahend: 5 - -4", function() {
@@ -150,7 +150,7 @@ describe("instruction sub:", function() {
             Test.code('sub eax, ebx');
             Test.next(3);
 
-            expect($('.eax.sdec').text()).toEqual('9');
+            expect(Test.reg('eax.sdec')).toEqual('9');
         });
 
         it("should sub with a negative subtrahend and negative minuend: -5 - -4", function() {
@@ -159,7 +159,7 @@ describe("instruction sub:", function() {
             Test.code('sub eax, ebx');
             Test.next(3);
 
-            expect($('.eax.sdec').text()).toEqual('-1');
+            expect(Test.reg('eax.sdec')).toEqual('-1');
         });
 
         it("should set dec register right, when difference is negative", function() {
@@ -168,7 +168,7 @@ describe("instruction sub:", function() {
             Test.code('sub eax, ebx');
             Test.next(3);
 
-            expect($('.eax.dec').text()).toEqual('4294967295');
+            expect(Test.reg('eax.dec')).toEqual('4294967295');
         });
     });
 
@@ -179,7 +179,7 @@ describe("instruction sub:", function() {
             Test.code('sub eax, ebx');
             Test.next(3);
 
-            expect($('.eax.sdec').text()).toEqual('2');
+            expect(Test.reg('eax.sdec')).toEqual('2');
         });
 
         it("should sub dec from bin", function() {
@@ -188,7 +188,7 @@ describe("instruction sub:", function() {
             Test.code('sub eax, ebx');
             Test.next(3);
 
-            expect($('.eax.sdec').text()).toEqual('-3');
+            expect(Test.reg('eax.sdec')).toEqual('-3');
         });
 
         it("should sub bin from hex", function() {
@@ -197,7 +197,7 @@ describe("instruction sub:", function() {
             Test.code('sub eax, ebx');
             Test.next(3);
 
-            expect($('.eax.sdec').text()).toEqual('-1');
+            expect(Test.reg('eax.sdec')).toEqual('-1');
         });
     });
 });

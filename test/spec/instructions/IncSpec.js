@@ -9,7 +9,7 @@ describe("instruction inc:", function() {
             Test.code('inc eax');
             Test.next(2);
 
-            expect($('.eax.dec').text()).toEqual('9');
+            expect(Test.reg('eax.dec')).toEqual('9');
         });
 
         it("should increase reg16", function() {
@@ -17,7 +17,7 @@ describe("instruction inc:", function() {
             Test.code('inc cx');
             Test.next(2);
 
-            expect($('.ecx.dec').text()).toEqual('12');
+            expect(Test.reg('ecx.dec')).toEqual('12');
         });
 
         it("should increase reg8h", function() {
@@ -25,7 +25,7 @@ describe("instruction inc:", function() {
             Test.code('inc dh');
             Test.next(2);
 
-            expect($('.dh.dec').text()).toEqual('9');
+            expect(Test.reg('dh.dec')).toEqual('9');
         });
 
         it("should increase reg8l", function() {
@@ -33,7 +33,7 @@ describe("instruction inc:", function() {
             Test.code('inc al');
             Test.next(2);
 
-            expect($('.eax.dec').text()).toEqual('3');
+            expect(Test.reg('eax.dec')).toEqual('3');
         });
 
         it("should not increase a value", function() {
@@ -48,7 +48,7 @@ describe("instruction inc:", function() {
             Test.code('inc al');
             Test.next(2);
 
-            expect($('.eax.hex').text()).toEqual('1234 5600');
+            expect(Test.reg('eax.hex')).toEqual('1234 5600');
         });
 
         it("should only increase ah, not eax", function() {
@@ -56,7 +56,7 @@ describe("instruction inc:", function() {
             Test.code('inc ah');
             Test.next(2);
 
-            expect($('.eax.hex').text()).toEqual('1234 0056');
+            expect(Test.reg('eax.hex')).toEqual('1234 0056');
         });
 
         it("should only increase ax, not eax", function() {
@@ -64,7 +64,7 @@ describe("instruction inc:", function() {
             Test.code('inc ax');
             Test.next(2);
 
-            expect($('.eax.hex').text()).toEqual('1234 0000');
+            expect(Test.reg('eax.hex')).toEqual('1234 0000');
         });
 
         it("should only increase eax, no other registers", function() {
@@ -76,11 +76,11 @@ describe("instruction inc:", function() {
             Test.code('inc eax');
             Test.next(7);
 
-            expect($('.ebx.hex').text()).toEqual('1234 56ff');
-            expect($('.ecx.hex').text()).toEqual('1234 56ff');
-            expect($('.edx.hex').text()).toEqual('1234 56ff');
-            expect($('.esi.hex').text()).toEqual('1234 56ff');
-            expect($('.edi.hex').text()).toEqual('1234 56ff');
+            expect(Test.reg('ebx.hex')).toEqual('1234 56ff');
+            expect(Test.reg('ecx.hex')).toEqual('1234 56ff');
+            expect(Test.reg('edx.hex')).toEqual('1234 56ff');
+            expect(Test.reg('esi.hex')).toEqual('1234 56ff');
+            expect(Test.reg('edi.hex')).toEqual('1234 56ff');
         });
     });
 
@@ -90,7 +90,7 @@ describe("instruction inc:", function() {
             Test.code('inc edx');
             Test.next(2);
 
-            expect($('.edx.sdec').text()).toEqual('-8');
+            expect(Test.reg('edx.sdec')).toEqual('-8');
         });
     });
 });

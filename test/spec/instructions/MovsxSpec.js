@@ -9,7 +9,7 @@ xdescribe("instruction movsx:", function() {
             Test.code('movsx eax, dx');
             Test.next(2);
 
-            expect($('.eax.bin').text()).toEqual('11111111 11111111 11111111 00000000');
+            expect(Test.reg('eax.bin')).toEqual('11111111 11111111 11111111 00000000');
         });
 
         it("should movsx reg16 to reg32 with sign 0", function() {
@@ -17,7 +17,7 @@ xdescribe("instruction movsx:", function() {
             Test.code('movsx eax, dx');
             Test.next(2);
 
-            expect($('.eax.bin').text()).toEqual('00000000 00000000 01111111 00000000');
+            expect(Test.reg('eax.bin')).toEqual('00000000 00000000 01111111 00000000');
         });
 
         it("should movsx reg8h to reg32 with sign 1", function() {
@@ -25,7 +25,7 @@ xdescribe("instruction movsx:", function() {
             Test.code('movsx eax, dh');
             Test.next(2);
 
-            expect($('.eax.bin').text()).toEqual('11111111 11111111 11111111 00000000');
+            expect(Test.reg('eax.bin')).toEqual('11111111 11111111 11111111 00000000');
         });
 
         it("should movsx reg8h to reg32 with sign 0", function() {
@@ -33,7 +33,7 @@ xdescribe("instruction movsx:", function() {
             Test.code('movsx eax, dh');
             Test.next(2);
 
-            expect($('.eax.bin').text()).toEqual('00000000 00000000 01111111 00000000');
+            expect(Test.reg('eax.bin')).toEqual('00000000 00000000 01111111 00000000');
         });
 
         it("should movsx reg8l to reg32 with sign 1", function() {
@@ -41,7 +41,7 @@ xdescribe("instruction movsx:", function() {
             Test.code('movsx eax, dl');
             Test.next(2);
 
-            expect($('.eax.bin').text()).toEqual('11111111 11111111 11111111 11111111');
+            expect(Test.reg('eax.bin')).toEqual('11111111 11111111 11111111 11111111');
         });
 
         it("should movsx reg8l to reg32 with sign 0", function() {
@@ -49,7 +49,7 @@ xdescribe("instruction movsx:", function() {
             Test.code('movsx eax, dl');
             Test.next(2);
 
-            expect($('.eax.bin').text()).toEqual('00000000 00000000 00000000 01111111');
+            expect(Test.reg('eax.bin')).toEqual('00000000 00000000 00000000 01111111');
         });
 
         it("should movsx reg8h to reg16 with sign 1", function() {
@@ -57,7 +57,7 @@ xdescribe("instruction movsx:", function() {
             Test.code('movsx ax, dh');
             Test.next(2);
 
-            expect($('.ax.bin').text()).toEqual('111111111 11111111');
+            expect(Test.reg('ax.bin')).toEqual('111111111 11111111');
         });
 
         it("should movsx reg8h to reg16 with sign 0", function() {
@@ -65,7 +65,7 @@ xdescribe("instruction movsx:", function() {
             Test.code('movsx ax, dh');
             Test.next(2);
 
-            expect($('.ax.bin').text()).toEqual('00000000 01111111');
+            expect(Test.reg('ax.bin')).toEqual('00000000 01111111');
         });
 
         it("should movsx reg8l to reg16 with sign 1", function() {
@@ -73,7 +73,7 @@ xdescribe("instruction movsx:", function() {
             Test.code('movsx ax, dl');
             Test.next(2);
 
-            expect($('.ax.bin').text()).toEqual('00000000 11111111');
+            expect(Test.reg('ax.bin')).toEqual('00000000 11111111');
         });
 
         it("should movsx reg8l to reg16 with sign 0", function() {
@@ -81,7 +81,7 @@ xdescribe("instruction movsx:", function() {
             Test.code('movsx ax, dl');
             Test.next(2);
 
-            expect($('.ax.bin').text()).toEqual('00000000 01111111');
+            expect(Test.reg('ax.bin')).toEqual('00000000 01111111');
         });
 
         it("should not movsx reg16 to reg16", function() {

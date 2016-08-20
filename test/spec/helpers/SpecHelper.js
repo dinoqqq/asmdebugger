@@ -34,13 +34,24 @@ Test = function() {
         }
     }
 
+    /**
+     * Return the value of a register.
+     *
+     * regvaluetype can be any general regster or flag register
+     *
+     * Example inputs:
+     * "eax.dec"
+     * "si.bin"
+     * "al.sdec"
+     * "of"
+     * "sf"
+     */
     function reg(regValueType) {
-        regValueType = regValueType.split('.');
-        if (regValueType.length !== 2) {
-            console.log('Test.reg needs a dot "." in the middle');
-            return false;
+        if(regValueType.indexOf('.') === -1) {
+            return $('.' + regValueType).text();
         }
 
+        regValueType = regValueType.split('.');
         var reg = regValueType[0];
         var valueType = regValueType[1];
 
