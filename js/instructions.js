@@ -514,7 +514,7 @@ Debugger.Instructions = (function() {
                     Debugger.Vars.instructionPointer = address;
 
                     // Decrease ecx
-                    Debugger.Helper.setRegister('ecx', --ecx);
+                    Debugger.Helper.setRegister('ecx', 'reg32', --ecx);
                 }
 
                 var operand1 = null;
