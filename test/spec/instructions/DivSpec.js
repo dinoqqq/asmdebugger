@@ -306,7 +306,7 @@ describe("instruction div:", function() {
     });
 
     describe("64 bit calculation", function() {
-        it("should div 32bit with 32bit (0x0000000200000005 / 0x8)", function() {
+        it("should div 32bit with 32bit (0x0000000300000008 / 0x00000008)", function() {
             Test.code('mov eax, 8');
             Test.code('mov edx, 3');
             Test.code('mov ebx, 8');
