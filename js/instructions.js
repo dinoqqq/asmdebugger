@@ -337,6 +337,8 @@ Debugger.Instructions = (function() {
              * div cl (ah:al / cl) remainder: ah, division: al
              * div ch (ah:al / ch) remainder: ah, division: al
              *
+             * The remainder always has the same sign as the dividend (see https://en.wikipedia.org/wiki/Modulo_operation)
+             *
              */
             case 'div':
                 var value1 = Debugger.Helper.paramToRegisterValue(param1);
@@ -401,7 +403,9 @@ Debugger.Instructions = (function() {
              * 7. When the dividend or divisor is negative, make ik positive via the two's complement
              * 8. Divide
              * 9. When result should be negative, take the two's complement
+             * 10. When dividend was negative, remainder also must be negative
              *
+             * The remainder always has the same sign as the dividend (see https://en.wikipedia.org/wiki/Modulo_operation)
              */
             case 'idiv':
                 // 1.
@@ -479,22 +483,58 @@ Debugger.Instructions = (function() {
                 // 8.
                 var result = bigInt(value4).divmod(value1);
 
+                var resultQuotient = result.quotient;
+                var resultRemainder = result.remainder;
+
+                var setRegisters = true;
+
+                // Check if the remainder is too large for the output
+                if (Debugger.Helper.registerOverflow(resultRemainder, mulDivValues.size, 2)) {
+                    setRegisters = false;
+                    console.log('Overflow error');
+                }
+
+                // Check if the quotient is too large for the output
+                if (Debugger.Helper.registerOverflow(resultQuotient, mulDivValues.size, 2)) {
+                    setRegisters = false;
+                    console.log('Overflow error');
+                }
+
                 // 9.
                 if (negativeResult) {
-                    result.quotient = Debugger.Helper.twoComplement(result.quotient, sizeRegister);
+                    var resultQuotientBin = Debugger.Helper.twoComplement(resultQuotient, sizeRegister, 2);
+                    resultQuotient = bigInt(resultQuotientBin, 2);
+                }
+
+                // 10.
+                if (value4Negative) {
+                    var resultRemainderBin = Debugger.Helper.twoComplement(resultRemainder, sizeRegister, 2);
+                    resultRemainder = bigInt(resultRemainderBin, 2);
+                }
+
+                // 11. Convert all to bin
+                if (!resultQuotientBin) {
+                    resultQuotientBin = resultQuotient.toString(2);
                 }
 
                 // Never set any flags
 
+                // When the result overflows the register, do not set the registers and give an
+                // overflow error.
+
+                if (!setRegisters) {
+                    return;
+                }
+
                 Debugger.Helper.setRegister(
                     mulDivValues.register1,
                     Debugger.Helper.getTypeRegister(mulDivValues.register1),
-                    result.quotient
+                    resultQuotient
                 );
                 Debugger.Helper.setRegister(
                     mulDivValues.register2,
                     Debugger.Helper.getTypeRegister(mulDivValues.register2),
-                    result.remainder
+                    resultRemainder
                 );
 
                 break;
