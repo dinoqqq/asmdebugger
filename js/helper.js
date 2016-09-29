@@ -1102,6 +1102,22 @@ Debugger.Helper = (function() {
         }
     }
 
+    /**
+     * registerOverflow
+     *
+     * Check if the value that is to be set on a register, overflows the max value of the register.
+     *
+     * @param {int} value The decimal value of the value to be checked
+     * @param {int} registerSize The size of the exponent with base 2 which calculates the max register size
+     *
+     * @returns {bool}
+     */
+    function registerOverflow(value, registerSize) {
+        var maxSize = Math.pow(2, registerSize) - 1;
+
+        return value > maxSize || value < 0;
+    }
+
     return {
         setRegister: setRegister,
         setFlags: setFlags,
@@ -1146,6 +1162,7 @@ Debugger.Helper = (function() {
         getAllRegisters: getAllRegisters,
         twoComplement: twoComplement,
         twoComplement64Bit: twoComplement64Bit,
-        valueTypeToBase: valueTypeToBase
+        valueTypeToBase: valueTypeToBase,
+        registerOverflow: registerOverflow
     };
 })();
