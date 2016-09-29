@@ -1,4 +1,4 @@
-describe("instruction idiv:", function() {
+describe("instruction idiv", function() {
     beforeEach(function() {
         Test.clear();
     });
@@ -81,8 +81,9 @@ describe("instruction idiv:", function() {
         });
 
         it("should divide reg8 with a dividend < divisor", function() {
+            // signed 199: -57
             Test.code('mov al, 5');
-            Test.code('mov bl, 199');
+            Test.code('mov bl, 199'); 
             Test.code('idiv bl');
             Test.next(3);
 
@@ -108,17 +109,65 @@ describe("instruction idiv:", function() {
             expect(Test.reg('eax.sdec')).toEqual('1');
         });
 
-        xit("should wrap a long -1 into eax", function() {
-            Test.code('mov eax, 0xffffffff');
-            Test.code('mov edx, 0xffffffff');
-            Test.code('mov ebx, 2');
+        it("should have positive remainder when using positive dividend 8bit", function() {
+            Test.code('mov al, 126');
+            Test.code('mov bl, -60');
+            Test.code('idiv bl');
+            Test.next(3);
+
+            expect(Test.reg('ah.sdec')).toEqual('6');
+        });
+
+        it("should have negative remainder when using negative dividend 8bit", function() {
+            Test.code('mov al, -60');
+            Test.code('mov ah, 0xff');
+            Test.code('mov bl, 7');
+            Test.code('idiv bl');
+            Test.next(4);
+
+            expect(Test.reg('ah.sdec')).toEqual('-4');
+        });
+
+        it("should have positive remainder when using positive dividend 16bit", function() {
+            Test.code('mov ax, 1000');
+            Test.code('mov dx, 0x0');
+            Test.code('mov bx, 99');
+            Test.code('idiv bx');
+            Test.next(4);
+
+            expect(Test.reg('dx.sdec')).toEqual('10');
+        });
+
+        it("should have negative remainder when using negative dividend 16bit", function() {
+            Test.code('mov ax, -1000');
+            Test.code('mov dx, 0xffff');
+            Test.code('mov bx, 99');
+            Test.code('idiv bx');
+            Test.next(4);
+
+            expect(Test.reg('dx.sdec')).toEqual('-10');
+        });
+
+
+        it("should have positive remainder when using positive dividend 32bit", function() {
+            Test.code('mov eax, 700000');
+            Test.code('mov edx, 0');
+            Test.code('mov ebx, 699999');
             Test.code('idiv ebx');
             Test.next(4);
 
-            expect(Test.reg('eax.sdec')).toEqual('-1');
-            expect(Test.reg('edx.sdec')).toEqual('0');
+            expect(Test.reg('edx.sdec')).toEqual('1');
         });
 
+        it("should have negative remainder when using negative dividend 32bit", function() {
+            Test.code('mov eax, -700001');
+            Test.code('mov edx, 0xffffffff');
+            Test.code('mov ebx, 99999');
+            Test.code('idiv ebx');
+            Test.next(4);
+
+            expect(Test.reg('edx.sdec')).toEqual('-8');
+        });
     });
 
     describe("errors", function() {
@@ -141,7 +190,7 @@ describe("instruction idiv:", function() {
             expect(Test.reg('bh.bin')).toEqual('00000000');
         });
 
-        xit("should give error when result doesn't fit in eax", function() {
+       it("should give error when result doesn't fit in eax", function() {
             // signed: -9223372036854775807
             // unsigned: 9223372036854775809
             Test.code('mov eax, 0x00000001');
@@ -153,21 +202,22 @@ describe("instruction idiv:", function() {
             expect(Test.getError()).toEqual('Overflow error');
         });
 
-        xit("should not change registers when result doesn't fit in eax", function() {
+        it("should not change registers when result doesn't fit in eax", function() {
+            console.log('hahaha');
             Test.code('mov eax, 0xffffffff');
-            Test.code('mov edx, 0xffffffff');
+            Test.code('mov edx, 0x7fffffff');
             Test.code('mov ebx, 2');
             Test.code('idiv ebx');
             Test.next(4);
 
             expect(Test.reg('eax.hex')).toEqual('ffff ffff');
-            expect(Test.reg('edx.hex')).toEqual('ffff ffff');
+            expect(Test.reg('edx.hex')).toEqual('7fff ffff');
             expect(Test.reg('ebx.hex')).toEqual('0000 0002');
         });
 
-        xit("should give error when result doesn't fit in ax", function() {
-            Test.code('mov ax, 0xffffffff');
-            Test.code('mov dx, 0xffffffff');
+        it("should give error when result doesn't fit in ax", function() {
+            Test.code('mov ax, 0xffff');
+            Test.code('mov dx, 0x7fff');
             Test.code('mov bx, 2');
             Test.code('idiv bx');
             Test.next(4);
@@ -175,21 +225,21 @@ describe("instruction idiv:", function() {
             expect(Test.getError()).toEqual('Overflow error');
         });
 
-        xit("should not change registers when result doesn't fit in eax", function() {
-            Test.code('mov eax, 0xffffffff');
-            Test.code('mov edx, 0xffffffff');
-            Test.code('mov ebx, 2');
-            Test.code('idiv ebx');
+        it("should not change registers when result doesn't fit in ax", function() {
+            Test.code('mov ax, 0xffff');
+            Test.code('mov dx, 0x7fff');
+            Test.code('mov bx, 2');
+            Test.code('idiv bx');
             Test.next(4);
 
-            expect(Test.reg('eax.hex')).toEqual('ffff ffff');
-            expect(Test.reg('edx.hex')).toEqual('ffff ffff');
-            expect(Test.reg('ebx.hex')).toEqual('0000 0002');
+            expect(Test.reg('ax.hex')).toEqual('ffff');
+            expect(Test.reg('dx.hex')).toEqual('7fff');
+            expect(Test.reg('bx.hex')).toEqual('0002');
         });
 
-        xit("should give error when result doesn't fit in al", function() {
+        it("should give error when result doesn't fit in al", function() {
             Test.code('mov al, 0xff');
-            Test.code('mov ah, 0xff');
+            Test.code('mov ah, 0x7f');
             Test.code('mov bl, 2');
             Test.code('idiv bl');
             Test.next(4);
@@ -197,15 +247,15 @@ describe("instruction idiv:", function() {
             expect(Test.getError()).toEqual('Overflow error');
         });
 
-        xit("should not change registers when result doesn't fit in al", function() {
+        it("should not change registers when result doesn't fit in al", function() {
             Test.code('mov al, 0xff');
-            Test.code('mov ah, 0xff');
+            Test.code('mov ah, 0x7f');
             Test.code('mov cl, 2');
             Test.code('idiv cl');
             Test.next(4);
 
             expect(Test.reg('al.hex')).toEqual('ff');
-            expect(Test.reg('ah.hex')).toEqual('ff');
+            expect(Test.reg('ah.hex')).toEqual('7f');
             expect(Test.reg('cl.hex')).toEqual('02');
         });
     });
@@ -220,7 +270,7 @@ describe("instruction idiv:", function() {
             Test.next(4);
 
             expect(Test.reg('eax.hex')).toEqual('2000 0000');
-            expect(Test.reg('edx.hex')).toEqual('1fff ffff');
+            expect(Test.reg('edx.hex')).toEqual('e000 0001');
             expect(Test.reg('eax.sdec')).toEqual('536870912');
         });
 
@@ -272,7 +322,7 @@ describe("instruction idiv:", function() {
             Test.next(4);
 
             expect(Test.reg('ax.hex')).toEqual('2000');
-            expect(Test.reg('dx.hex')).toEqual('1fff');
+            expect(Test.reg('dx.hex')).toEqual('e001');
             expect(Test.reg('ax.sdec')).toEqual('8192');
         });
 
@@ -321,7 +371,7 @@ describe("instruction idiv:", function() {
             Test.next(4);
 
             expect(Test.reg('al.hex')).toEqual('20');
-            expect(Test.reg('ah.hex')).toEqual('1f');
+            expect(Test.reg('ah.hex')).toEqual('e1');
             expect(Test.reg('al.sdec')).toEqual('32');
         });
 
@@ -377,15 +427,16 @@ describe("instruction idiv:", function() {
         });
 
         it("should idiv dec width bin", function() {
-            // 254 / -120
-            Test.code('mov al, 254');
-            Test.code('mov bl, 10001000b');
+            // 126 / -60
+            Test.code('mov al, 126');
+            Test.code('mov bl, 11000100b');
             Test.code('idiv bl');
             Test.next(3);
 
             expect(Test.reg('al.bin')).toEqual('11111110');
-            expect(Test.reg('ah.bin')).toEqual('00001110');
+            expect(Test.reg('ah.bin')).toEqual('00000110');
             expect(Test.reg('al.sdec')).toEqual('-2');
+            expect(Test.reg('ah.sdec')).toEqual('6');
         });
 
         it("should idiv bin width hex", function() {
@@ -434,7 +485,7 @@ describe("instruction idiv:", function() {
             Test.next(4);
 
             expect(Test.reg('eax.hex')).toEqual('1f01 d6f2');
-            expect(Test.reg('edx.hex')).toEqual('02e4 0c10');
+            expect(Test.reg('edx.hex')).toEqual('fd1b f3f0');
         });
 
         it("should idiv 32bit with 32bit (-2 / 0xffffffffffffffff)", function() {
@@ -458,8 +509,8 @@ describe("instruction idiv:", function() {
             Test.code('idiv ebx');
             Test.next(4);
 
-            expect(Test.reg('eax.dec')).toEqual('0');
-            expect(Test.reg('edx.dec')).toEqual('1');
+            expect(Test.reg('eax.sdec')).toEqual('0');
+            expect(Test.reg('edx.sdec')).toEqual('-1');
         });
 
         xit("should give overflow error with idiv 32bit with 32bit (0xfe1212fefe1212fe / 0xfe1212ff)", function() {
