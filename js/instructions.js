@@ -568,13 +568,14 @@ Debugger.Instructions = (function() {
              * Negates the number, it find's the two's complement.
              */
             case 'neg':
-                var value1 = Debugger.Helper.paramToRegisterValue(param1);
+                var value1SDec = Debugger.Helper.paramToRegisterValue(param1, null, 'sDec');
+
                 var size = Debugger.Helper.getSizeOfRegister(param1.type);
 
-                var result = Debugger.Helper.twoComplement(value1, size);
+                var result = Debugger.Helper.twoComplement(value1SDec, size);
 
                 var type = 'neg';
-                var operand1 = value1;
+                var operand1 = value1SDec;
                 var operand2 = result;
                 var resultSize = Debugger.Helper.getSizeOfRegister(Debugger.Helper.getTypeParam(param1.value));
 

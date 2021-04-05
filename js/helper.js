@@ -359,6 +359,7 @@ Debugger.Helper = (function() {
     function updateCarryFlag(type, result, resultSize) {
         if (type === 'dec') { return true; }
         if (type === 'inc') { return true; }
+        if (type === 'neg') { return updateCarryFlagNeg(result); }
 
         var maxResult = Math.pow(2, resultSize);
 
@@ -367,6 +368,17 @@ Debugger.Helper = (function() {
             Debugger.Helper.setFlag('cf', 1);
         } else {
             Debugger.Helper.setFlag('cf', 0);
+        }
+    }
+
+    /**
+     * Updating the carry flag for a neg operation is special. It sets it to 1 when the sign changes.
+     */
+    function updateCarryFlagNeg(result) {
+        if (result === 0) {
+            Debugger.Helper.setFlag('cf', 0);
+        } else {
+            Debugger.Helper.setFlag('cf', 1);
         }
     }
 
